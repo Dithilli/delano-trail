@@ -325,8 +325,30 @@ export function TourCard({
   onRead: () => void
   onExit: () => void
 }) {
+  const audio = useRef<HTMLAudioElement>(null)
+  const [progress, setProgress] = useState(0)
+  const [failed, setFailed] = useState(false)
+  const narrated = stop.slug === 'city-hall' && !failed
+  useEffect(() => {
+    const player = audio.current
+    if (!player || !narrated) return
+    let active = true
+    if (playing) {
+      player.play().catch(() => { if (active) onPlaying(false) })
+    } else {
+      player.pause()
+    }
+    return () => { active = false; player.pause() }
+  }, [playing, narrated, onPlaying])
+
   return (
     <article className="view tour" style={trailVar(trail)}>
+      {narrated && <audio ref={audio} src="./narration/city-hall.mp3" onEnded={onDone}
+        onError={() => setFailed(true)}
+        onTimeUpdate={(event) => {
+          const player = event.currentTarget
+          if (player.duration > 0) setProgress(player.currentTime / player.duration)
+        }} />}
       <div className="tour__top">
         <span className="tour__label">Guided tour · {trail.name}</span>
         <button className="tour__exit" onClick={onExit}>End tour ×</button>
@@ -334,8 +356,8 @@ export function TourCard({
       <div className="tour__bar" role="progressbar" aria-label="Time until the next stop">
         <i
           key={stop.slug}
-          style={{ animationDuration: `${TOUR_SECONDS}s`, animationPlayState: playing ? 'running' : 'paused' }}
-          onAnimationEnd={onDone}
+          style={narrated ? { animation: 'none', transform: `scaleX(${progress})` } : { animationDuration: `${TOUR_SECONDS}s`, animationPlayState: playing ? 'running' : 'paused' }}
+          onAnimationEnd={narrated ? undefined : onDone}
         />
       </div>
       <div className="tour__head">

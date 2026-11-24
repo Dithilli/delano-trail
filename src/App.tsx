@@ -96,6 +96,8 @@ export function App() {
     setIntro(false)
   }
 
+  const changePlayback = useCallback((playing: boolean) => setTour({ playing }), [])
+
   const startTour = () => {
     if (!trailStops.length) return
     setCompleted(null)
@@ -180,7 +182,7 @@ export function App() {
             trail={trail}
             total={trailStops.length}
             playing={tour.playing && !searchOpen}
-            onPlaying={(playing) => setTour({ playing })}
+            onPlaying={changePlayback}
             onStep={tourStep}
             onDone={() => tourStep(1)}
             onRead={() => { setTour(null); setSnap('full') }}
