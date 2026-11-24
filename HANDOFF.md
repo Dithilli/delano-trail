@@ -14,9 +14,11 @@ City Hall is the only narrated stop. The recording is about 51 seconds long and 
 
 **Voice for all stops:** Christian - Warm Documentary Narrator (voice ID `KMLpM4tgKxYUlv81Ue0p`) on the `eleven_v4` model. It replaced Rouell, which had a noticeable lisp. Owen was also lispy; the owner hears a faint trace on Christian and accepted it.
 
-**Pronouncing "Delano":** the owner confirmed "DEL-uh-no", with the emphasis on the first syllable (not "duh-LAY-no", not the Spanish pronunciation). In the text sent to `eleven_v4`, write the name as IPA between slashes: `/ˈdɛlənoʊ/` (possessive `/ˈdɛlənoʊz/`). This is not reliable: the same spelling came out as "DAH-luh-no" on some voices and takes, so the owner must listen to every take before it ships.
+**Pronouncing "Delano":** the owner confirmed "DEL-uh-no", with the emphasis on the first syllable (not "duh-LAY-no", not the Spanish pronunciation). In the text sent to `eleven_v4`, write the name as IPA between slashes: `/ˈdɛlənoʊ/` (possessive `/ˈdɛlənoʊz/`), or with syllable breaks, `/ˈdɛl.ə.noʊ/`. This is not reliable: the same spelling came out as "DAH-luh-no" on some voices and takes, and a full-script take never got all four right.
 
-**Credits:** the free plan allows 10,000 per month and 4,512 are used as of November 24, 2026. A full-length stop costs about 800 credits per take, and each request makes two takes. The free queue also rejects takes as busy when several run at once. The remaining 71 stops will not fit in the free allowance.
+**How the City Hall recording was made:** each sentence was generated as its own short clip, the owner picked a take of each by ear, and the clips were joined into one MP3. Generate one sentence per request for the other stops too, so a bad "Delano" costs one short re-roll instead of the whole script. The owner must listen to every "Delano" before it ships.
+
+**Credits:** the owner added credits to the ElevenLabs account on November 24, 2026; check the balance before a batch. A full-length stop is about 800 characters, and each request makes two takes.
 
 The other 71 stops still use the timed tour. Before generating additional audio, estimate credits for the chosen scripts. Tour playback is in `src/Panels.tsx`; the current implementation selects the recording by the City Hall slug.
 
