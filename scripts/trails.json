@@ -1,0 +1,88 @@
+[
+ {"id": "green", "name": "Green Trail", "area": "Heritage Center / 2nd St", "color": "#1fa866", "stops": [
+  {"slug": "city-hall", "name": "City Hall"},
+  {"slug": "dcdc", "name": "Delano Community Development Corporation"},
+  {"slug": "dftahs", "name": "Delano Franklin Township Area Historical Society"},
+  {"slug": "delano-united-way", "name": "Delano Loretto Area United Way"},
+  {"slug": "delano-schools", "name": "Delano Schools"},
+  {"slug": "funeral-services", "name": "Funeral Services"},
+  {"slug": "fire-department", "name": "Fire Department"},
+  {"slug": "leiters-livery-and-auto", "name": "Leiter Livery and Auto"},
+  {"slug": "sesquicentennial", "name": "Sesquicentennial"},
+  {"slug": "village-hall", "name": "Old Village Hall"}
+ ]},
+ {"id": "red", "name": "Red Trail", "area": "Bridge Ave.", "color": "#e0303a", "stops": [
+  {"slug": "barbers", "name": "Barbers"},
+  {"slug": "bakeries", "name": "Bakeries"},
+  {"slug": "beck-building", "name": "Beck Building"},
+  {"slug": "brick-block-on-bridge", "name": "Brick Block on Bridge"},
+  {"slug": "east-brick-block-on-bridge", "name": "East Brick Block on Bridge"},
+  {"slug": "eppel-building", "name": "Eppel Building"},
+  {"slug": "hollywood-in-delano-and-local-talent", "name": "Hollywood in Delano"},
+  {"slug": "lebovsky-building", "name": "Lebovsky Building"},
+  {"slug": "longish-building", "name": "Longosh Building"},
+  {"slug": "state-bank-of-delano-bldg", "name": "State Bank of Delano"},
+  {"slug": "west-brick-block-on-bridge", "name": "West Brick Block on Bridge"}
+ ]},
+ {"id": "lime", "name": "Lime Green Trail", "area": "River St. north of Bridge", "color": "#8cb82b", "stops": [
+  {"slug": "beauty-shops", "name": "Beauty Shops"},
+  {"slug": "bwgc", "name": "Big Woods Garden Club"},
+  {"slug": "cramer-building", "name": "Cramer Building"},
+  {"slug": "dcc", "name": "Delano Chamber of Commerce", "nonprofit": true},
+  {"slug": "delano-granite-works", "name": "Delano Granite Works"},
+  {"slug": "dudtf", "name": "Delano United Diversity Task Force", "nonprofit": true},
+  {"slug": "1st-national-bank", "name": "First National Bank"},
+  {"slug": "gp-schaffer-building", "name": "GP Schaffer Building"},
+  {"slug": "floods-bridge", "name": "Wagon Bridge / Crow River Floods"},
+  {"slug": "ziebarth-lebovsky", "name": "Ziebarth/Lebovsky Block"}
+ ]},
+ {"id": "purple", "name": "Purple Trail", "area": "River St. south of Bridge", "color": "#a8619c", "stops": [
+  {"slug": "bernick-building", "name": "Bernick Building"},
+  {"slug": "millinery", "name": "Millinery"},
+  {"slug": "rieder-meat-market", "name": "Rieder Meat Market"},
+  {"slug": "plattner-building", "name": "Plattner Building"},
+  {"slug": "120-river-st-n", "name": "120 River St. N."},
+  {"slug": "borsch-building", "name": "Borsch Building"},
+  {"slug": "post-office", "name": "Post Office"},
+  {"slug": "delano-lions", "name": "Delano Lions", "nonprofit": true},
+  {"slug": "delano-boy-scouts-troop-273", "name": "Delano Boy Scouts Troop 273", "nonprofit": true},
+  {"slug": "delano-loretto-girl-scouts", "name": "Delano Loretto Girl Scouts", "nonprofit": true},
+  {"slug": "stein-barber-shop", "name": "Stein Barber Shop"},
+  {"slug": "dacac", "name": "Delano Area Council for Arts & Culture", "nonprofit": true}
+ ]},
+ {"id": "yellow", "name": "Yellow Trail", "area": "Railroad Ave.", "color": "#e8c800", "stops": [
+  {"slug": "original-commercial-district", "name": "Delano Original Commercial District"},
+  {"slug": "grain-elevators", "name": "Grain Elevators"},
+  {"slug": "great-northern-hotel", "name": "Great Northern Hotel"},
+  {"slug": "delano-library", "name": "Delano Library"},
+  {"slug": "eagle-building", "name": "Eagle Building"},
+  {"slug": "ioof", "name": "Independent Order of Odd Fellows"},
+  {"slug": "lindsley-bldg", "name": "Lindsley Building"},
+  {"slug": "lundsten-lumber", "name": "Lundsten Lumber"},
+  {"slug": "railroad", "name": "The Railroad"},
+  {"slug": "dwright-county-bank-bldg", "name": "Wright County Bank"}
+ ]},
+ {"id": "blue", "name": "Blue Trail", "area": "Bridge Ave. / Hwy. 12", "color": "#2f9fc4", "stops": [
+  {"slug": "delano-american-legion", "name": "Delano American Legion", "nonprofit": true},
+  {"slug": "delano-creamery", "name": "Delano Creamery"},
+  {"slug": "delano-municipal-utilities", "name": "Delano Municipal Utilities"},
+  {"slug": "hildebrandt-bldg", "name": "Hildebrandt Building"},
+  {"slug": "indigenous-people", "name": "Indigenous Peoples"},
+  {"slug": "leiter-oil-company", "name": "Leiter Oil Company"},
+  {"slug": "plotniks-blacksmith", "name": "Plotnik's Blacksmith"},
+  {"slug": "rieder-homestead", "name": "Rieder Homestead Barn"},
+  {"slug": "the-drive-in", "name": "The Drive-In"}
+ ]},
+ {"id": "orange", "name": "Orange Trail", "area": "Central Park", "color": "#ee8a1d", "stops": [
+  {"slug": "central-park", "name": "Central Park"},
+  {"slug": "general-federated-womens-club-delano", "name": "General Federated Women's Club", "nonprofit": true},
+  {"slug": "delano-4th-of-july", "name": "Delano 4th of July"},
+  {"slug": "delano-american-legion-war-memorials", "name": "Delano American Legion Memorial", "nonprofit": true},
+  {"slug": "light-the-night", "name": "Delano Light the Night", "nonprofit": true},
+  {"slug": "delano-municipal-baseball-park", "name": "Delano Municipal Baseball", "nonprofit": false},
+  {"slug": "delano-royalty", "name": "Delano Royalty", "nonprofit": true},
+  {"slug": "snowstormers", "name": "Delano Snowstormers", "nonprofit": true},
+  {"slug": "delano-sportsmans-club", "name": "Delano Sportsman's Club", "nonprofit": true},
+  {"slug": "lsi-big-rock-park", "name": "Big Rock Park - LSI", "nonprofit": true}
+ ]}
+]
