@@ -303,6 +303,9 @@ export function StopPanel({
 
 export const TOUR_SECONDS = 16
 
+/** Stops with a recording at public/narration/<slug>.mp3; the rest use the timed tour. */
+const NARRATED_STOPS = new Set(['city-hall', 'dcdc'])
+
 /** Guided tour: one plaque at a time, advancing on its own. */
 export function TourCard({
   stop,
@@ -328,7 +331,11 @@ export function TourCard({
   const audio = useRef<HTMLAudioElement>(null)
   const [progress, setProgress] = useState(0)
   const [failed, setFailed] = useState(false)
-  const narrated = stop.slug === 'city-hall' && !failed
+  const narrated = NARRATED_STOPS.has(stop.slug) && !failed
+  useEffect(() => {
+    setProgress(0)
+    setFailed(false)
+  }, [stop.slug])
   useEffect(() => {
     const player = audio.current
     if (!player || !narrated) return
@@ -339,11 +346,11 @@ export function TourCard({
       player.pause()
     }
     return () => { active = false; player.pause() }
-  }, [playing, narrated, onPlaying])
+  }, [playing, narrated, onPlaying, stop.slug])
 
   return (
     <article className="view tour" style={trailVar(trail)}>
-      {narrated && <audio ref={audio} src="./narration/city-hall.mp3" onEnded={onDone}
+      {narrated && <audio key={stop.slug} ref={audio} src={`./narration/${stop.slug}.mp3`} onEnded={onDone}
         onError={() => setFailed(true)}
         onTimeUpdate={(event) => {
           const player = event.currentTarget

@@ -1,0 +1,10 @@
+Delano Community Development Corporation
+
+In 1967, a group of Delano entrepreneurs and business leaders came together with a shared goal: to bring jobs, industry, and new opportunities to their community. They formed the Delano Community Development Corporation, or D.C.D.C., combining private investment, local leadership, and innovative development tools to help shape Delano's future. Their efforts contributed to projects ranging from industrial development and new businesses to housing for the community's seniors, leaving an impact that continued long after the organization disbanded in 1980. The story of the D.C.D.C. is a remarkable example of what can happen when local citizens invest not only in their businesses, but in the future of their hometown.
+
+---
+NOTES:
+- Text is the stop title plus its summary from src/data/trail.json; "(DCDC)" is spoken as "or D.C.D.C."
+- Voice, model and the Delano pronunciation spelling are the same as city-hall-script.txt (IPA used: /ˈdɛl.ə.noʊ/)
+- Generated one sentence per clip (title + sentence 1 together) and joined; the owner approved the first take of each on Nov 24, 2026
+- The summary says "disbanded in 1980" but the stop's longer text says late 1980s/early 1990s; unresolved

@@ -10,7 +10,7 @@ The local app includes building search and a narrated first stop. The public Git
 
 ## Audio and remaining work
 
-City Hall is the only narrated stop. The recording is about 51 seconds long and lives at `public/narration/city-hall.mp3`; its script is in `public/narration/city-hall-script.txt`. The official ElevenLabs Creative MCP is configured and signed in on the Mac.
+The first two Green Trail stops are narrated: City Hall (`public/narration/city-hall.mp3`, about 51 seconds) and the Delano Community Development Corporation (`public/narration/dcdc.mp3`, about 49 seconds). Each has its script beside it as `<slug>-script.txt`. The official ElevenLabs Creative MCP is configured and signed in on the Mac.
 
 **Voice for all stops:** Christian - Warm Documentary Narrator (voice ID `KMLpM4tgKxYUlv81Ue0p`) on the `eleven_v4` model. It replaced Rouell, which had a noticeable lisp. Owen was also lispy; the owner hears a faint trace on Christian and accepted it.
 
@@ -20,7 +20,7 @@ City Hall is the only narrated stop. The recording is about 51 seconds long and 
 
 **Credits:** the owner added credits to the ElevenLabs account on November 24, 2026; check the balance before a batch. A full-length stop is about 800 characters, and each request makes two takes.
 
-The other 71 stops still use the timed tour. Before generating additional audio, estimate credits for the chosen scripts. Tour playback is in `src/Panels.tsx`; the current implementation selects the recording by the City Hall slug.
+The other 70 stops still use the timed tour. To narrate another stop, save its recording as `public/narration/<slug>.mp3` and add the slug to `NARRATED_STOPS` in `src/Panels.tsx`. The DCDC summary says the organization "disbanded in 1980" while its longer text says late 1980s/early 1990s; the narration follows the summary and the owner has not yet said which is right.
 
 ## Verification and publication
 
