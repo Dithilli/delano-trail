@@ -78,17 +78,20 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 /* The map positions .pin-wrap (and writes its own inline styles on it); the button inside is ours to animate. */
 .pin-wrap { width: 0; height: 0; }
 .pin {
+  /* A station on a transit map: white, ringed in its line's colour. */
   position: absolute; left: -17px; top: -17px; width: 34px; height: 34px; padding: 0; border-radius: 50%;
-  background: var(--trail); color: #fff; border: 2px solid var(--ink);
-  font: 700 15px/1 var(--sans); text-shadow: 0 1px 1px rgb(0 0 0 / 0.45);
-  box-shadow: 1.5px 2px 0 rgb(43 41 35 / 0.35);
-  transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1), opacity 0.35s;
+  background: #fffdf6; color: var(--ink); border: 4.5px solid var(--trail);
+  font: 800 14px/1 var(--sans);
+  box-shadow: 0 0 0 1.5px var(--ink), 1.5px 3px 0 1px rgb(43 41 35 / 0.3);
+  transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.35s, font-size 0.2s, background 0.2s;
 }
 /* A finger needs more than 34px: widen the touch area without growing the dot. */
 .pin::before { content: ''; position: absolute; inset: -7px; border-radius: 50%; }
 .pin-wrap--dim .pin { opacity: 0.2; }
 .pin-wrap--active { z-index: 4; }
-.pin-wrap--active .pin { transform: scale(1.45); box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--ink); }
+.pin-wrap--active .pin { transform: scale(1.45); background: var(--trail); color: #fff; border-color: #fffdf6; text-shadow: 0 1px 1px rgb(0 0 0 / 0.45); box-shadow: 0 0 0 2px var(--ink); }
+/* Zoomed out, stops are dots on their line; the chosen trail's stops (and the open one) stay numbered. */
+.map--far .pin-wrap:not(.pin-wrap--lit):not(.pin-wrap--active) .pin { transform: scale(0.4); font-size: 0; }
 .pin-wrap--active::before {
   content: ''; position: absolute; left: -24px; top: -24px; width: 48px; height: 48px; border-radius: 50%;
   border: 3px solid var(--ink); animation: ping 1.8s ease-out infinite; pointer-events: none;
@@ -354,8 +357,8 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
   .maplibregl-ctrl-group button { width: 29px; height: 29px; }
   .near, .editbar { left: calc(var(--panel-w) + 14px); right: auto; bottom: 26px; }
 
-  .pin { left: -15px; top: -15px; width: 30px; height: 30px; font-size: 14px; }
-  .pin:hover { transform: scale(1.25); }
+  .pin { left: -15px; top: -15px; width: 30px; height: 30px; font-size: 13px; border-width: 4px; }
+  .pin:hover, .map--far .pin-wrap:not(.pin-wrap--lit):not(.pin-wrap--active) .pin:hover { transform: scale(1.25); font-size: 13px; }
   .pin-wrap:hover { z-index: 3; }
   .pin-wrap--dim .pin:hover { opacity: 0.9; }
   .pin-wrap--active .pin:hover { transform: scale(1.5); }

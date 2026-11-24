@@ -127,6 +127,7 @@ export function App() {
         wide={wide}
         bottomInset={bottomInset}
         onMapTap={() => setSnap((s) => (s === 'full' ? s : 'peek'))}
+        onSelectTrail={(id) => go({ view: 'trail', trail: id })}
         onSelectStop={(slug) => { setSnap('half'); go({ view: 'stop', slug }) }}
         onLocate={onLocate}
         onMoveStop={onMoveStop}

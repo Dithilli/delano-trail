@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import type { ExpressionSpecification } from 'maplibre-gl'
 import { AttributionControl, GeolocateControl, Map as MapLibreMap, Marker, NavigationControl, setWorkerUrl } from 'maplibre-gl'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -10,6 +11,9 @@ setWorkerUrl(workerUrl)
 
 const DOWNTOWN: LngLat = [-93.7885, 45.0425]
 const CLEAR = 'rgba(0,0,0,0)'
+const INK = '#2b2923'
+/** Below this zoom, stops shrink to dots and the trail lines carry the map. */
+const FAR_ZOOM = 15.7
 const calm = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 interface Props {
@@ -28,6 +32,7 @@ interface Props {
   /** Pixels at the bottom of the map hidden by the sheet. */
   bottomInset: number
   onMapTap: () => void
+  onSelectTrail: (id: string) => void
   onSelectStop: (slug: string) => void
   onLocate: (at: LngLat) => void
   onMoveStop: (slug: string, at: LngLat) => void
@@ -54,6 +59,8 @@ export function MapView(props: Props) {
   const [loaded, setLoaded] = useState(false)
   // Pins and trails stay hidden until the opening flight lands.
   const [revealed, setRevealed] = useState(!intro)
+  // Zoomed out, the map reads as a transit diagram: bold lines, stops as small dots.
+  const [far, setFar] = useState(true)
   const wasIntro = useRef(intro)
   const anims = useRef(new Map<string, number>())
 
@@ -81,8 +88,17 @@ export function MapView(props: Props) {
     if (!wide) map.addControl(new NavigationControl({ visualizePitch: true, showZoom: false }), corner)
     map.addControl(new AttributionControl({ compact: true }), wide ? 'bottom-right' : 'top-left')
     map.on('click', (e) => {
-      if (!(e.originalEvent.target as HTMLElement | null)?.closest?.('.pin-wrap')) handlers.current.onMapTap()
+      if ((e.originalEvent.target as HTMLElement | null)?.closest?.('.pin-wrap')) return
+      // A tap on (or near) a coloured line picks that trail.
+      const r = 12
+      const layers = trails.map((t) => `trail-line-${t.id}`).filter((id) => map.getLayer(id))
+      const hit = map.queryRenderedFeatures([[e.point.x - r, e.point.y - r], [e.point.x + r, e.point.y + r]], { layers })[0]
+      if (hit) handlers.current.onSelectTrail(hit.layer.id.replace('trail-line-', ''))
+      else handlers.current.onMapTap()
     })
+    const onZoom = () => setFar(map.getZoom() < FAR_ZOOM)
+    map.on('zoom', onZoom)
+    onZoom()
 
     map.on('load', () => {
       for (const t of trails) {
@@ -98,17 +114,39 @@ export function MapView(props: Props) {
             })),
           },
         })
-        const width = (k: number) => ['interpolate', ['exponential', 1.6], ['zoom'], 13, 3 * k, 16, 9 * k, 19, 26 * k] as unknown as number
+        // Drawn like lines on a transit map: thick, ink-edged, above the buildings
+        // so nothing hides them, with the trail's name running alongside.
+        const width = (extra: number) => ['interpolate', ['exponential', 1.6], ['zoom'], 13, 4 + extra, 16, 13 + extra, 19, 38 + extra] as unknown as number
+        const hidden: ExpressionSpecification = ['step', ['line-progress'], CLEAR, 0, CLEAR]
         map.addLayer({
           id: `trail-glow-${t.id}`, type: 'line', source: `trail-${t.id}`,
           layout: { 'line-cap': 'round', 'line-join': 'round' },
-          paint: { 'line-color': t.color, 'line-width': width(2.6), 'line-blur': 14, 'line-opacity': 0 },
-        }, 'building-3d')
+          paint: { 'line-color': t.color, 'line-width': width(22), 'line-blur': 16, 'line-opacity': 0 },
+        }, 'road-label')
+        map.addLayer({
+          id: `trail-case-${t.id}`, type: 'line', source: `trail-${t.id}`,
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: { 'line-color': INK, 'line-width': width(3.5), 'line-gradient': hidden },
+        }, 'road-label')
         map.addLayer({
           id: `trail-line-${t.id}`, type: 'line', source: `trail-${t.id}`,
           layout: { 'line-cap': 'round', 'line-join': 'round' },
-          paint: { 'line-color': t.color, 'line-width': width(1), 'line-gradient': ['step', ['line-progress'], CLEAR, 0, CLEAR] },
-        }, 'building-3d')
+          paint: { 'line-color': t.color, 'line-width': width(0), 'line-gradient': hidden },
+        }, 'road-label')
+        map.addLayer({
+          id: `trail-name-${t.id}`, type: 'symbol', source: `trail-${t.id}`, maxzoom: 18,
+          layout: {
+            visibility: 'none',
+            'symbol-placement': 'line',
+            'symbol-spacing': 220,
+            'text-field': t.name.toUpperCase(),
+            'text-font': ['Noto Sans Bold'],
+            'text-size': ['interpolate', ['linear'], ['zoom'], 13, 10, 17, 14],
+            'text-letter-spacing': 0.14,
+            'text-offset': [0, 1.9],
+          },
+          paint: { 'text-color': INK, 'text-halo-color': '#f4f0e1', 'text-halo-width': 2 },
+        })
       }
       setLoaded(true)
     })
@@ -128,17 +166,24 @@ export function MapView(props: Props) {
     const map = mapRef.current
     if (!map) return
     const layer = `trail-line-${trail.id}`
-    const full = () => map.getLayer(layer) && map.setPaintProperty(layer, 'line-gradient', ['interpolate', ['linear'], ['line-progress'], 0, trail.color, 1, trail.color])
+    const paint = (t: number) => {
+      for (const [id, color] of [[`trail-case-${trail.id}`, INK], [layer, trail.color]] as const) {
+        if (!map.getLayer(id)) continue
+        map.setPaintProperty(id, 'line-gradient', t >= 1
+          ? ['interpolate', ['linear'], ['line-progress'], 0, color, 1, color]
+          : t <= 0.001 ? ['step', ['line-progress'], CLEAR, 0, CLEAR] : ['step', ['line-progress'], color, t, CLEAR])
+      }
+      if (t >= 1 && map.getLayer(`trail-name-${trail.id}`)) map.setLayoutProperty(`trail-name-${trail.id}`, 'visibility', 'visible')
+    }
     cancelAnimationFrame(anims.current.get(layer) ?? 0)
-    if (calm() || duration === 0) return void full()
-    map.setPaintProperty(layer, 'line-gradient', ['step', ['line-progress'], CLEAR, 0, CLEAR])
+    if (calm() || duration === 0) return void paint(1)
+    paint(0)
     const start = performance.now() + delay
     const tick = (now: number) => {
       if (!mapRef.current?.getLayer(layer)) return
       const t = Math.min(1, Math.max(0, (now - start) / duration))
-      const eased = 1 - (1 - t) ** 3
-      if (t >= 1) return void full()
-      if (eased > 0.001) map.setPaintProperty(layer, 'line-gradient', ['step', ['line-progress'], trail.color, eased, CLEAR])
+      if (t >= 1) return void paint(1)
+      paint(1 - (1 - t) ** 3)
       anims.current.set(layer, requestAnimationFrame(tick))
     }
     anims.current.set(layer, requestAnimationFrame(tick))
@@ -191,6 +236,7 @@ export function MapView(props: Props) {
       marker.setLngLat(at.lngLat)
       const wrap = marker.getElement()
       wrap.classList.toggle('pin-wrap--dim', activeTrail !== null && stop.trail !== activeTrail)
+      wrap.classList.toggle('pin-wrap--lit', stop.trail === activeTrail)
       wrap.classList.toggle('pin-wrap--active', stop.slug === activeStop)
       wrap.classList.toggle('pin-wrap--approx', editing && at.approx)
     }
@@ -214,8 +260,11 @@ export function MapView(props: Props) {
     if (!map || !loaded) return
     for (const t of trails) {
       const on = activeTrail === t.id
-      map.setPaintProperty(`trail-line-${t.id}`, 'line-opacity', activeTrail && !on ? 0.14 : 0.9)
-      map.setPaintProperty(`trail-glow-${t.id}`, 'line-opacity', on ? 0.55 : 0)
+      const fade = activeTrail && !on ? 0.22 : 1
+      map.setPaintProperty(`trail-line-${t.id}`, 'line-opacity', fade)
+      map.setPaintProperty(`trail-case-${t.id}`, 'line-opacity', fade)
+      map.setPaintProperty(`trail-name-${t.id}`, 'text-opacity', fade)
+      map.setPaintProperty(`trail-glow-${t.id}`, 'line-opacity', on ? 0.45 : 0)
     }
     if (firstTrailRun.current) {
       firstTrailRun.current = false
@@ -239,7 +288,8 @@ export function MapView(props: Props) {
     map.jumpTo({ center: DOWNTOWN, zoom: 5.2, pitch: 0, bearing: 0 })
     for (const t of trails) {
       cancelAnimationFrame(anims.current.get(`trail-line-${t.id}`) ?? 0)
-      map.setPaintProperty(`trail-line-${t.id}`, 'line-gradient', ['step', ['line-progress'], CLEAR, 0, CLEAR])
+      for (const id of [`trail-line-${t.id}`, `trail-case-${t.id}`]) map.setPaintProperty(id, 'line-gradient', ['step', ['line-progress'], CLEAR, 0, CLEAR])
+      map.setLayoutProperty(`trail-name-${t.id}`, 'visibility', 'none')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded, intro])
@@ -269,7 +319,10 @@ export function MapView(props: Props) {
     ]
     const box = bounds(pts)
     if (!box) return
-    const cam = map.cameraForBounds(box, { padding: padding(), maxZoom: 17.6 })
+    // cameraForBounds adds its padding to the map's own, so set the map's padding
+    // and ask with none; passing it again would count the sheet twice.
+    map.setPadding(padding())
+    const cam = map.cameraForBounds(box, { maxZoom: 17.6 })
     if (!cam) return
     const target = { center: cam.center, zoom: (cam.zoom ?? 15) - 0.25, pitch: activeTrail ? 50 : 42, bearing: activeTrail ? 14 : -12 }
     if (still) {
@@ -327,7 +380,7 @@ export function MapView(props: Props) {
 
   // MapLibre owns the inner element's class list, so our own classes live on a wrapper.
   return (
-    <div className={`map ${revealed ? '' : 'map--veiled'}`}>
+    <div className={`map ${revealed ? '' : 'map--veiled'} ${far && !editing ? 'map--far' : ''}`}>
       <div ref={el} className="map__canvas" aria-label="Map of the Spirit of Community Trail" />
     </div>
   )

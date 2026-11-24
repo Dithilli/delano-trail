@@ -57,6 +57,12 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   await page.waitForTimeout(8800)
   const landed = await cam(page)
   check('phone: flight lands on downtown, tilted', landed.zoom > 13.5 && landed.pitch > 30, JSON.stringify(landed))
+  check('phone: overview shows stops as dots on bold trail lines', await page.evaluate(() => {
+    const far = !!document.querySelector('.map--far')
+    const w = document.querySelector('.pin').getBoundingClientRect().width
+    const lines = ['green', 'red', 'lime', 'purple', 'yellow', 'blue', 'orange'].every((t) => window.__map.getLayer(`trail-line-${t}`) && window.__map.getLayer(`trail-case-${t}`))
+    return far && w < 20 && lines
+  }))
   check('phone: 72 pins revealed', await page.locator('.pin').count() === 72 && await page.locator('.map--veiled').count() === 0)
   check('phone: sheet opens half-raised', await snapOf(page) === 'sheet--half', `${await showing(page)}px showing`)
   check('phone: no sideways scroll', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
@@ -75,9 +81,20 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   await page.waitForTimeout(600)
   check('phone: tapping the handle raises it', await snapOf(page) === 'sheet--half')
 
+  // Tapping a coloured line picks that trail.
+  const onLine = await page.evaluate(() => { const p = window.__map.project([-93.7872, 45.040695]); return [p.x, p.y] }) // Railroad Ave: yellow
+  await page.touchscreen.tap(onLine[0], onLine[1])
+  await page.waitForTimeout(2600)
+  check('phone: tapping a trail line selects that trail', page.url().endsWith('#/trail/yellow'), page.url().split('#')[1])
   await page.tap('.chip:has-text("Red")')
   await page.waitForTimeout(2800)
   check('phone: red trail lists 11 stops', await page.locator('.stop-row').count() === 11)
+  const fit = await page.evaluate(() => {
+    const top = document.querySelector('.sheet').getBoundingClientRect().top
+    const ys = [...document.querySelectorAll('.pin-wrap--lit .pin')].map((p) => { const r = p.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2] })
+    return { zoom: +window.__map.getZoom().toFixed(1), lit: ys.length, inView: ys.filter(([x, y]) => x > 0 && x < innerWidth && y > 60 && y < top).length }
+  })
+  check('phone: map zooms to the chosen trail, all its stops above the sheet', fit.zoom > 16.3 && fit.lit === 11 && fit.inView === 11, JSON.stringify(fit))
   check('phone: other trails dim on map', await page.locator('.pin-wrap:not(.pin-wrap--dim)').count() === 11)
   check('phone: tour button within thumb reach at half', await tappable(page, '.bronze-button--wide'))
   await page.screenshot({ path: `${dir}/p4-trail.png` })
