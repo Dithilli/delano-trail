@@ -1,14 +1,16 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { GeolocateControl, Map as MapLibreMap, Marker, NavigationControl, setWorkerUrl } from 'maplibre-gl'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { mapStyle } from './mapStyle'
-import { bounds } from './lib/geo'
+import { bounds, distance } from './lib/geo'
 import type { Geo, LngLat, Stop, Trail } from './types'
 
 setWorkerUrl(workerUrl)
 
 const DOWNTOWN: LngLat = [-93.7885, 45.0425]
+const CLEAR = 'rgba(0,0,0,0)'
+const calm = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 interface Props {
   trails: Trail[]
@@ -16,86 +18,143 @@ interface Props {
   geo: Geo
   activeTrail: string | null
   activeStop: string | null
+  /** The opening card is up: hold the camera high above Minnesota. */
+  intro: boolean
+  /** Slowly circle the selected stop (guided tour). */
+  orbit: boolean
   editing: boolean
   onSelectStop: (slug: string) => void
   onLocate: (at: LngLat) => void
   onMoveStop: (slug: string, at: LngLat) => void
 }
 
-/** Panel covers the left on desktop and the bottom on phones; keep targets clear of it. */
 function padding() {
   const wide = window.matchMedia('(min-width: 900px)').matches
-  return wide ? { top: 90, right: 60, bottom: 60, left: 60 } : { top: 80, right: 40, bottom: 40, left: 40 }
+  return wide ? { top: 100, right: 70, bottom: 70, left: 70 } : { top: 70, right: 36, bottom: 36, left: 36 }
 }
 
-export function MapView({ trails, stops, geo, activeTrail, activeStop, editing, onSelectStop, onLocate, onMoveStop }: Props) {
+/** A different approach angle for each stop, so moving between neighbours swoops. */
+function bearingFor(stop: Stop) {
+  return ((stop.number * 47 + stop.trail.length * 31) % 120) - 60
+}
+
+export function MapView(props: Props) {
+  const { trails, stops, geo, activeTrail, activeStop, intro, orbit, editing } = props
   const el = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const markers = useRef(new Map<string, Marker>())
-  const handlers = useRef({ onSelectStop, onLocate, onMoveStop })
-  handlers.current = { onSelectStop, onLocate, onMoveStop }
+  const handlers = useRef(props)
+  handlers.current = props
+  const [loaded, setLoaded] = useState(false)
+  // Pins and trails stay hidden until the opening flight lands.
+  const [revealed, setRevealed] = useState(!intro)
+  const wasIntro = useRef(intro)
+  const anims = useRef(new Map<string, number>())
 
   useEffect(() => {
     const map = new MapLibreMap({
       container: el.current!,
       style: mapStyle,
       center: DOWNTOWN,
-      zoom: 15.2,
-      minZoom: 11,
-      maxZoom: 19,
+      zoom: intro ? 5.2 : 15.2,
+      pitch: intro ? 0 : 45,
+      bearing: intro ? 0 : -12,
+      minZoom: 4,
+      maxZoom: 19.5,
+      maxPitch: 70,
       attributionControl: { compact: true },
     })
     mapRef.current = map
     ;(window as unknown as { __map?: MapLibreMap }).__map = map
-    map.addControl(new NavigationControl({ showCompass: false }), 'bottom-right')
+    map.addControl(new NavigationControl({ visualizePitch: true }), 'bottom-right')
     const locate = new GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: true })
     locate.on('geolocate', (e) => handlers.current.onLocate([e.coords.longitude, e.coords.latitude]))
     map.addControl(locate, 'bottom-right')
 
     map.on('load', () => {
-      map.addSource('trails', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: trails.flatMap((t) =>
-            (geo.trails[t.id] ?? []).map((line) => ({
+      for (const t of trails) {
+        map.addSource(`trail-${t.id}`, {
+          type: 'geojson',
+          lineMetrics: true, // needed for line-gradient, which is how a trail "draws itself"
+          data: {
+            type: 'FeatureCollection',
+            features: (geo.trails[t.id] ?? []).map((line) => ({
               type: 'Feature' as const,
-              properties: { trail: t.id, color: t.color },
+              properties: {},
               geometry: { type: 'LineString' as const, coordinates: line },
             })),
-          ),
-        },
-      })
-      map.addLayer({
-        id: 'trail-line', type: 'line', source: 'trails',
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-color': ['get', 'color'],
-          'line-width': ['interpolate', ['exponential', 1.6], ['zoom'], 13, 3, 16, 9, 19, 26],
-          'line-opacity': 0.75,
-        },
-      }, 'road-label')
+          },
+        })
+        const width = (k: number) => ['interpolate', ['exponential', 1.6], ['zoom'], 13, 3 * k, 16, 9 * k, 19, 26 * k] as unknown as number
+        map.addLayer({
+          id: `trail-glow-${t.id}`, type: 'line', source: `trail-${t.id}`,
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: { 'line-color': t.color, 'line-width': width(2.6), 'line-blur': 14, 'line-opacity': 0 },
+        }, 'building-3d')
+        map.addLayer({
+          id: `trail-line-${t.id}`, type: 'line', source: `trail-${t.id}`,
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: { 'line-color': t.color, 'line-width': width(1), 'line-gradient': ['step', ['line-progress'], CLEAR, 0, CLEAR] },
+        }, 'building-3d')
+      }
+      setLoaded(true)
     })
 
     return () => {
+      for (const id of anims.current.values()) cancelAnimationFrame(id)
       markers.current.clear()
       map.remove()
       mapRef.current = null
     }
-    // Trails and geometry are static for the life of the page.
+    // Trails and base geometry are static for the life of the page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  /** Animate a trail line growing from its start. */
+  function draw(trail: Trail, duration: number, delay = 0) {
+    const map = mapRef.current
+    if (!map) return
+    const layer = `trail-line-${trail.id}`
+    const full = () => map.getLayer(layer) && map.setPaintProperty(layer, 'line-gradient', ['interpolate', ['linear'], ['line-progress'], 0, trail.color, 1, trail.color])
+    cancelAnimationFrame(anims.current.get(layer) ?? 0)
+    if (calm() || duration === 0) return void full()
+    map.setPaintProperty(layer, 'line-gradient', ['step', ['line-progress'], CLEAR, 0, CLEAR])
+    const start = performance.now() + delay
+    const tick = (now: number) => {
+      if (!mapRef.current?.getLayer(layer)) return
+      const t = Math.min(1, Math.max(0, (now - start) / duration))
+      const eased = 1 - (1 - t) ** 3
+      if (t >= 1) return void full()
+      if (eased > 0.001) map.setPaintProperty(layer, 'line-gradient', ['step', ['line-progress'], trail.color, eased, CLEAR])
+      anims.current.set(layer, requestAnimationFrame(tick))
+    }
+    anims.current.set(layer, requestAnimationFrame(tick))
+  }
+
+  /** Replay the drop-in for a set of pins, staggered. */
+  function drop(slugs: string[], step = 55) {
+    slugs.forEach((slug, i) => {
+      const pin = markers.current.get(slug)?.getElement().firstElementChild as HTMLElement | null
+      if (!pin) return
+      pin.classList.remove('pin--drop')
+      void pin.offsetWidth
+      pin.style.animationDelay = `${i * step}ms`
+      pin.classList.add('pin--drop')
+    })
+  }
 
   // Markers: one numbered pin per stop.
   useEffect(() => {
     const map = mapRef.current
-    if (!map) return
+    if (!map || !loaded) return
     const color = new Map(trails.map((t) => [t.id, t.color]))
     for (const stop of stops) {
       const at = geo.stops[stop.slug]
       if (!at) continue
       let marker = markers.current.get(stop.slug)
       if (!marker) {
+        const wrap = document.createElement('div')
+        wrap.className = 'pin-wrap'
         const pin = document.createElement('button')
         pin.type = 'button'
         pin.className = 'pin'
@@ -107,50 +166,148 @@ export function MapView({ trails, stops, geo, activeTrail, activeStop, editing, 
           e.stopPropagation()
           handlers.current.onSelectStop(stop.slug)
         })
-        marker = new Marker({ element: pin, draggable: editing }).setLngLat(at.lngLat).addTo(map)
-        marker.on('dragend', () => {
-          const p = marker!.getLngLat()
+        wrap.append(pin)
+        const m = new Marker({ element: wrap, draggable: editing }).setLngLat(at.lngLat).addTo(map)
+        m.on('dragend', () => {
+          const p = m.getLngLat()
           handlers.current.onMoveStop(stop.slug, [+p.lng.toFixed(6), +p.lat.toFixed(6)])
         })
-        markers.current.set(stop.slug, marker)
+        markers.current.set(stop.slug, m)
+        marker = m
       }
-      marker.setDraggable(editing)
       marker.setLngLat(at.lngLat)
-      const pin = marker.getElement()
-      pin.classList.toggle('pin--dim', activeTrail !== null && stop.trail !== activeTrail)
-      pin.classList.toggle('pin--active', stop.slug === activeStop)
-      pin.classList.toggle('pin--approx', editing && at.approx)
+      const wrap = marker.getElement()
+      wrap.classList.toggle('pin-wrap--dim', activeTrail !== null && stop.trail !== activeTrail)
+      wrap.classList.toggle('pin-wrap--active', stop.slug === activeStop)
+      wrap.classList.toggle('pin-wrap--approx', editing && at.approx)
     }
-  }, [stops, trails, geo, activeTrail, activeStop, editing])
+  }, [loaded, stops, trails, geo, activeTrail, activeStop, editing])
 
-  // Trail emphasis.
+  // The reveal: every trail draws, pins fall outward from downtown.
+  useEffect(() => {
+    if (!loaded || !revealed) return
+    trails.forEach((t, i) => draw(t, 1600, i * 140))
+    const byDistance = stops
+      .filter((s) => geo.stops[s.slug])
+      .sort((a, b) => distance(DOWNTOWN, geo.stops[a.slug].lngLat) - distance(DOWNTOWN, geo.stops[b.slug].lngLat))
+    drop(byDistance.map((s) => s.slug), 22)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, revealed])
+
+  // Choosing a trail: it redraws and glows, its pins drop again, the rest fade back.
+  const firstTrailRun = useRef(true)
   useEffect(() => {
     const map = mapRef.current
-    if (!map) return
-    const apply = () => {
-      if (!map.getLayer('trail-line')) return
-      map.setPaintProperty('trail-line', 'line-opacity', activeTrail ? ['case', ['==', ['get', 'trail'], activeTrail], 0.9, 0.15] : 0.75)
+    if (!map || !loaded) return
+    for (const t of trails) {
+      const on = activeTrail === t.id
+      map.setPaintProperty(`trail-line-${t.id}`, 'line-opacity', activeTrail && !on ? 0.14 : 0.9)
+      map.setPaintProperty(`trail-glow-${t.id}`, 'line-opacity', on ? 0.55 : 0)
     }
-    if (map.isStyleLoaded() && map.getLayer('trail-line')) apply()
-    else map.once('idle', apply)
-  }, [activeTrail])
+    if (firstTrailRun.current) {
+      firstTrailRun.current = false
+      return
+    }
+    const trail = trails.find((t) => t.id === activeTrail)
+    if (trail && revealed && !activeStop) {
+      draw(trail, 1300)
+      drop(stops.filter((s) => s.trail === trail.id).map((s) => s.slug), 70)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, activeTrail])
+
+  // Replaying the opening: back up into the sky, pins and trails away.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded || !intro || wasIntro.current) return
+    wasIntro.current = true
+    setRevealed(false)
+    map.stop()
+    map.jumpTo({ center: DOWNTOWN, zoom: 5.2, pitch: 0, bearing: 0 })
+    for (const t of trails) {
+      cancelAnimationFrame(anims.current.get(`trail-line-${t.id}`) ?? 0)
+      map.setPaintProperty(`trail-line-${t.id}`, 'line-gradient', ['step', ['line-progress'], CLEAR, 0, CLEAR])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, intro])
 
   // Camera follows the selection.
   useEffect(() => {
     const map = mapRef.current
-    if (!map || editing) return
-    if (activeStop && geo.stops[activeStop]) {
-      map.easeTo({ center: geo.stops[activeStop].lngLat, zoom: Math.max(map.getZoom(), 17), padding: padding(), duration: 700 })
+    if (!map || !loaded || editing || intro) return
+    const opening = wasIntro.current
+    wasIntro.current = false
+    const still = calm()
+    const land = () => setRevealed(true)
+
+    const stop = activeStop ? stops.find((s) => s.slug === activeStop) : undefined
+    if (stop && geo.stops[stop.slug]) {
+      const target = { center: geo.stops[stop.slug].lngLat, zoom: 17.9, pitch: 62, bearing: bearingFor(stop), padding: padding() }
+      if (still) map.jumpTo(target)
+      else map.flyTo({ ...target, duration: opening ? 6000 : 2400, curve: 1.3, essential: true })
+      land()
       return
     }
+
     const shown = stops.filter((s) => !activeTrail || s.trail === activeTrail)
     const pts = [
       ...shown.map((s) => geo.stops[s.slug]?.lngLat).filter((p): p is LngLat => !!p),
       ...Object.entries(geo.trails).filter(([id]) => !activeTrail || id === activeTrail).flatMap(([, lines]) => lines.flat()),
     ]
     const box = bounds(pts)
-    if (box) map.fitBounds(box, { padding: padding(), maxZoom: 17.5, duration: 700 })
-  }, [activeTrail, activeStop, stops, geo, editing])
+    if (!box) return
+    const cam = map.cameraForBounds(box, { padding: padding(), maxZoom: 17.6 })
+    if (!cam) return
+    const target = { center: cam.center, zoom: (cam.zoom ?? 15) - 0.25, pitch: activeTrail ? 50 : 42, bearing: activeTrail ? 14 : -12 }
+    if (still) {
+      map.jumpTo(target)
+      land()
+    } else if (opening) {
+      // The opening shot: fall out of the sky onto downtown.
+      map.flyTo({ ...target, duration: 6500, curve: 1.6, essential: true })
+      window.setTimeout(land, 4300)
+    } else {
+      map.flyTo({ ...target, duration: 1800, curve: 1.2, essential: true })
+    }
+  }, [loaded, activeTrail, activeStop, stops, geo, editing, intro])
 
-  return <div ref={el} className="map" aria-label="Map of the Spirit of Community Trail" />
+  // Guided tour: circle the stop until something else happens.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded || !orbit || !activeStop || calm()) return
+    let frame = 0
+    let last = 0
+    let running = false
+    const spin = (now: number) => {
+      if (last) map.setBearing(map.getBearing() + ((now - last) / 1000) * 5)
+      last = now
+      frame = requestAnimationFrame(spin)
+    }
+    const start = () => {
+      if (running) return
+      running = true
+      frame = requestAnimationFrame(spin)
+    }
+    const timer = window.setTimeout(start, 2600) // after the fly-in
+    const halt = () => cancelAnimationFrame(frame)
+    map.on('dragstart', halt)
+    map.on('wheel', halt)
+    return () => {
+      window.clearTimeout(timer)
+      cancelAnimationFrame(frame)
+      map.off('dragstart', halt)
+      map.off('wheel', halt)
+    }
+  }, [loaded, orbit, activeStop])
+
+  useEffect(() => {
+    for (const m of markers.current.values()) m.setDraggable(editing)
+  }, [editing, loaded])
+
+  // MapLibre owns the inner element's class list, so our own classes live on a wrapper.
+  return (
+    <div className={`map ${revealed ? '' : 'map--veiled'}`}>
+      <div ref={el} className="map__canvas" aria-label="Map of the Spirit of Community Trail" />
+    </div>
+  )
 }

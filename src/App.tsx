@@ -1,15 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import data from './data/trail.json'
 import geoData from './data/geo.json'
+import { Fireworks } from './Fireworks'
+import { Intro } from './Intro'
 import { MapView } from './MapView'
-import { HomePanel, StopPanel, TrailPanel } from './Panels'
+import { HomePanel, StopPanel, TourCard, TrailPanel } from './Panels'
 import { formatDistance, nearest } from './lib/geo'
 import { parseHash, toHash, type Route } from './lib/route'
 import type { Geo, LngLat, Stop, Trail } from './types'
 
 const trails = data.trails as Trail[]
 const stops = data.stops as Stop[]
-const editing = new URLSearchParams(location.search).has('edit')
+const query = new URLSearchParams(location.search)
+const editing = query.has('edit')
+const SEEN = 'soct-intro-seen'
+const trailColors = trails.map((t) => t.color)
 
 function useRoute(): [Route, (r: Route) => void] {
   const [route, setRoute] = useState<Route>(() => parseHash(location.hash))
@@ -28,17 +33,31 @@ export function App() {
   const [route, go] = useRoute()
   const [geo, setGeo] = useState<Geo>(geoData as unknown as Geo)
   const [near, setNear] = useState<{ stop: Stop; metres: number } | null>(null)
+  // The opening plays once per visit, and never for someone arriving at a plaque's own link.
+  const [intro, setIntro] = useState(
+    () => route.view === 'home' && !editing && !query.has('nointro') && !sessionStorage.getItem(SEEN),
+  )
+  const [tour, setTour] = useState<{ playing: boolean } | null>(null)
+  const [completed, setCompleted] = useState<string | null>(null)
+  const [fireworks, setFireworks] = useState(0)
   const panel = useRef<HTMLElement>(null)
 
   const stop = route.view === 'stop' ? stops.find((s) => s.slug === route.slug) : undefined
   const trailId = route.view === 'trail' ? route.trail : stop?.trail ?? null
   const trail = trails.find((t) => t.id === trailId)
   const trailStops = useMemo(() => stops.filter((s) => s.trail === trailId), [trailId])
+  const touring = !!tour && !!stop
 
   useEffect(() => {
     panel.current?.scrollTo({ top: 0 })
     document.title = `${stop?.title ?? trail?.name ?? 'Spirit of Community Trail'} · Delano, Minnesota`
   }, [stop, trail])
+
+  // Leaving the stops ends a tour; leaving a finished trail clears its banner.
+  useEffect(() => {
+    if (route.view !== 'stop') setTour(null)
+    if (completed && trailId !== completed) setCompleted(null)
+  }, [route, trailId, completed])
 
   const onLocate = useCallback((at: LngLat) => {
     const hit = nearest(at, stops, (s) => geo.stops[s.slug]?.lngLat)
@@ -59,14 +78,40 @@ export function App() {
     URL.revokeObjectURL(a.href)
   }
 
+  const begin = () => {
+    sessionStorage.setItem(SEEN, '1')
+    setIntro(false)
+  }
+
+  const startTour = () => {
+    if (!trailStops.length) return
+    setCompleted(null)
+    setTour({ playing: true })
+    go({ view: 'stop', slug: trailStops[0].slug })
+  }
+
+  const tourStep = (d: 1 | -1) => {
+    if (!stop || !trail) return
+    const next = trailStops[trailStops.findIndex((s) => s.slug === stop.slug) + d]
+    if (next) return go({ view: 'stop', slug: next.slug })
+    if (d === 1) {
+      setTour(null)
+      setCompleted(trail.id)
+      setFireworks((n) => n + 1)
+      go({ view: 'trail', trail: trail.id })
+    }
+  }
+
   return (
-    <div className="app">
+    <div className={`app ${intro ? 'app--intro' : ''}`}>
       <MapView
         trails={trails}
         stops={stops}
         geo={geo}
         activeTrail={trail?.id ?? null}
         activeStop={stop?.slug ?? null}
+        intro={intro}
+        orbit={touring}
         editing={editing}
         onSelectStop={(slug) => go({ view: 'stop', slug })}
         onLocate={onLocate}
@@ -105,14 +150,38 @@ export function App() {
       )}
 
       <aside className="panel" ref={panel}>
-        {stop && trail ? (
-          <StopPanel stop={stop} trail={trail} siblings={trailStops} placed={geo.stops[stop.slug]} go={go} />
+        {stop && trail && tour ? (
+          <TourCard
+            key={`tour-${stop.slug}`}
+            stop={stop}
+            trail={trail}
+            total={trailStops.length}
+            playing={tour.playing}
+            onPlaying={(playing) => setTour({ playing })}
+            onStep={tourStep}
+            onDone={() => tourStep(1)}
+            onRead={() => setTour(null)}
+            onExit={() => go({ view: 'trail', trail: trail.id })}
+          />
+        ) : stop && trail ? (
+          <StopPanel key={stop.slug} stop={stop} trail={trail} siblings={trailStops} placed={geo.stops[stop.slug]} go={go} />
         ) : trail ? (
-          <TrailPanel trail={trail} stops={trailStops} go={go} />
+          <TrailPanel
+            key={trail.id}
+            trail={trail}
+            stops={trailStops}
+            go={go}
+            completed={completed === trail.id}
+            nextTrail={trails[(trails.indexOf(trail) + 1) % trails.length]}
+            onTour={startTour}
+          />
         ) : (
-          <HomePanel trails={trails} stops={stops} go={go} />
+          <HomePanel key="home" trails={trails} stops={stops} go={go} onReplay={() => setIntro(true)} />
         )}
       </aside>
+
+      <Fireworks show={fireworks} bursts={10} colors={trailColors} />
+      {intro && <Intro onBegin={begin} colors={trailColors} />}
     </div>
   )
 }

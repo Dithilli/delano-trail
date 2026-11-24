@@ -49,6 +49,17 @@ export const mapStyle: StyleSpecification = {
       paint: { 'fill-color': '#ebe5cf', 'fill-outline-color': INK_SOFT, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 1] },
     },
     {
+      // Buildings stand up once the camera tilts, like a paper model of downtown.
+      id: 'building-3d', type: 'fill-extrusion', source: 'openmaptiles', 'source-layer': 'building', minzoom: 15,
+      paint: {
+        'fill-extrusion-color': ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 5], 0, '#f2ecd8', 12, '#e2d7b8'],
+        'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'], 15, 0, 15.6, ['coalesce', ['get', 'render_height'], 5]],
+        'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
+        'fill-extrusion-opacity': 0.92,
+        'fill-extrusion-vertical-gradient': true,
+      },
+    },
+    {
       id: 'path', type: 'line', source: 'openmaptiles', 'source-layer': 'transportation', minzoom: 14,
       filter: ['==', ['get', 'class'], 'path'],
       paint: { 'line-color': INK_SOFT, 'line-width': 1, 'line-dasharray': [2, 2] },

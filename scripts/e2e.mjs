@@ -1,0 +1,115 @@
+// End-to-end walk through the app as a visitor would use it.
+// Usage: node scripts/e2e.mjs <base-url> <screenshot-dir>
+import { chromium } from 'playwright'
+const [base, dir] = process.argv.slice(2)
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] })
+const results = []
+const errors = []
+const check = (name, ok, detail = '') => results.push(`${ok ? 'PASS' : 'FAIL'} ${name}${detail ? ' — ' + detail : ''}`)
+const watch = (page) => {
+  page.on('console', (m) => m.type() === 'error' && errors.push(m.text().slice(0, 200)))
+  page.on('pageerror', (e) => errors.push('PAGEERROR ' + String(e).slice(0, 200)))
+}
+const cam = (page) => page.evaluate(() => ({ zoom: +window.__map.getZoom().toFixed(2), pitch: +window.__map.getPitch().toFixed(0) }))
+
+const page = await browser.newPage({ viewport: { width: 1360, height: 860 } })
+watch(page)
+await page.goto(base, { waitUntil: 'load' })
+await page.waitForSelector('.intro .bronze-button')
+await page.waitForTimeout(3600)
+check('opening card shows', await page.locator('.intro__title').isVisible())
+check('map waits high above', (await cam(page)).zoom < 7, JSON.stringify(await cam(page)))
+check('pins hidden during opening', await page.locator('.map--veiled').count() === 1)
+await page.screenshot({ path: `${dir}/1-intro.png` })
+
+await page.click('.intro .bronze-button')
+await page.waitForTimeout(2600)
+await page.screenshot({ path: `${dir}/2-flying.png` })
+await page.waitForTimeout(6200)
+const landed = await cam(page)
+check('flight lands on downtown, tilted', landed.zoom > 14 && landed.pitch > 30, JSON.stringify(landed))
+check('72 pins revealed', await page.locator('.pin').count() === 72 && await page.locator('.map--veiled').count() === 0)
+check('7 trail cards', await page.locator('.trail-card').count() === 7)
+await page.screenshot({ path: `${dir}/3-home.png` })
+
+await page.click('.chip:has-text("Red")')
+await page.waitForTimeout(2600)
+check('red trail lists 11 stops', await page.locator('.stop-row').count() === 11)
+check('other trails dim on map', await page.locator('.pin-wrap:not(.pin-wrap--dim)').count() === 11)
+await page.screenshot({ path: `${dir}/4-trail.png` })
+
+await page.click('.stop-row:has-text("Beck Building")')
+await page.waitForTimeout(3200)
+check('stop story opens', (await page.locator('.stop h1').textContent()) === 'Beck Building')
+check('address and year shown', (await page.locator('.facts').textContent())?.includes('136 Bridge Ave'))
+check('url is a deep link', page.url().endsWith('#/stop/beck-building'), page.url())
+check('camera swooped in', (await cam(page)).zoom > 17, JSON.stringify(await cam(page)))
+check('active pin marked', await page.locator('.pin-wrap--active').count() === 1)
+await page.screenshot({ path: `${dir}/5-stop.png` })
+
+await page.click('.hero')
+await page.waitForTimeout(900)
+check('photo viewer opens', await page.locator('.lightbox img').isVisible())
+await page.keyboard.press('ArrowRight')
+await page.waitForTimeout(700)
+check('photo viewer steps', (await page.locator('.lightbox small').textContent())?.startsWith('2 of'))
+await page.screenshot({ path: `${dir}/6-lightbox.png` })
+await page.keyboard.press('Escape')
+check('photo viewer closes', await page.locator('.lightbox').count() === 0)
+
+await page.click('.pager__next')
+await page.waitForTimeout(600)
+check('next stop in trail', (await page.locator('.badge').textContent())?.includes('4'))
+
+await page.click('.back')
+await page.waitForTimeout(500)
+await page.click('.bronze-button--wide')
+await page.waitForTimeout(3400)
+check('tour starts at stop 1', (await page.locator('.tour .badge').textContent())?.includes('Stop 1 of 11'))
+await page.screenshot({ path: `${dir}/7-tour.png` })
+const b1 = await page.evaluate(() => window.__map.getBearing())
+await page.waitForTimeout(1500)
+const b2 = await page.evaluate(() => window.__map.getBearing())
+check('camera circles during tour', Math.abs(b2 - b1) > 1, `${b1.toFixed(1)} -> ${b2.toFixed(1)}`)
+for (let i = 0; i < 11; i++) { await page.click('.tour__controls button[aria-label="Next stop"]'); await page.waitForTimeout(150) }
+await page.waitForTimeout(1500)
+check('finishing the tour celebrates', await page.locator('.complete').isVisible())
+await page.screenshot({ path: `${dir}/8-complete.png` })
+await page.close()
+
+// Tour advances by itself (shortened clock).
+const auto = await browser.newPage({ viewport: { width: 1100, height: 800 } })
+watch(auto)
+await auto.goto(`${base}?nointro#/trail/blue`, { waitUntil: 'load' })
+await auto.addStyleTag({ content: '.tour__bar i { animation-duration: 1.2s !important; }' })
+await auto.click('.bronze-button--wide')
+await auto.waitForTimeout(2200)
+check('tour advances on its own', !(await auto.locator('.tour .badge').textContent())?.includes('Stop 1 of'), await auto.locator('.tour .badge').textContent())
+await auto.close()
+
+// A plaque's QR link: straight to the story on a phone, no opening card.
+const phone = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true })
+watch(phone)
+await phone.goto(`${base}#/stop/delano-creamery`, { waitUntil: 'load' })
+await phone.waitForTimeout(4500)
+check('deep link skips the opening', await phone.locator('.intro').count() === 0)
+check('deep link shows the story', (await phone.locator('.stop h1').textContent()) === 'Delano Creamery')
+check('phone layout has no sideways scroll', await phone.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth))
+await phone.screenshot({ path: `${dir}/9-phone-stop.png` })
+await phone.goto(`${base}?nointro#/`, { waitUntil: 'load' })
+await phone.waitForTimeout(3500)
+await phone.screenshot({ path: `${dir}/10-phone-home.png` })
+await phone.close()
+
+// Pin editor.
+const edit = await browser.newPage({ viewport: { width: 1200, height: 800 } })
+watch(edit)
+await edit.goto(`${base}?edit`, { waitUntil: 'load' })
+await edit.waitForTimeout(3000)
+check('pin editor shows estimates dashed', await edit.locator('.pin-wrap--approx').count() === 44, String(await edit.locator('.pin-wrap--approx').count()))
+await edit.close()
+
+await browser.close()
+console.log(results.join('\n'))
+console.log('console errors:', JSON.stringify([...new Set(errors)].slice(0, 6)))
+process.exit(results.some((r) => r.startsWith('FAIL')) ? 1 : 0)
