@@ -67,7 +67,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .chip:first-child { padding-left: 16px; }
 .chip--on { background: var(--ink); color: var(--paper); }
 .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--trail); border: 1.5px solid var(--ink); }
-.chip--trail.chip--on { background: var(--trail); color: #000; font-weight: 700; }
+.chip--trail.chip--on { background: var(--trail); color: #fff; font-weight: 700; }
 .chip--trail.chip--on .dot { background: currentColor; border-color: currentColor; }
 
 /* ---------- map controls: up top on a phone, the sheet owns the bottom ---------- */
