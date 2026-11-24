@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import { Lightbox, type Photo } from './Lightbox'
-import { MEDALLION, PRINTED_MAP, sized } from './lib/image'
+import { PRINTED_MAP, sized } from './lib/image'
 import type { Route } from './lib/route'
 import { excerpt, plain } from './lib/text'
 import type { Block, LngLat, Stop, Trail } from './types'
@@ -40,11 +40,9 @@ export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; st
   return (
     <div className="view home">
       <header className="masthead">
-        <div className="medallion">
-          <img src={MEDALLION} alt="" width={216} height={200} />
-        </div>
-        <p className="eyebrow">Delano, Minnesota</p>
-        <h1>Spirit of Community Trail</h1>
+        <h1>
+          <img src="./delano-trail-header.jpg" alt="Delano Spirit of Community Trail" width={1466} height={526} />
+        </h1>
         <p className="lede">
           Delano’s story is one of <em>creativity, resilience and community investment</em>. Follow the bronze plaques
           through downtown and discover the people and places behind it.

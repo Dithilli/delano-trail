@@ -129,10 +129,8 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .photo.reveal.is-in { transform: none; }
 
 /* ---------- home ---------- */
-.masthead { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; align-items: center; }
-.masthead .medallion { grid-row: span 2; }
+.masthead img { display: block; width: 100%; height: auto; }
 .eyebrow { margin: 0 0 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bronze); }
-.masthead h1 { font-size: 30px; letter-spacing: -0.015em; }
 .lede { grid-column: 1 / -1; margin: 14px 0 0; font-size: 17px; color: var(--ink-soft); }
 .lede em { font-family: var(--serif); color: var(--ink); }
 .section-title { margin: 26px 0 12px; font: 700 12px/1 var(--sans); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); }
@@ -363,11 +361,9 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
   .pin-wrap--dim .pin:hover { opacity: 0.9; }
   .pin-wrap--active .pin:hover { transform: scale(1.5); }
 
-  .masthead { display: block; }
   .medallion { width: 96px; margin: 0 0 14px -6px; }
   .medallion--large { width: 190px; margin: 0 auto 6px; }
   .eyebrow { margin-bottom: 10px; font-size: 12px; }
-  .masthead h1 { font-size: 44px; }
   .section-title { margin-top: 34px; }
   .trail-card:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--trail); }
   .stop-row:hover { background: var(--card); }
