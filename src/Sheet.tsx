@@ -4,7 +4,8 @@ import type { Snap } from './types'
 
 /**
  * On a phone, the story lives in a sheet pulled up over the map: peek, half or
- * full. On a wide screen the same element is simply the side panel.
+ * full. At half it scrolls in place, so the map stays in view while reading.
+ * On a wide screen the same element is simply the side panel.
  */
 export function Sheet({
   wide,
@@ -57,8 +58,11 @@ export function Sheet({
         if (Math.abs(dy) < 6) return
         const onHandle = (e.target as HTMLElement).closest('.sheet__handle')
         const scrolled = (body.current?.scrollTop ?? 0) > 0
-        // A fully raised sheet scrolls its story; it only moves when pulled down from the top.
-        if (state.current.snap === 'full' && !onHandle && (scrolled || dy < 0)) {
+        // At half or full height the story scrolls in place (at half, with the map
+        // still showing above it). The sheet itself only moves when dragged by its
+        // handle, or pulled down from the top of the story. A peeking sheet has
+        // nothing to scroll, so any drag moves it.
+        if (state.current.snap !== 'peek' && !onHandle && (scrolled || dy < 0)) {
           mode = 'scroll'
           return
         }
@@ -99,9 +103,9 @@ export function Sheet({
     }
   }, [wide])
 
-  // Anything but full height starts from the top of the story.
+  // A peeking sheet shows the top of the story.
   useEffect(() => {
-    if (!wide && snap !== 'full') body.current?.scrollTo({ top: 0 })
+    if (!wide && snap === 'peek') body.current?.scrollTo({ top: 0 })
   }, [snap, wide])
 
   const cycle = () => onSnap(snap === 'peek' ? 'half' : snap === 'half' ? 'full' : 'half')

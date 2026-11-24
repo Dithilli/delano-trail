@@ -62,8 +62,9 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   check('phone: no sideways scroll', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
   await page.screenshot({ path: `${dir}/p2-home.png` })
 
-  // The sheet follows the finger.
-  await swipe(page, 195, 470, 150)
+  // The sheet follows the finger when dragged by its handle.
+  const handleY = (await page.evaluate(() => document.querySelector('.sheet__handle').getBoundingClientRect().top)) + 16
+  await swipe(page, 195, handleY, 150)
   check('phone: swipe up raises the sheet fully', await snapOf(page) === 'sheet--full', `${await showing(page)}px showing`)
   check('phone: chips stay reachable above a full sheet', await tappable(page, '.chip'))
   await page.screenshot({ path: `${dir}/p3-home-full.png` })
@@ -81,8 +82,8 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   check('phone: tour button within thumb reach at half', await tappable(page, '.bronze-button--wide'))
   await page.screenshot({ path: `${dir}/p4-trail.png` })
 
-  await swipe(page, 195, 600, 200)
-  check('phone: list scrolls once the sheet is full', await snapOf(page) === 'sheet--full')
+  await swipe(page, 195, 760, 560)
+  check('phone: trail list scrolls at half height', await snapOf(page) === 'sheet--half' && await page.evaluate(() => document.querySelector('.sheet__body').scrollTop) > 80)
   await page.locator('.stop-row:has-text("Beck Building")').tap()
   await page.waitForTimeout(3400)
   check('phone: stop opens half-raised with its title', await snapOf(page) === 'sheet--half' && (await page.locator('.stop h1').textContent()) === 'Beck Building')
@@ -113,13 +114,36 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   await page.tap('.lightbox__close')
   check('phone: photo viewer closes', await page.locator('.lightbox').count() === 0)
 
-  // Reading: raise the sheet, scroll the story.
-  await swipe(page, 195, 560, 160)
-  check('phone: swipe up on the story raises it', await snapOf(page) === 'sheet--full')
-  await swipe(page, 195, 700, 250)
-  const scrolled = await page.evaluate(() => document.querySelector('.sheet__body').scrollTop)
-  check('phone: then the story scrolls', scrolled > 100 && await snapOf(page) === 'sheet--full', `scrollTop ${scrolled}`)
+  // Reading with the map still in view: the story scrolls inside the half-height sheet.
+  await swipe(page, 195, 780, 520)
+  await swipe(page, 195, 780, 520)
+  const reading = await page.evaluate(() => {
+    const body = document.querySelector('.sheet__body')
+    const sheetTop = document.querySelector('.sheet').getBoundingClientRect().top
+    const pin = document.querySelector('.pin-wrap--active .pin').getBoundingClientRect()
+    return { scrollTop: Math.round(body.scrollTop), sheetTop: Math.round(sheetTop), pinY: Math.round(pin.top + pin.height / 2), bodyBottom: Math.round(body.getBoundingClientRect().bottom), screen: innerHeight }
+  })
+  check('phone: story scrolls at half height', reading.scrollTop > 300 && await snapOf(page) === 'sheet--half', JSON.stringify(reading))
+  check('phone: map and selected pin stay visible while reading', reading.sheetTop > 380 && reading.pinY > 70 && reading.pinY < reading.sheetTop, JSON.stringify(reading))
+  check('phone: scrolling area ends at the bottom of the screen', reading.bodyBottom === reading.screen, JSON.stringify(reading))
   await page.screenshot({ path: `${dir}/p7-reading.png` })
+  const end = await page.evaluate(() => {
+    const body = document.querySelector('.sheet__body')
+    body.scrollTop = body.scrollHeight
+    const src = document.querySelector('.source').getBoundingClientRect()
+    return { bottom: Math.round(src.bottom), screen: innerHeight }
+  })
+  check('phone: the end of the story is reachable at half height', end.bottom <= end.screen, JSON.stringify(end))
+  await page.evaluate(() => { document.querySelector('.sheet__body').scrollTop = 0 })
+  // Full screen is still there for anyone who wants it, via the handle.
+  await page.tap('.sheet__handle')
+  await page.waitForTimeout(600)
+  check('phone: handle still raises the story to full screen', await snapOf(page) === 'sheet--full')
+  await swipe(page, 195, 700, 300)
+  check('phone: story scrolls at full height too', await page.evaluate(() => document.querySelector('.sheet__body').scrollTop) > 100)
+  await page.evaluate(() => { document.querySelector('.sheet__body').scrollTop = 0 })
+  await swipe(page, 195, 300, 620)
+  check('phone: pulling down from the top of the story lowers the sheet', await snapOf(page) !== 'sheet--full', await snapOf(page))
 
   // Guided tour.
   await page.goto(`${base}?nointro#/trail/blue`, { waitUntil: 'load' })
