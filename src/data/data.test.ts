@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import data from './trail.json'
 import geo from './geo.json'
+import streets from './streets.json'
 import type { Block } from '../types'
 
 const storyFiles = import.meta.glob<{ default: Record<string, Block[]> }>('./stories/*.json', { eager: true })
@@ -63,6 +64,19 @@ describe('trail data', () => {
     for (const t of trails) {
       expect(lines[t.id]?.length, t.id).toBeGreaterThan(0)
       for (const line of lines[t.id]) for (const p of line) expect(inTown(p), t.id).toBe(true)
+    }
+  })
+  it('labels the downtown streets every few metres', () => {
+    for (const name of ['Bridge Avenue East', 'River Street North', 'Railroad Avenue', '2nd Street North']) {
+      const i = streets.names.indexOf(name)
+      expect(i, name).toBeGreaterThanOrEqual(0)
+      expect(streets.points.filter((p) => p[3] === i).length, name).toBeGreaterThan(5)
+    }
+    for (const [lng, lat, rotation, name] of streets.points) {
+      expect(lng > -93.81 && lng < -93.77 && lat > 45.03 && lat < 45.056).toBe(true)
+      expect(rotation).toBeGreaterThan(-91) // kept upright
+      expect(rotation).toBeLessThan(91)
+      expect(streets.names[name]).toBeTruthy()
     }
   })
 })

@@ -1,4 +1,18 @@
 import type { StyleSpecification } from 'maplibre-gl'
+import streets from './data/streets.json'
+
+// Our own street-name labels: a point every 18 m along each named street, drawn
+// as text lying on the road. The basemap's along-the-line labels (road-label
+// below) thin out to almost nothing when zoomed in close, which is exactly when
+// someone on foot wants them, so these take over from zoom 15.5.
+const streetLabels = {
+  type: 'FeatureCollection' as const,
+  features: (streets.points as number[][]).map(([lng, lat, rotation, name]) => ({
+    type: 'Feature' as const,
+    properties: { name: streets.names[name], rotation },
+    geometry: { type: 'Point' as const, coordinates: [lng, lat] },
+  })),
+}
 
 // A paper-and-ink basemap in the spirit of the printed trail map: cream ground,
 // ink-outlined streets, quiet labels, so the coloured trails are the only colour.
@@ -24,6 +38,7 @@ export const mapStyle: StyleSpecification = {
   glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
   sources: {
     openmaptiles: { type: 'vector', url: 'https://tiles.openfreemap.org/planet' },
+    streets: { type: 'geojson', data: streetLabels },
   },
   layers: [
     { id: 'paper', type: 'background', paint: { 'background-color': PAPER } },
@@ -93,15 +108,32 @@ export const mapStyle: StyleSpecification = {
       paint: { 'line-color': INK, 'line-width': width(5, 12), 'line-dasharray': [0.15, 1.2] },
     },
     {
-      id: 'road-label', type: 'symbol', source: 'openmaptiles', 'source-layer': 'transportation_name', minzoom: 13.5,
+      id: 'road-label', type: 'symbol', source: 'openmaptiles', 'source-layer': 'transportation_name', minzoom: 13, maxzoom: 15.5,
       layout: {
         'symbol-placement': 'line',
+        'symbol-spacing': 150,
         'text-field': ['get', 'name'],
         'text-font': ['Noto Sans Italic'],
-        'text-size': ['interpolate', ['linear'], ['zoom'], 14, 10, 18, 15],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 13, 10, 15.5, 12.5],
         'text-letter-spacing': 0.04,
       },
-      paint: { 'text-color': INK, 'text-halo-color': STREET, 'text-halo-width': 1.6 },
+      paint: { 'text-color': INK, 'text-halo-color': STREET, 'text-halo-width': 1.8 },
+    },
+    {
+      id: 'street-name', type: 'symbol', source: 'streets', minzoom: 15.5,
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-font': ['Noto Sans Italic'],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 15.5, 12.5, 17, 14, 19, 17],
+        'text-letter-spacing': 0.04,
+        'text-rotate': ['get', 'rotation'],
+        'text-rotation-alignment': 'map',
+        'text-pitch-alignment': 'map',
+        // Labels along one street are 18 m apart; this gap decides how many of
+        // them survive at each zoom.
+        'text-padding': ['interpolate', ['linear'], ['zoom'], 15.5, 16, 19, 10],
+      },
+      paint: { 'text-color': INK, 'text-halo-color': STREET, 'text-halo-width': 1.8 },
     },
     {
       id: 'water-label', type: 'symbol', source: 'openmaptiles', 'source-layer': 'waterway', minzoom: 13,
