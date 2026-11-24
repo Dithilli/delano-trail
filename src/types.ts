@@ -14,7 +14,8 @@ export interface Stop {
   subtitle: string | null
   summary: string
   hero: string | null
-  body: Block[]
+  /** How many photographs the story has (the story itself loads per trail). */
+  photos: number
   sourceUrl: string
   trail: string
   number: number
@@ -35,3 +36,9 @@ export interface Geo {
   stops: Record<string, { lngLat: LngLat; approx: boolean }>
   trails: Record<string, LngLat[][]>
 }
+
+/** Story bodies for one trail, keyed by stop slug. */
+export type Stories = Record<string, Block[]>
+
+/** How much of the pull-up sheet is showing on a phone. */
+export type Snap = 'peek' | 'half' | 'full'

@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import data from './trail.json'
 import geo from './geo.json'
+import type { Block } from '../types'
+
+const storyFiles = import.meta.glob<{ default: Record<string, Block[]> }>('./stories/*.json', { eager: true })
+const stories: Record<string, Block[]> = Object.assign({}, ...Object.values(storyFiles).map((m) => m.default))
 
 const stops = data.stops
 const trails = data.trails
@@ -24,17 +28,25 @@ describe('trail data', () => {
       expect(nums).toEqual(nums.map((_, i) => i + 1))
     }
   })
+  it('keeps one story file per trail, holding exactly that trail\'s plaques', () => {
+    expect(Object.keys(storyFiles).sort()).toEqual(trails.map((t) => `./stories/${t.id}.json`).sort())
+    for (const t of trails) {
+      const own = stops.filter((s) => s.trail === t.id).map((s) => s.slug).sort()
+      expect(Object.keys(storyFiles[`./stories/${t.id}.json`].default).sort()).toEqual(own)
+    }
+  })
   it('gives every plaque a title, a summary and a story', () => {
     for (const s of stops) {
       expect(s.title, s.slug).toBeTruthy()
       expect(s.summary.length, s.slug).toBeGreaterThan(100)
-      expect(s.body.length, s.slug).toBeGreaterThan(0)
+      expect(stories[s.slug]?.length, s.slug).toBeGreaterThan(0)
+      expect(stories[s.slug].filter((b) => b.type === 'image').length, s.slug).toBe(s.photos)
     }
   })
   it('contains only whitelisted markup in story text', () => {
     const allowed = /^(p|h2|h3|h4|strong|em|b|i|a|ul|ol|li|br|blockquote)$/
     for (const s of stops) {
-      for (const b of s.body) {
+      for (const b of stories[s.slug]) {
         if (b.type !== 'text') continue
         for (const m of (b.html ?? '').matchAll(/<\/?([a-z0-9]+)([^>]*)>/gi)) {
           expect(m[1], s.slug).toMatch(allowed)

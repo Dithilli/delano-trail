@@ -3,6 +3,8 @@
 
 Usage: python3 -I scripts/scrape.py <cache_dir> <out_json>
 
+Writes <out_json> (trails + stop index) and stories/<trail>.json beside it.
+
 Pages are fetched once into <cache_dir> and parsed from there. Trail
 membership and numbering come from scripts/trails.json (the printed plaque
 list), not from the website's trail pages.
@@ -251,6 +253,18 @@ def main():
             flags.append("other:" + ",".join(sorted(set(s["_other"]))))
         report.append(f'{s["trail"]:>6} {s["number"]:>2} {s["slug"][:34]:<34} blocks={len(s["body"]):>3} img={imgs:>2} addr={s["address"]!r} sub={s["subtitle"]!r} title={s["title"]!r} {" ".join(flags)}')
         del s["_other"]
+    # The index (no story bodies) ships with the app; each trail's stories are a
+    # separate file the app fetches when that trail is opened, to keep the first
+    # load small on a phone.
+    stories_dir = os.path.join(os.path.dirname(out_path), "stories")
+    os.makedirs(stories_dir, exist_ok=True)
+    for trail in trails:
+        own = {s["slug"]: s["body"] for s in stops if s["trail"] == trail["id"]}
+        with open(os.path.join(stories_dir, trail["id"] + ".json"), "w", encoding="utf-8") as f:
+            json.dump(own, f, ensure_ascii=False)
+    for s in stops:
+        s["photos"] = sum(1 for b in s["body"] if b["type"] == "image")
+        del s["body"]
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump({"trails": [{k: v for k, v in t.items() if k != "stops"} for t in trails], "stops": stops}, f, ensure_ascii=False, indent=1)
     print("\n".join(report))

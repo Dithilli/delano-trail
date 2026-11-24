@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { createPortal } from 'react-dom'
 import { Lightbox, type Photo } from './Lightbox'
 import { MEDALLION, PRINTED_MAP, sized } from './lib/image'
 import type { Route } from './lib/route'
@@ -170,24 +171,29 @@ export function StopPanel({
   stop,
   trail,
   siblings,
+  body,
   placed,
   go,
 }: {
   stop: Stop
   trail: Trail
   siblings: Stop[]
+  /** undefined while the trail's stories are loading, null if they failed to load. */
+  body: Block[] | null | undefined
   placed?: { lngLat: LngLat; approx: boolean }
   go: Go
 }) {
-  const root = useReveal(stop.slug)
+  const root = useReveal(`${stop.slug}:${body ? 'ready' : 'waiting'}`)
   const [open, setOpen] = useState<number | null>(null)
   useEffect(() => setOpen(null), [stop.slug])
 
-  const photos = useMemo<Photo[]>(
-    () => stop.body.flatMap((b, i) => (b.type === 'image' ? [{ src: b.src, alt: b.alt, caption: captionFor(stop.body, i) }] : [])),
-    [stop],
-  )
-  const heroIndex = stop.body.findIndex((b) => b.type === 'image')
+  const blocks = body ?? []
+  const photos = useMemo<Photo[]>(() => {
+    const fromBody = blocks.flatMap((b, i) => (b.type === 'image' ? [{ src: b.src, alt: b.alt, caption: captionFor(blocks, i) }] : []))
+    return fromBody.length || !stop.hero ? fromBody : [{ src: stop.hero }]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stop, body])
+  const heroIndex = blocks.findIndex((b) => b.type === 'image')
   const i = siblings.findIndex((s) => s.slug === stop.slug)
   const prev = siblings[i - 1]
   const next = siblings[i + 1]
@@ -195,36 +201,52 @@ export function StopPanel({
 
   return (
     <article className="view stop" style={trailVar(trail)} ref={root}>
+      <div className="stop-top">
+        <button className="back" onClick={() => go({ view: 'trail', trail: trail.id })}>← {trail.name}</button>
+        <header className="stop-head">
+          <p className="badge">
+            <span className="num">{stop.number}</span>
+            {trail.name}
+            {stop.nonprofit && <span className="tag">Nonprofit</span>}
+          </p>
+          <h1>{stop.title}</h1>
+          {(stop.address || stop.subtitle) && (
+            <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>
+          )}
+        </header>
+      </div>
       {stop.hero && (
         <button className="hero" onClick={() => setOpen(0)} aria-label="View photograph">
           <img key={stop.hero} src={sized(stop.hero, 1000)} alt="" />
+          {stop.photos > 1 && <span className="hero__count">{stop.photos} photos</span>}
         </button>
       )}
-      <button className="back" onClick={() => go({ view: 'trail', trail: trail.id })}>← {trail.name}</button>
-      <header className="stop-head">
-        <p className="badge">
-          <span className="num">{stop.number}</span>
-          {trail.name}
-          {stop.nonprofit && <span className="tag">Nonprofit</span>}
-        </p>
-        <h1>{stop.title}</h1>
-        {(stop.address || stop.subtitle) && (
-          <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>
-        )}
-        {placed && (
-          <a
-            className="directions"
-            href={`https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=${placed.lngLat[1]},${placed.lngLat[0]}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Walking directions
-          </a>
-        )}
-      </header>
+      {placed && (
+        <a
+          className="directions"
+          href={`https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=${placed.lngLat[1]},${placed.lngLat[0]}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Walking directions
+        </a>
+      )}
 
       <div className="stop-body">
-        {stop.body.map((b, n) => {
+        {!body && (
+          <>
+            <div className="prose"><p>{stop.summary}</p></div>
+            {body === undefined ? (
+              <div className="loading" role="status">Loading the full story…</div>
+            ) : (
+              <p className="loading loading--failed">
+                The rest of this story couldn’t be loaded. Check your signal, or{' '}
+                <a href={stop.sourceUrl} target="_blank" rel="noreferrer">read it on the Historical Society’s site</a>.
+              </p>
+            )}
+          </>
+        )}
+        {blocks.map((b, n) => {
           if (b.type === 'image') {
             const mine = ++photoN
             if (n === heroIndex) return null // already shown as the hero
@@ -237,7 +259,7 @@ export function StopPanel({
             )
           }
           if (b.type === 'text') {
-            const isCaption = n > 0 && stop.body[n - 1].type === 'image' && captionFor(stop.body, n - 1) !== undefined
+            const isCaption = n > 0 && blocks[n - 1].type === 'image' && captionFor(blocks, n - 1) !== undefined
             return <div key={n} className={`prose reveal ${isCaption ? 'prose--caption' : ''}`} dangerouslySetInnerHTML={{ __html: b.html }} />
           }
           if (b.type === 'link') {
@@ -274,7 +296,8 @@ export function StopPanel({
         <a href={stop.sourceUrl} target="_blank" rel="noreferrer">view the original</a>
       </p>
 
-      {open !== null && <Lightbox photos={photos} index={open} onIndex={setOpen} onClose={() => setOpen(null)} />}
+      {/* Portalled: the sheet is CSS-transformed, which would trap a fixed-position child inside it. */}
+      {open !== null && createPortal(<Lightbox photos={photos} index={open} onIndex={setOpen} onClose={() => setOpen(null)} />, document.body)}
     </article>
   )
 }
@@ -316,21 +339,21 @@ export function TourCard({
           onAnimationEnd={onDone}
         />
       </div>
-      {stop.hero && (
-        <div className="tour__photo">
-          <img key={stop.hero} src={sized(stop.hero, 1000)} alt="" />
+      <div className="tour__head">
+        {stop.hero && (
+          <div className="tour__photo">
+            <img key={stop.hero} src={sized(stop.hero, 1000)} alt="" />
+          </div>
+        )}
+        <div>
+          <p className="badge">
+            <span className="num">{stop.number}</span>
+            Stop {stop.number} of {total}
+          </p>
+          <h1>{stop.title}</h1>
+          {(stop.address || stop.subtitle) && <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>}
         </div>
-      )}
-      <p className="badge">
-        <span className="num">{stop.number}</span>
-        Stop {stop.number} of {total}
-        {stop.nonprofit && <span className="tag">Nonprofit</span>}
-      </p>
-      <h1>{stop.title}</h1>
-      {(stop.address || stop.subtitle) && <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>}
-      <p className="tour__summary">{excerpt(stop.summary, 420)}</p>
-      <button className="tour__read" onClick={onRead}>Read the full story →</button>
-
+      </div>
       <div className="tour__controls">
         <button onClick={() => onStep(-1)} disabled={stop.number === 1} aria-label="Previous stop">‹</button>
         <button className="tour__play" onClick={() => onPlaying(!playing)} aria-label={playing ? 'Pause the tour' : 'Resume the tour'}>
@@ -338,6 +361,8 @@ export function TourCard({
         </button>
         <button onClick={() => onStep(1)} aria-label="Next stop">›</button>
       </div>
+      <p className="tour__summary">{excerpt(stop.summary, 420)}</p>
+      <button className="tour__read" onClick={onRead}>Read the full story →</button>
     </article>
   )
 }

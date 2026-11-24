@@ -5,9 +5,12 @@ import { Fireworks } from './Fireworks'
 import { Intro } from './Intro'
 import { MapView } from './MapView'
 import { HomePanel, StopPanel, TourCard, TrailPanel } from './Panels'
+import { Sheet } from './Sheet'
 import { formatDistance, nearest } from './lib/geo'
 import { parseHash, toHash, type Route } from './lib/route'
-import type { Geo, LngLat, Stop, Trail } from './types'
+import { useStories } from './lib/stories'
+import { sheetVisible, useViewport } from './lib/viewport'
+import type { Geo, LngLat, Snap, Stop, Trail } from './types'
 
 const trails = data.trails as Trail[]
 const stops = data.stops as Stop[]
@@ -40,16 +43,24 @@ export function App() {
   const [tour, setTour] = useState<{ playing: boolean } | null>(null)
   const [completed, setCompleted] = useState<string | null>(null)
   const [fireworks, setFireworks] = useState(0)
-  const panel = useRef<HTMLElement>(null)
+  const panel = useRef<HTMLDivElement>(null)
+  const { wide, height } = useViewport()
+  const [snap, setSnap] = useState<Snap>('half')
 
   const stop = route.view === 'stop' ? stops.find((s) => s.slug === route.slug) : undefined
   const trailId = route.view === 'trail' ? route.trail : stop?.trail ?? null
   const trail = trails.find((t) => t.id === trailId)
   const trailStops = useMemo(() => stops.filter((s) => s.trail === trailId), [trailId])
   const touring = !!tour && !!stop
+  const stories = useStories(trailId)
+  const body = stop ? (stories ? stories[stop.slug] ?? [] : stories) : undefined
+  // The map keeps its subject in the strip above the sheet; a full sheet counts as half.
+  const visible = wide ? 0 : sheetVisible(snap, height)
+  const bottomInset = wide ? 0 : sheetVisible(snap === 'full' ? 'half' : snap, height)
 
   useEffect(() => {
     panel.current?.scrollTo({ top: 0 })
+    setSnap('half') // every new view opens with the map and the story sharing the screen
     document.title = `${stop?.title ?? trail?.name ?? 'Spirit of Community Trail'} · Delano, Minnesota`
   }, [stop, trail])
 
@@ -103,7 +114,7 @@ export function App() {
   }
 
   return (
-    <div className={`app ${intro ? 'app--intro' : ''}`}>
+    <div className={`app ${intro ? 'app--intro' : ''}`} style={{ '--sheet': `${visible}px` } as React.CSSProperties}>
       <MapView
         trails={trails}
         stops={stops}
@@ -113,7 +124,10 @@ export function App() {
         intro={intro}
         orbit={touring}
         editing={editing}
-        onSelectStop={(slug) => go({ view: 'stop', slug })}
+        wide={wide}
+        bottomInset={bottomInset}
+        onMapTap={() => setSnap((s) => (s === 'full' ? s : 'peek'))}
+        onSelectStop={(slug) => { setSnap('half'); go({ view: 'stop', slug }) }}
         onLocate={onLocate}
         onMoveStop={onMoveStop}
       />
@@ -149,7 +163,7 @@ export function App() {
         </div>
       )}
 
-      <aside className="panel" ref={panel}>
+      <Sheet wide={wide} height={height} snap={snap} onSnap={setSnap} scroller={panel}>
         {stop && trail && tour ? (
           <TourCard
             key={`tour-${stop.slug}`}
@@ -160,11 +174,11 @@ export function App() {
             onPlaying={(playing) => setTour({ playing })}
             onStep={tourStep}
             onDone={() => tourStep(1)}
-            onRead={() => setTour(null)}
+            onRead={() => { setTour(null); setSnap('full') }}
             onExit={() => go({ view: 'trail', trail: trail.id })}
           />
         ) : stop && trail ? (
-          <StopPanel key={stop.slug} stop={stop} trail={trail} siblings={trailStops} placed={geo.stops[stop.slug]} go={go} />
+          <StopPanel key={stop.slug} stop={stop} trail={trail} siblings={trailStops} body={body} placed={geo.stops[stop.slug]} go={go} />
         ) : trail ? (
           <TrailPanel
             key={trail.id}
@@ -178,7 +192,7 @@ export function App() {
         ) : (
           <HomePanel key="home" trails={trails} stops={stops} go={go} onReplay={() => setIntro(true)} />
         )}
-      </aside>
+      </Sheet>
 
       <Fireworks show={fireworks} bursts={10} colors={trailColors} />
       {intro && <Intro onBegin={begin} colors={trailColors} />}

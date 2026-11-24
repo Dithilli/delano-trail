@@ -3,6 +3,7 @@ import { bounds, distance, formatDistance, nearest } from './geo'
 import { sized } from './image'
 import { parseHash, toHash, type Route } from './route'
 import { excerpt, plain } from './text'
+import { settle, sheetVisible, SHEET_TOP } from './viewport'
 
 describe('route', () => {
   it('round-trips every view', () => {
@@ -52,5 +53,28 @@ describe('text and images', () => {
   it('asks the CDN for a size, and leaves other hosts alone', () => {
     expect(sized('https://images.squarespace-cdn.com/a/b.jpg', 750)).toBe('https://images.squarespace-cdn.com/a/b.jpg?format=750w')
     expect(sized('https://example.org/b.jpg', 750)).toBe('https://example.org/b.jpg')
+  })
+})
+
+describe('pull-up sheet', () => {
+  const h = 844 // a typical phone
+  it('has three growing snap points that fit the screen', () => {
+    const [peek, half, full] = (['peek', 'half', 'full'] as const).map((s) => sheetVisible(s, h))
+    expect(peek).toBeLessThan(half)
+    expect(half).toBeLessThan(full)
+    expect(full).toBe(h - SHEET_TOP)
+    // a very short screen (landscape phone) never asks for more than there is
+    expect(sheetVisible('half', 200)).toBeLessThanOrEqual(200 - SHEET_TOP)
+    expect(sheetVisible('peek', 200)).toBeLessThanOrEqual(200 - SHEET_TOP)
+  })
+  it('settles on the nearest snap when released slowly', () => {
+    expect(settle(sheetVisible('half', h) + 20, 0, h)).toBe('half')
+    expect(settle(sheetVisible('peek', h) + 30, 0, h)).toBe('peek')
+    expect(settle(h - 100, 0, h)).toBe('full')
+  })
+  it('lets a flick carry it to the next snap', () => {
+    const half = sheetVisible('half', h)
+    expect(settle(half + 40, 1.5, h)).toBe('full') // flicked up
+    expect(settle(half - 40, -1.5, h)).toBe('peek') // flicked down
   })
 })

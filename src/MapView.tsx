@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { GeolocateControl, Map as MapLibreMap, Marker, NavigationControl, setWorkerUrl } from 'maplibre-gl'
+import { AttributionControl, GeolocateControl, Map as MapLibreMap, Marker, NavigationControl, setWorkerUrl } from 'maplibre-gl'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { mapStyle } from './mapStyle'
@@ -23,14 +23,19 @@ interface Props {
   /** Slowly circle the selected stop (guided tour). */
   orbit: boolean
   editing: boolean
+  /** Side-panel layout (desktop) rather than the phone's pull-up sheet. */
+  wide: boolean
+  /** Pixels at the bottom of the map hidden by the sheet. */
+  bottomInset: number
+  onMapTap: () => void
   onSelectStop: (slug: string) => void
   onLocate: (at: LngLat) => void
   onMoveStop: (slug: string, at: LngLat) => void
 }
 
-function padding() {
-  const wide = window.matchMedia('(min-width: 900px)').matches
-  return wide ? { top: 100, right: 70, bottom: 70, left: 70 } : { top: 70, right: 36, bottom: 36, left: 36 }
+/** Keep targets clear of the chips on top and, on a phone, the sheet below. */
+function paddingFor(wide: boolean, bottomInset: number) {
+  return wide ? { top: 100, right: 70, bottom: 70, left: 70 } : { top: 76, right: 34, bottom: bottomInset + 28, left: 34 }
 }
 
 /** A different approach angle for each stop, so moving between neighbours swoops. */
@@ -39,12 +44,13 @@ function bearingFor(stop: Stop) {
 }
 
 export function MapView(props: Props) {
-  const { trails, stops, geo, activeTrail, activeStop, intro, orbit, editing } = props
+  const { trails, stops, geo, activeTrail, activeStop, intro, orbit, editing, wide, bottomInset } = props
   const el = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const markers = useRef(new Map<string, Marker>())
   const handlers = useRef(props)
   handlers.current = props
+  const padding = () => paddingFor(handlers.current.wide, handlers.current.bottomInset)
   const [loaded, setLoaded] = useState(false)
   // Pins and trails stay hidden until the opening flight lands.
   const [revealed, setRevealed] = useState(!intro)
@@ -62,14 +68,21 @@ export function MapView(props: Props) {
       minZoom: 4,
       maxZoom: 19.5,
       maxPitch: 70,
-      attributionControl: { compact: true },
+      attributionControl: false,
     })
     mapRef.current = map
     ;(window as unknown as { __map?: MapLibreMap }).__map = map
-    map.addControl(new NavigationControl({ visualizePitch: true }), 'bottom-right')
+    // On a phone the bottom of the map is under the sheet, so controls sit up top.
+    const corner = wide ? 'bottom-right' : 'top-right'
     const locate = new GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: true })
     locate.on('geolocate', (e) => handlers.current.onLocate([e.coords.longitude, e.coords.latitude]))
-    map.addControl(locate, 'bottom-right')
+    if (wide) map.addControl(new NavigationControl({ visualizePitch: true }), corner)
+    map.addControl(locate, corner)
+    if (!wide) map.addControl(new NavigationControl({ visualizePitch: true, showZoom: false }), corner)
+    map.addControl(new AttributionControl({ compact: true }), wide ? 'bottom-right' : 'top-left')
+    map.on('click', (e) => {
+      if (!(e.originalEvent.target as HTMLElement | null)?.closest?.('.pin-wrap')) handlers.current.onMapTap()
+    })
 
     map.on('load', () => {
       for (const t of trails) {
@@ -303,6 +316,14 @@ export function MapView(props: Props) {
   useEffect(() => {
     for (const m of markers.current.values()) m.setDraggable(editing)
   }, [editing, loaded])
+
+  // The sheet moved: slide the map's centre of attention to the part still showing.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded || intro || wide) return
+    map.easeTo({ padding: padding(), duration: 350 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bottomInset, wide, loaded])
 
   // MapLibre owns the inner element's class list, so our own classes live on a wrapper.
   return (

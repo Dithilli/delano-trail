@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { sized } from './lib/image'
 
 export interface Photo { src: string; alt?: string; caption?: string }
@@ -6,6 +6,16 @@ export interface Photo { src: string; alt?: string; caption?: string }
 export function Lightbox({ photos, index, onIndex, onClose }: { photos: Photo[]; index: number; onIndex: (i: number) => void; onClose: () => void }) {
   const photo = photos[index]
   const step = (d: number) => onIndex((index + d + photos.length) % photos.length)
+  const touch = useRef<{ x: number; y: number } | null>(null)
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const from = touch.current
+    touch.current = null
+    if (!from) return
+    const dx = e.changedTouches[0].clientX - from.x
+    const dy = e.changedTouches[0].clientY - from.y
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5 && photos.length > 1) step(dx < 0 ? 1 : -1)
+    else if (dy > 90 && Math.abs(dy) > Math.abs(dx) * 1.5) onClose()
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -19,7 +29,15 @@ export function Lightbox({ photos, index, onIndex, onClose }: { photos: Photo[];
 
   if (!photo) return null
   return (
-    <div className="lightbox" role="dialog" aria-modal="true" aria-label="Photograph" onClick={onClose}>
+    <div
+      className="lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Photograph"
+      onClick={onClose}
+      onTouchStart={(e) => { touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY } }}
+      onTouchEnd={onTouchEnd}
+    >
       <button className="lightbox__close" onClick={onClose} aria-label="Close">×</button>
       {photos.length > 1 && (
         <>
