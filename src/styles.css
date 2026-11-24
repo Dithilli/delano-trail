@@ -7,8 +7,6 @@
   --ink: #2b2923;
   --ink-soft: #6d685a;
   --rule: #d9d2ba;
-  --bronze: #a8732f;
-  --brushed: linear-gradient(100deg, #b98b4f 0%, #ecd3a1 22%, #c99c5d 45%, #f3dfb6 63%, #c2924f 82%, #e6c88f 100%);
   --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
   --sans: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --panel-w: 440px;
@@ -25,9 +23,9 @@ body {
   overflow: hidden; overscroll-behavior: none; -webkit-tap-highlight-color: transparent;
 }
 button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
-a { color: var(--bronze); }
+a { color: var(--ink); }
 h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 0; text-wrap: balance; }
-:focus-visible { outline: 3px solid var(--bronze); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 
 /* ---------- layout: map underneath, sheet on top ---------- */
 .app { position: fixed; inset: 0; overflow: hidden; }
@@ -131,7 +129,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 
 /* ---------- home ---------- */
 .trail-mark { display: block; width: min(88px, 100%); height: auto; margin: 0 auto; overflow: hidden; }
-.eyebrow { margin: 0 0 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bronze); }
+.eyebrow { margin: 0 0 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink); }
 .lede { grid-column: 1 / -1; margin: 14px 0 0; font-size: 17px; color: var(--ink-soft); }
 .lede em { font-family: var(--serif); color: var(--ink); }
 .section-title { margin: 26px 0 12px; font: 700 12px/1 var(--sans); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); }
@@ -158,7 +156,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .printed img { width: 68px; border-radius: 4px; border: 1px solid var(--rule); }
 .printed strong { display: block; color: var(--ink); font-family: var(--serif); font-size: 17px; }
 .credits { margin-top: 30px; padding-top: 18px; border-top: 1.5px solid var(--rule); font-size: 14px; color: var(--ink-soft); }
-.replay { display: block; margin-top: 14px; padding: 8px 0; background: none; border: 0; color: var(--bronze); font-size: 14px; font-weight: 600; text-decoration: underline; }
+.replay { display: block; margin-top: 14px; padding: 8px 0; background: none; border: 0; color: var(--ink); font-size: 14px; font-weight: 600; text-decoration: underline; }
 
 /* ---------- trail ---------- */
 .back { display: inline-flex; align-items: center; min-height: 36px; background: none; border: 0; padding: 0; margin-bottom: 6px; font-size: 15px; font-weight: 600; color: var(--ink-soft); }
@@ -181,13 +179,13 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .stop-row__text { flex: 1; min-width: 0; display: grid; }
 .stop-row__text strong { font-family: var(--serif); font-size: 19px; font-weight: 600; line-height: 1.2; }
 .stop-row__text span { font-size: 14px; color: var(--ink-soft); }
-.stop-row img { flex: none; width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1.5px solid var(--ink); filter: sepia(0.25); }
+.stop-row img { flex: none; width: 54px; height: 54px; object-fit: cover; border-radius: 8px; border: 1.5px solid var(--ink); }
 
 /* ---------- stop ---------- */
 /* Title first on a phone, so the peeking sheet names the plaque; photo right under it. */
 .stop { display: flex; flex-direction: column; }
 .badge { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
-.tag { padding: 2px 8px; border: 1.5px solid var(--bronze); border-radius: 999px; color: var(--bronze); font-size: 11px; }
+.tag { padding: 2px 8px; border: 1.5px solid var(--ink); border-radius: 999px; color: var(--ink); font-size: 11px; }
 .stop-head h1 { font-size: 30px; letter-spacing: -0.01em; }
 .facts { margin: 6px 0 0; font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--ink-soft); }
 .hero {
@@ -196,7 +194,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 }
 .hero img { width: 100%; height: 100%; object-fit: cover; animation: kenburns 22s ease-out both; }
 .hero__count { position: absolute; right: 10px; bottom: 10px; padding: 4px 10px; border-radius: 999px; background: rgb(20 18 14 / 0.75); color: #f6efdc; font-size: 13px; font-weight: 600; }
-@keyframes kenburns { from { transform: scale(1.02); filter: sepia(0.5) contrast(0.95); } to { transform: scale(1.22) translate(-2%, -2%); filter: sepia(0.1); } }
+@keyframes kenburns { from { transform: scale(1.02); } to { transform: scale(1.22) translate(-2%, -2%); } }
 .directions {
   align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; margin-top: 16px; padding: 0 18px;
   border: 1.5px solid var(--ink); border-radius: 999px; background: var(--card); color: var(--ink); font-size: 15px; font-weight: 600; text-decoration: none;
@@ -227,32 +225,14 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .pager .pager__next { text-align: right; }
 .source { margin-top: 22px; font-size: 14px; color: var(--ink-soft); }
 
-/* ---------- bronze ---------- */
-.medallion { position: relative; width: 64px; filter: drop-shadow(0 4px 6px rgb(43 41 35 / 0.3)); }
-.medallion img { display: block; width: 100%; height: auto; }
-/* A band of light crossing the metal. */
-.medallion::after {
-  content: ''; position: absolute; inset: 0; border-radius: 50%;
-  background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.75) 50%, transparent 62%);
-  background-size: 260% 100%; mix-blend-mode: soft-light; animation: sheen 4.5s ease-in-out infinite;
-}
-@keyframes sheen { 0%, 55% { background-position: 130% 0; } 100% { background-position: -130% 0; } }
-.medallion--large { width: 150px; margin: 0 auto 6px; animation: medal-in 1.4s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
-@keyframes medal-in { from { transform: scale(0.2) rotate(-200deg); opacity: 0; } to { transform: none; opacity: 1; } }
-
-.bronze-button {
+.primary-button {
   position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   min-height: 54px; padding: 0 30px; border: 2px solid var(--ink); border-radius: 999px;
-  background: var(--brushed); color: var(--ink); font: 700 18px/1 var(--sans); letter-spacing: 0.04em;
+  background: var(--ink); color: white; font: 700 18px/1 var(--sans); letter-spacing: 0.04em;
   box-shadow: 4px 4px 0 var(--ink); transition: transform 0.12s, box-shadow 0.12s;
 }
-.bronze-button::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.7) 50%, transparent 65%);
-  background-size: 250% 100%; animation: sheen 3.2s ease-in-out infinite;
-}
-.bronze-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
-.bronze-button--wide { width: 100%; margin-bottom: 16px; font-size: 17px; }
+.primary-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.primary-button--wide { width: 100%; margin-bottom: 16px; font-size: 17px; }
 .play { width: 0; height: 0; border-style: solid; border-width: 7px 0 7px 12px; border-color: transparent transparent transparent currentColor; }
 .pause { width: 12px; height: 14px; border-style: solid; border-width: 0 4px; border-color: currentColor; }
 
@@ -263,7 +243,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
   position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; text-align: center;
   padding: calc(24px + var(--safe-top)) 24px calc(24px + var(--safe-bottom));
   overflow-y: auto; justify-items: center; align-items: safe center;
-  background: radial-gradient(ellipse at 50% 36%, #fffdf5 0%, #f4f0e1 55%, #e5d8bd 100%);
+  background: radial-gradient(ellipse at 50% 36%, #fffdf5 0%, #f4f0e1 55%, var(--paper) 100%);
   transition: opacity 0.9s ease;
 }
 .intro--leaving { opacity: 0; pointer-events: none; }
@@ -271,14 +251,14 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .intro__title .trail-mark { width: min(64vw, 39dvh, 310px); animation: rise 0.7s ease-out both; }
 .intro__years { margin: 18px 0 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; }
 .intro__lede { margin: 12px auto 22px; max-width: 30em; font: italic clamp(18px, 2.4vw, 21px)/1.4 var(--serif); }
-.intro .bronze-button { min-height: 52px; font-size: 18px; padding: 0 32px; }
+.intro .primary-button { min-height: 52px; font-size: 18px; padding: 0 32px; }
 /* While the opening is up, the page behind is scenery. */
 .app--intro .sheet, .app--intro .chips, .app--intro .maplibregl-control-container { visibility: hidden; }
 
 /* ---------- trail complete ---------- */
 .complete {
   display: grid; gap: 4px; margin-bottom: 18px; padding: 16px 18px; border: 2px solid var(--ink); border-radius: 14px;
-  background: var(--brushed); box-shadow: 4px 4px 0 var(--ink); animation: medal-pop 0.7s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+  background: var(--card); box-shadow: 4px 4px 0 var(--ink); animation: medal-pop 0.7s cubic-bezier(0.2, 1.5, 0.4, 1) both;
 }
 @keyframes medal-pop { from { transform: scale(0.6); opacity: 0; } to { transform: none; opacity: 1; } }
 .complete strong { font-family: var(--serif); font-size: 24px; }
@@ -286,7 +266,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 
 /* ---------- guided tour: everything needed fits in the half-raised sheet ---------- */
 .tour__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.tour__label { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bronze); }
+.tour__label { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
 .tour__exit { min-height: 36px; background: none; border: 0; padding: 0; font-size: 15px; font-weight: 600; color: var(--ink-soft); }
 .tour__bar { height: 8px; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; background: var(--card); margin-bottom: 14px; }
 .tour__bar i { display: block; height: 100%; background: var(--trail); transform-origin: left; animation: fill linear both; }
@@ -304,9 +284,9 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
   background: var(--card); font-size: 30px; line-height: 1; padding: 0 0 4px;
 }
 .tour__controls button:disabled { opacity: 0.3; }
-.tour__controls .tour__play { width: 66px; height: 66px; padding: 0; background: var(--brushed); box-shadow: 3px 3px 0 var(--ink); }
+.tour__controls .tour__play { width: 66px; height: 66px; padding: 0; background: var(--ink); color: white; box-shadow: 3px 3px 0 var(--ink); }
 .tour__summary { margin: 0 0 8px; font-size: 17px; }
-.tour__read { min-height: 44px; background: none; border: 0; padding: 0; color: var(--bronze); font-weight: 700; }
+.tour__read { min-height: 44px; background: none; border: 0; padding: 0; color: var(--ink); font-weight: 700; }
 
 /* ---------- photo viewer ---------- */
 .lightbox {
@@ -355,14 +335,12 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
   .pin-wrap--dim .pin:hover { opacity: 0.9; }
   .pin-wrap--active .pin:hover { transform: scale(1.5); }
 
-  .medallion { width: 96px; margin: 0 0 14px -6px; }
-  .medallion--large { width: 190px; margin: 0 auto 6px; }
   .eyebrow { margin-bottom: 10px; font-size: 12px; }
   .section-title { margin-top: 34px; }
   .trail-card:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--trail); }
   .stop-row:hover { background: var(--card); }
   .pager button:hover { box-shadow: 3px 3px 0 var(--trail); }
-  .bronze-button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+  .primary-button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
   .directions:hover { background: var(--ink); color: var(--paper); }
   .back:hover { color: var(--ink); }
   .photo button img { transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }

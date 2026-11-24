@@ -24,7 +24,7 @@ export function Intro({ onBegin, colors }: { onBegin: () => void; colors: string
         <h1 className="intro__title"><TrailMark /></h1>
         <p className="intro__years">Delano, Minnesota · 1876 – 2026</p>
         <p className="intro__lede">Seven trails. Seventy-two bronze plaques. One hundred and fifty years of stories.</p>
-        <button ref={button} className="bronze-button" onClick={begin}>
+        <button ref={button} className="primary-button" onClick={begin}>
           Begin the adventure
         </button>
       </div>

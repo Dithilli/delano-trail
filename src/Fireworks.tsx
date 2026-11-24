@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 
 interface Spark { x: number; y: number; vx: number; vy: number; life: number; ttl: number; color: string; size: number }
 
-const GOLD = ['#f3dba8', '#d9b06c', '#fff4d6']
 
 /**
  * A few seconds of fireworks, as on the printed map's Central Park.
@@ -24,7 +23,7 @@ export function Fireworks({ show, bursts = 9, colors }: { show: number; bursts?:
     window.addEventListener('resize', size)
 
     const sparks: Spark[] = []
-    const palette = [...colors, ...GOLD]
+    const palette = colors
     const burst = () => {
       const x = canvas.width * (0.12 + Math.random() * 0.76)
       const y = canvas.height * (0.1 + Math.random() * 0.4)
@@ -34,7 +33,7 @@ export function Fireworks({ show, bursts = 9, colors }: { show: number; bursts?:
       for (let i = 0; i < count; i++) {
         const a = (i / count) * Math.PI * 2 + Math.random() * 0.2
         const v = power * (0.45 + Math.random() * 0.75)
-        sparks.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 0, ttl: 70 + Math.random() * 50, color: Math.random() < 0.2 ? GOLD[2] : color, size: (1.2 + Math.random() * 1.8) * dpr })
+        sparks.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 0, ttl: 70 + Math.random() * 50, color: Math.random() < 0.2 ? '#ffffff' : color, size: (1.2 + Math.random() * 1.8) * dpr })
       }
     }
 

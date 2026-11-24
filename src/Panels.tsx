@@ -137,7 +137,7 @@ export function TrailPanel({
           <p>{trail.area} · {stops.length} stops</p>
         </div>
       </header>
-      <button className="bronze-button bronze-button--wide" onClick={onTour}>
+      <button className="primary-button primary-button--wide" onClick={onTour}>
         <span className="play" aria-hidden="true" /> Play the guided tour
       </button>
       <ol className="stop-list">
