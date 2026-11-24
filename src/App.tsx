@@ -6,6 +6,7 @@ import { Intro } from './Intro'
 import { MapView } from './MapView'
 import { HomePanel, StopPanel, TourCard, TrailPanel } from './Panels'
 import { Sheet } from './Sheet'
+import { StopSearch } from './StopSearch'
 import { formatDistance, nearest } from './lib/geo'
 import { parseHash, toHash, type Route } from './lib/route'
 import { useStories } from './lib/stories'
@@ -45,6 +46,7 @@ export function App() {
   const [fireworks, setFireworks] = useState(0)
   const panel = useRef<HTMLDivElement>(null)
   const { wide, height } = useViewport()
+  const [searchOpen, setSearchOpen] = useState(false)
   const [snap, setSnap] = useState<Snap>('half')
 
   const stop = route.view === 'stop' ? stops.find((s) => s.slug === route.slug) : undefined
@@ -134,6 +136,11 @@ export function App() {
       />
 
       <nav className="chips" aria-label="Trails">
+        <StopSearch stops={stops} trails={trails} onToggle={setSearchOpen} onSelect={(slug) => {
+          setTour(null)
+          setSnap('half')
+          go({ view: 'stop', slug })
+        }} />
         <button aria-pressed={!trail} className={`chip ${!trail ? 'chip--on' : ''}`} onClick={() => go({ view: 'home' })}>All</button>
         {trails.map((t) => (
           <button
@@ -172,7 +179,7 @@ export function App() {
             stop={stop}
             trail={trail}
             total={trailStops.length}
-            playing={tour.playing}
+            playing={tour.playing && !searchOpen}
             onPlaying={(playing) => setTour({ playing })}
             onStep={tourStep}
             onDone={() => tourStep(1)}
