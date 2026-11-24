@@ -1,3 +1,4 @@
+import { TrailMark } from './TrailMark'
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import { Lightbox, type Photo } from './Lightbox'
@@ -41,17 +42,7 @@ export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; st
     <div className="view home">
       <header className="masthead">
         <h1>
-          <svg className="trail-mark" viewBox="100 13 382 481" role="img" aria-label="Delano Spirit of Community Trail">
-            <defs>
-              <filter id="trail-ink" primitiveUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                {/* The dark ink and gold background separate cleanly in the red channel. */}
-                <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -2 0 0 0 1.35" result="ink" />
-                <feFlood x="0" y="430" width="1466" height="12" floodColor="#967044" />
-                <feComposite in2="ink" operator="atop" />
-              </filter>
-            </defs>
-            <image href="./delano-trail-header.jpg" width="1466" height="526" filter="url(#trail-ink)" />
-          </svg>
+          <TrailMark />
         </h1>
         <p className="lede">
           Delano’s story is one of <em>creativity, resilience and community investment</em>. Follow the bronze plaques

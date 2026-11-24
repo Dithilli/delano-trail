@@ -134,11 +134,12 @@ export function App() {
       />
 
       <nav className="chips" aria-label="Trails">
-        <button className={`chip ${!trail ? 'chip--on' : ''}`} onClick={() => go({ view: 'home' })}>All</button>
+        <button aria-pressed={!trail} className={`chip ${!trail ? 'chip--on' : ''}`} onClick={() => go({ view: 'home' })}>All</button>
         {trails.map((t) => (
           <button
             key={t.id}
-            className={`chip ${trail?.id === t.id ? 'chip--on' : ''}`}
+            aria-pressed={trail?.id === t.id}
+            className={`chip chip--trail ${trail?.id === t.id ? 'chip--on' : ''}`}
             style={{ '--trail': t.color } as React.CSSProperties}
             onClick={() => go({ view: 'trail', trail: t.id })}
           >

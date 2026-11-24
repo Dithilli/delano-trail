@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Fireworks } from './Fireworks'
-import { MEDALLION } from './lib/image'
+import { TrailMark } from './TrailMark'
 
 /** The opening card. The map waits high above Minnesota until the visitor begins. */
 export function Intro({ onBegin, colors }: { onBegin: () => void; colors: string[] }) {
@@ -21,13 +21,8 @@ export function Intro({ onBegin, colors }: { onBegin: () => void; colors: string
     <div className={`intro ${leaving ? 'intro--leaving' : ''}`} role="dialog" aria-modal="true" aria-label="Welcome to the Spirit of Community Trail">
       <Fireworks show={1} bursts={16} colors={colors} />
       <div className="intro__card">
-        <div className="medallion medallion--large">
-          <img src={MEDALLION} alt="Delano Spirit of Community Trail" width={216} height={200} />
-        </div>
+        <h1 className="intro__title"><TrailMark /></h1>
         <p className="intro__years">Delano, Minnesota · 1876 – 2026</p>
-        <h1 className="intro__title">
-          <span>Your Adventure</span> <span>Starts Here</span>
-        </h1>
         <p className="intro__lede">Seven trails. Seventy-two bronze plaques. One hundred and fifty years of stories.</p>
         <button ref={button} className="bronze-button" onClick={begin}>
           Begin the adventure
