@@ -1,0 +1,14 @@
+City of Delano - Presidents & Mayors
+
+For 150 years, Delano's story has been shaped not only by the events that changed the community, but by the people who stepped forward to lead it. From the village presidents of its earliest days to the mayors of the modern city, each generation faced its own challenges and made decisions that helped build the Delano we know today. Streets were laid out, wells dug, lights turned on, water and sewer systems built, parks established, and public buildings raised as a small Minnesota village steadily grew into a thriving city. The stories of Delano's mayors and village presidents offer a glimpse at that journey—and at the local leaders whose service, vision, and everyday decisions helped guide the community through 150 years of change.
+
+---
+PRONUNCIATION NOTES:
+- Delano: "DEL-uh-no" (emphasis on the FIRST syllable), per the owner on Nov 24, 2026
+  NOT "duh-LAY-no" and NOT the Spanish "deh-LAH-no"
+  On eleven_v4, write the word as IPA between slashes: /ˈdɛlənoʊ/ (possessive: /ˈdɛlənoʊz/)
+
+VOICE:
+- Christian - Warm Documentary Narrator (ElevenLabs voice ID KMLpM4tgKxYUlv81Ue0p), model eleven_v4
+- Chosen by the owner on Nov 24, 2026 after auditions; Rouell and Owen sounded lispy, Dean mispronounced the city
+- The city name still varies from take to take, so listen to every take before using it

@@ -10,9 +10,15 @@ The local app includes building search and a narrated first stop. The public Git
 
 ## Audio and remaining work
 
-City Hall is the only narrated stop. The recording is about 23 seconds long and lives at `public/narration/city-hall.mp3`. ElevenLabs generated it with Rouell, a warm baritone. It used 364 credits. The last account check showed 9,636 credits remaining and zero overage. The official ElevenLabs Creative MCP is configured on the Mac.
+City Hall is the only narrated stop. The recording is about 51 seconds long and lives at `public/narration/city-hall.mp3`; its script is in `public/narration/city-hall-script.txt`. The official ElevenLabs Creative MCP is configured and signed in on the Mac.
 
-The other 71 stops still use the timed tour. Before generating additional audio, review the City Hall take and estimate credits for the chosen scripts. Tour playback is in `src/Panels.tsx`; the current implementation selects the recording by the City Hall slug.
+**Voice for all stops:** Christian - Warm Documentary Narrator (voice ID `KMLpM4tgKxYUlv81Ue0p`) on the `eleven_v4` model. It replaced Rouell, which had a noticeable lisp. Owen was also lispy; the owner hears a faint trace on Christian and accepted it.
+
+**Pronouncing "Delano":** the owner confirmed "DEL-uh-no", with the emphasis on the first syllable (not "duh-LAY-no", not the Spanish pronunciation). In the text sent to `eleven_v4`, write the name as IPA between slashes: `/ˈdɛlənoʊ/` (possessive `/ˈdɛlənoʊz/`). This is not reliable: the same spelling came out as "DAH-luh-no" on some voices and takes, so the owner must listen to every take before it ships.
+
+**Credits:** the free plan allows 10,000 per month and 4,512 are used as of November 24, 2026. A full-length stop costs about 800 credits per take, and each request makes two takes. The free queue also rejects takes as busy when several run at once. The remaining 71 stops will not fit in the free allowance.
+
+The other 71 stops still use the timed tour. Before generating additional audio, estimate credits for the chosen scripts. Tour playback is in `src/Panels.tsx`; the current implementation selects the recording by the City Hall slug.
 
 ## Verification and publication
 
