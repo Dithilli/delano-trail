@@ -169,10 +169,6 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   check('phone: tour starts at stop 1', (await page.locator('.tour .badge').textContent())?.includes('Stop 1 of 9'))
   check('phone: panel rises for the tour, controls reachable', await snapOf(page) === 'sheet--full' && await tappable(page, '.tour__play') && await tappable(page, '.dial button[aria-label="Play faster"]'))
   await page.screenshot({ path: `${dir}/p8-tour.png` })
-  const b1 = await page.evaluate(() => window.__map.getBearing())
-  await page.waitForTimeout(1500)
-  const b2 = await page.evaluate(() => window.__map.getBearing())
-  check('phone: camera circles during tour', Math.abs(b2 - b1) > 1, `${b1.toFixed(1)} -> ${b2.toFixed(1)}`)
 
   // A plaque's QR code: straight to the story.
   await page.goto('about:blank')

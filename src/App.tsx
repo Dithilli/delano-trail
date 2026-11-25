@@ -50,7 +50,6 @@ export function App() {
   const trailId = route.view === 'trail' ? route.trail : stop?.trail ?? null
   const trail = trails.find((t) => t.id === trailId)
   const trailStops = useMemo(() => stops.filter((s) => s.trail === trailId), [trailId])
-  const touring = !!tour && !!stop
   const stories = useStories(trailId)
   const body = stop ? (stories ? stories[stop.slug] ?? [] : stories) : undefined
   // The map keeps its subject in the strip above the sheet; a full sheet counts as half.
@@ -109,7 +108,6 @@ export function App() {
         activeTrail={trail?.id ?? null}
         activeStop={stop?.slug ?? null}
         intro={intro}
-        orbit={touring}
         editing={editing}
         wide={wide}
         bottomInset={bottomInset}

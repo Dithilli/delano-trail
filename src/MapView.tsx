@@ -27,7 +27,6 @@ interface Props {
   /** The opening card is up: hold the camera high above Minnesota. */
   intro: boolean
   /** Slowly circle the selected stop (guided tour). */
-  orbit: boolean
   editing: boolean
   /** Side-panel layout (desktop) rather than the phone's pull-up sheet. */
   wide: boolean
@@ -46,7 +45,7 @@ function paddingFor(wide: boolean, bottomInset: number) {
 }
 
 export function MapView(props: Props) {
-  const { trails, stops, geo, activeTrail, activeStop, intro, orbit, editing, wide, bottomInset } = props
+  const { trails, stops, geo, activeTrail, activeStop, intro, editing, wide, bottomInset } = props
   const el = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const markers = useRef(new Map<string, Marker>())
@@ -348,35 +347,6 @@ export function MapView(props: Props) {
       fly(target, 1800, 1.2)
     }
   }, [loaded, activeTrail, activeStop, stops, geo, editing, intro])
-
-  // Guided tour: circle the stop until something else happens.
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map || !loaded || !orbit || !activeStop || calm()) return
-    let frame = 0
-    let last = 0
-    let running = false
-    const spin = (now: number) => {
-      if (last) map.setBearing(map.getBearing() + ((now - last) / 1000) * 5)
-      last = now
-      frame = requestAnimationFrame(spin)
-    }
-    const start = () => {
-      if (running) return
-      running = true
-      frame = requestAnimationFrame(spin)
-    }
-    const timer = window.setTimeout(start, 2600) // after the fly-in
-    const halt = () => cancelAnimationFrame(frame)
-    map.on('dragstart', halt)
-    map.on('wheel', halt)
-    return () => {
-      window.clearTimeout(timer)
-      cancelAnimationFrame(frame)
-      map.off('dragstart', halt)
-      map.off('wheel', halt)
-    }
-  }, [loaded, orbit, activeStop])
 
   useEffect(() => {
     for (const m of markers.current.values()) m.setDraggable(editing)
