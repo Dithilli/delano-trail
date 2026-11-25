@@ -8,7 +8,6 @@
   {"slug": "funeral-services", "name": "Funeral Services"},
   {"slug": "fire-department", "name": "Fire Department"},
   {"slug": "leiters-livery-and-auto", "name": "Leiter Livery and Auto"},
-  {"slug": "sesquicentennial", "name": "Sesquicentennial"},
   {"slug": "village-hall", "name": "Old Village Hall"}
  ]},
  {"id": "red", "name": "Red Trail", "area": "Bridge Ave.", "color": "#e0303a", "stops": [
@@ -71,7 +70,8 @@
   {"slug": "leiter-oil-company", "name": "Leiter Oil Company"},
   {"slug": "plotniks-blacksmith", "name": "Plotnik's Blacksmith"},
   {"slug": "rieder-homestead", "name": "Rieder Homestead Barn"},
-  {"slug": "the-drive-in", "name": "The Drive-In"}
+  {"slug": "the-drive-in", "name": "The Drive-In"},
+  {"slug": "sesquicentennial", "name": "Sesquicentennial"}
  ]},
  {"id": "orange", "name": "Orange Trail", "area": "Central Park", "color": "#ee8a1d", "stops": [
   {"slug": "central-park", "name": "Central Park"},

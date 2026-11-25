@@ -10,7 +10,7 @@ The local app includes building search and a narrated first stop. The public Git
 
 ## Audio and remaining work
 
-All ten Green Trail stops are narrated. Each recording is `public/narration/<slug>.mp3` with its script beside it as `<slug>-script.txt`. The owner approved City Hall and the Delano Community Development Corporation by ear. Stops 3 to 10 were generated in one batch on November 24, 2026 and published before the owner listened to them, so their "Delano"s are unchecked. The official ElevenLabs Creative MCP is configured and signed in on the Mac.
+All nine Green Trail stops are narrated, and so is Sesquicentennial, which moved to the Blue Trail (stop 10, in the Sculpture Park) on November 24, 2026. Each recording is `public/narration/<slug>.mp3` with its script beside it as `<slug>-script.txt`. The owner approved City Hall and the Delano Community Development Corporation by ear. Stops 3 to 10 were generated in one batch on November 24, 2026 and published before the owner listened to them, so their "Delano"s are unchecked. The official ElevenLabs Creative MCP is configured and signed in on the Mac.
 
 **Voice for all stops:** Christian - Warm Documentary Narrator (voice ID `KMLpM4tgKxYUlv81Ue0p`) on the `eleven_v4` model. It replaced Rouell, which had a noticeable lisp. Owen was also lispy; the owner hears a faint trace on Christian and accepted it.
 

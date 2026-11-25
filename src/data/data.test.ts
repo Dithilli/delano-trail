@@ -20,7 +20,7 @@ describe('trail data', () => {
     expect(trails.map((t) => t.id)).toEqual(['green', 'red', 'lime', 'purple', 'yellow', 'blue', 'orange'])
     expect(stops).toHaveLength(72)
     const counts = Object.fromEntries(trails.map((t) => [t.id, stops.filter((s) => s.trail === t.id).length]))
-    expect(counts).toEqual({ green: 10, red: 11, lime: 10, purple: 12, yellow: 10, blue: 9, orange: 10 })
+    expect(counts).toEqual({ green: 9, red: 11, lime: 10, purple: 12, yellow: 10, blue: 10, orange: 10 })
   })
   it('numbers each trail 1..n with unique slugs', () => {
     expect(new Set(stops.map((s) => s.slug)).size).toBe(72)

@@ -157,20 +157,6 @@
    "photos": 14
   },
   {
-   "slug": "sesquicentennial",
-   "title": "Sesquicentennial",
-   "address": null,
-   "subtitle": "Delano 150th · 1876-2026",
-   "summary": "Delano was founded in 1876 along the banks of the Crow River. What started as a small river town has grown into the community you're standing in today, built by generations who showed up for each other. In 2026, Delano celebrated 150 years the way this town does everything: together. The celebration kicked off with a \"150 Ways to Celebrate\" campaign, giving the town 150 reasons to get involved throughout the year.",
-   "hero": "https://images.squarespace-cdn.com/content/v1/55648dcee4b0b7fb3090f7e7/1ddf0d92-76f5-4c7c-8393-88fafe50bc09/Trail+Image+6.jpeg",
-   "sourceUrl": "https://www.delanomnhistory.org/sesquicentennial",
-   "trail": "green",
-   "number": 9,
-   "name": "Sesquicentennial",
-   "nonprofit": false,
-   "photos": 7
-  },
-  {
    "slug": "village-hall",
    "title": "Delano Village Hall",
    "address": "234 2nd St North",
@@ -179,7 +165,7 @@
    "hero": "https://images.squarespace-cdn.com/content/v1/55648dcee4b0b7fb3090f7e7/d354cf5c-aa94-4785-8caa-f79fc9824579/Delano+city+hall.jpg",
    "sourceUrl": "https://www.delanomnhistory.org/village-hall",
    "trail": "green",
-   "number": 10,
+   "number": 9,
    "name": "Old Village Hall",
    "nonprofit": false,
    "photos": 4
@@ -911,6 +897,20 @@
    "name": "The Drive-In",
    "nonprofit": false,
    "photos": 10
+  },
+  {
+   "slug": "sesquicentennial",
+   "title": "Sesquicentennial",
+   "address": null,
+   "subtitle": "Delano 150th · 1876-2026",
+   "summary": "Delano was founded in 1876 along the banks of the Crow River. What started as a small river town has grown into the community you're standing in today, built by generations who showed up for each other. In 2026, Delano celebrated 150 years the way this town does everything: together. The celebration kicked off with a \"150 Ways to Celebrate\" campaign, giving the town 150 reasons to get involved throughout the year.",
+   "hero": "https://images.squarespace-cdn.com/content/v1/55648dcee4b0b7fb3090f7e7/1ddf0d92-76f5-4c7c-8393-88fafe50bc09/Trail+Image+6.jpeg",
+   "sourceUrl": "https://www.delanomnhistory.org/sesquicentennial",
+   "trail": "blue",
+   "number": 10,
+   "name": "Sesquicentennial",
+   "nonprofit": false,
+   "photos": 7
   },
   {
    "slug": "central-park",
