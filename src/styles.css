@@ -126,7 +126,11 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .trail-mark { display: block; width: min(88px, 100%); height: auto; margin: 0 auto; overflow: hidden; }
 .eyebrow { margin: 0 0 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink); }
 /* The gold trail banner runs edge to edge across the top of the home panel. */
-.banner { display: block; width: calc(100% + var(--gutter) * 2); max-width: none; height: auto; margin: 0 calc(var(--gutter) * -1); }
+.masthead { position: relative; margin: 0 calc(var(--gutter) * -1); }
+.masthead h1 { margin: 0; }
+.home-dot { position: absolute; top: 69.4%; width: 10.5%; aspect-ratio: 1; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+.home-dot:hover, .home-dot:active { box-shadow: 0 0 0 3px #fff; }
+.banner { display: block; width: 100%; height: auto; }
 .lede { margin: 26px 0 0; padding-top: 20px; border-top: 1.5px solid var(--rule); font-size: 17px; color: var(--ink-soft); }
 .lede em { font-family: var(--serif); color: var(--ink); }
 .section-title { margin: 26px 0 12px; font: 700 12px/1 var(--sans); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); }
@@ -267,7 +271,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 /* Many of the photographs are portraits or documents, so each is shown whole on a dark mat. */
 .tour__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #2b2923; }
 /* Each photograph fades in over the last and drifts while it holds. */
-.tour__photo .tour__slide { animation: slide-in 1.1s ease both, slide-drift 7s ease-out both; }
+.tour__photo .tour__slide { animation: slide-in 0.9s ease both, slide-drift 5s ease-out both; }
 @keyframes slide-drift { from { transform: scale(1); } to { transform: scale(1.06); } }
 @keyframes slide-in { from { opacity: 0; } }
 /* Arrows to turn the photographs by hand: quiet while the story plays, plain once it stops. */
@@ -356,7 +360,7 @@ h1, h2, h3, h4, .dial__name { hyphens: none; overflow-wrap: normal; word-break: 
     border-radius: 0; box-shadow: none; transition: none;
   }
   .sheet__body, .sheet--peek .sheet__body { flex: 1; height: auto; min-height: 0; overflow-y: auto; padding: 28px var(--gutter) 40px; }
-  .banner { margin-top: -28px; }
+  .masthead { margin-top: -28px; }
 
   .chips { top: 14px; left: calc(var(--panel-w) + 2px); right: 2px; }
   .chip { min-height: 34px; font-size: 13px; padding: 0 13px 0 10px; }

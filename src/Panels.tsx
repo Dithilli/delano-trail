@@ -36,13 +36,25 @@ function useReveal(key: string) {
   return root
 }
 
+/** The trails in the order their circles appear in the home artwork, left to right. */
+const HOME_CIRCLES = ['green', 'red', 'blue', 'lime', 'orange', 'purple', 'yellow']
+
 export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; stops: Stop[]; go: Go; onReplay: () => void }) {
   return (
     <div className="view home">
       <header className="masthead">
         <h1>
-          <img className="banner" src="./delano-trail-banner.jpg" alt="Delano Spirit of Community Trail" width={1486} height={494} />
+          <img className="banner" src="./delano-trail-home.jpg" width={1260} height={1300}
+            alt="Explore Delano. Over 70 bronze plaques bring history to life. Choose a color-coded trail to start your adventure. Creativity. Resilience. Community investment." />
         </h1>
+        {/* The seven coloured circles in the artwork each open their trail. */}
+        {HOME_CIRCLES.map((id, i) => {
+          const t = trails.find((x) => x.id === id)
+          return t && (
+            <button key={id} className="home-dot" style={{ left: `${((186 + i * 147 - 66) / 1260) * 100}%` }}
+              onClick={() => go({ view: 'trail', trail: t.id })} aria-label={t.name} title={t.name} />
+          )
+        })}
       </header>
 
       <h2 className="section-title">Choose a trail</h2>
@@ -400,7 +412,7 @@ const FAST_PACE = 1.5
 
 export const TOUR_SECONDS = 16
 /** How long each photograph holds during a story. */
-const SLIDE_SECONDS = 4.5
+const SLIDE_SECONDS = 3
 
 /** Stops with a recording at public/narration/<slug>.mp3; the rest use the timed tour. */
 const NARRATED_STOPS = new Set([
