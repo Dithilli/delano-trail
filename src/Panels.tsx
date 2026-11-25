@@ -238,8 +238,8 @@ function AudioDial({
   return (
     <div className={`dial${playing ? ' dial--playing' : ''}${dark ? ' dial--ink' : ''}`}>
       <div className="dial__buttons">
-        <button className="dial__step" onClick={onBack} disabled={!onBack} aria-label="Go back 10 seconds" title="Go back 10 seconds">{chevrons('M10 2 L3 10 L10 18 M19 2 L12 10 L19 18')}</button>
-        <button className="tour__play dial__play" onClick={onToggle} aria-label={playing ? 'Pause the story' : 'Play the story'}>
+        <button className="dial__step" onClick={onBack} disabled={!onBack} aria-label={fast ? 'Back to normal speed' : 'Go back 10 seconds'} title={fast ? 'Back to normal speed' : 'Go back 10 seconds'}>{chevrons('M10 2 L3 10 L10 18 M19 2 L12 10 L19 18')}</button>
+        <button className="tour__play dial__play" onClick={onToggle} aria-label={playing ? (fast ? 'Back to normal speed' : 'Pause the story') : 'Play the story'}>
           {playing ? <span className="pause" aria-hidden="true" /> : <span className="play" aria-hidden="true" />}
         </button>
         <button className={`dial__step${fast ? ' dial__step--on' : ''}`} onClick={onFast} aria-pressed={!!fast} aria-label="Play at double speed" title={fast ? 'Back to normal speed' : 'Play at double speed'}>{chevrons('M3 2 L10 10 L3 18 M12 2 L19 10 L12 18')}</button>
@@ -450,6 +450,8 @@ export function TourCard({
   // A timed story has no recording to wind back, so going back starts its bar again.
   const [again, setAgain] = useState(0)
   const back = () => {
+    // At double speed the left arrows first bring the story back to normal speed.
+    if (fast) return setFast(false)
     const player = audio.current
     if (!narrated || !player) return setAgain((n) => n + 1)
     player.currentTime = Math.max(0, player.currentTime - 10)
@@ -520,7 +522,7 @@ export function TourCard({
           progress={progress}
           timed={!narrated}
           fast={fast}
-          onToggle={() => onPlaying(!playing)}
+          onToggle={() => (playing && fast ? setFast(false) : onPlaying(!playing))}
           onBack={back}
           onFast={() => setFast((f) => !f)}
           onTimedEnd={finish}
