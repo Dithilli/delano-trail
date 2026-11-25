@@ -191,7 +191,7 @@ export function App() {
           />
         ) : stop && trail ? (
           <StopPanel key={stop.slug} stop={stop} trail={trail} siblings={trailStops} body={body} placed={geo.stops[stop.slug]} go={go}
-            onTour={() => { setCompleted(null); setTour({ playing: true }); setSnap('half') }} />
+            onTour={() => { setCompleted(null); setTour({ playing: true }); setSnap('half'); panel.current?.scrollTo({ top: 0 }) }} />
         ) : trail ? (
           <TrailPanel
             key={trail.id}
