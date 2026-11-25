@@ -130,8 +130,8 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 /* The gold trail banner runs edge to edge across the top of the home panel. */
 .masthead { position: relative; margin: 0 calc(var(--gutter) * -1); }
 .masthead h1 { margin: 0; }
-.home-dot { position: absolute; top: 69.4%; width: 10.5%; aspect-ratio: 1; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
-.home-dot:hover, .home-dot:active { box-shadow: 0 0 0 3px #fff; }
+.home-dot { position: absolute; top: 0; width: 7.47%; height: 9.5%; padding: 0; border: 0; border-radius: 0 0 999px 999px; background: none; cursor: pointer; }
+.home-dot:hover, .home-dot:active { background: rgb(255 255 255 / 0.25); }
 .banner { display: block; width: 100%; height: auto; }
 .lede { margin: 26px 0 0; padding-top: 20px; border-top: 1.5px solid var(--rule); font-size: 17px; color: var(--ink-soft); }
 .lede em { font-family: var(--serif); color: var(--ink); }
