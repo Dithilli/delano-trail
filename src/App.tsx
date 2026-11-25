@@ -183,7 +183,7 @@ export function App() {
             onExit={() => go({ view: 'trail', trail: trail.id })}
           />
         ) : stop && trail ? (
-          <StopPanel key={stop.slug} stop={stop} trail={trail} siblings={trailStops} body={body} placed={geo.stops[stop.slug]} go={go}
+          <StopPanel key={stop.slug} stop={stop} trail={trail} siblings={trailStops} body={body} go={go}
             onTour={() => { setCompleted(null); setTour({ playing: true }); setSnap('half'); panel.current?.scrollTo({ top: 0 }) }} />
         ) : trail ? (
           <TrailPanel

@@ -4,7 +4,7 @@ import { Lightbox, type Photo } from './Lightbox'
 import { PRINTED_MAP, sized } from './lib/image'
 import type { Route } from './lib/route'
 import { excerpt, plain } from './lib/text'
-import type { Block, LngLat, Stop, Trail } from './types'
+import type { Block, Stop, Trail } from './types'
 
 type Go = (r: Route) => void
 
@@ -166,7 +166,6 @@ export function StopPanel({
   trail,
   siblings,
   body,
-  placed,
   go,
   onTour,
 }: {
@@ -177,7 +176,6 @@ export function StopPanel({
   onTour: () => void
   /** undefined while the trail's stories are loading, null if they failed to load. */
   body: Block[] | null | undefined
-  placed?: { lngLat: LngLat; approx: boolean }
   go: Go
 }) {
   const root = useReveal(`${stop.slug}:${body ? 'ready' : 'waiting'}`)
@@ -221,16 +219,6 @@ export function StopPanel({
       <button className="primary-button primary-button--wide stop__tour" onClick={onTour}>
         <span className="play" aria-hidden="true" /> <span>Listen to the {stop.title.replace(/^The /, '')} story</span>
       </button>
-      {placed && (
-        <a
-          className="directions"
-          href={`https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=${placed.lngLat[1]},${placed.lngLat[0]}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Walking directions
-        </a>
-      )}
 
       <div className="stop-body">
         {!body && (
