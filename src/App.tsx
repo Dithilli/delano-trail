@@ -180,16 +180,18 @@ export function App() {
             key={`tour-${stop.slug}`}
             stop={stop}
             trail={trail}
-            total={trailStops.length}
+            stops={trailStops}
             playing={tour.playing && !searchOpen}
             onPlaying={changePlayback}
             onStep={tourStep}
+            onJump={(slug) => go({ view: 'stop', slug })}
             onDone={() => tourStep(1)}
             onRead={() => { setTour(null); setSnap('full') }}
             onExit={() => go({ view: 'trail', trail: trail.id })}
           />
         ) : stop && trail ? (
-          <StopPanel key={stop.slug} stop={stop} trail={trail} siblings={trailStops} body={body} placed={geo.stops[stop.slug]} go={go} />
+          <StopPanel key={stop.slug} stop={stop} trail={trail} siblings={trailStops} body={body} placed={geo.stops[stop.slug]} go={go}
+            onTour={() => { setCompleted(null); setTour({ playing: true }); setSnap('half') }} />
         ) : trail ? (
           <TrailPanel
             key={trail.id}

@@ -173,10 +173,13 @@ export function StopPanel({
   body,
   placed,
   go,
+  onTour,
 }: {
   stop: Stop
   trail: Trail
   siblings: Stop[]
+  /** Start the guided tour from this stop. */
+  onTour: () => void
   /** undefined while the trail's stories are loading, null if they failed to load. */
   body: Block[] | null | undefined
   placed?: { lngLat: LngLat; approx: boolean }
@@ -220,6 +223,9 @@ export function StopPanel({
           {stop.photos > 1 && <span className="hero__count">{stop.photos} photos</span>}
         </button>
       )}
+      <button className="primary-button primary-button--wide stop__tour" onClick={onTour}>
+        <span className="play" aria-hidden="true" /> Play the guided tour
+      </button>
       {placed && (
         <a
           className="directions"
@@ -321,20 +327,24 @@ const NARRATED_STOPS = new Set([
 export function TourCard({
   stop,
   trail,
-  total,
+  stops,
   playing,
   onPlaying,
   onStep,
+  onJump,
   onDone,
   onRead,
   onExit,
 }: {
   stop: Stop
   trail: Trail
-  total: number
+  /** Every stop on this trail, in order. */
+  stops: Stop[]
   playing: boolean
   onPlaying: (p: boolean) => void
   onStep: (d: 1 | -1) => void
+  /** Jump straight to another stop's number. */
+  onJump: (slug: string) => void
   onDone: () => void
   onRead: () => void
   onExit: () => void
@@ -378,6 +388,20 @@ export function TourCard({
           onAnimationEnd={narrated ? undefined : onDone}
         />
       </div>
+      <nav className="tour__stops" aria-label="Stops on this trail">
+        {stops.map((s) => (
+          <button
+            key={s.slug}
+            className={s.slug === stop.slug ? 'num num--on' : 'num'}
+            onClick={() => onJump(s.slug)}
+            aria-current={s.slug === stop.slug ? 'step' : undefined}
+            aria-label={`Stop ${s.number}: ${s.name}`}
+            title={s.name}
+          >
+            {s.number}
+          </button>
+        ))}
+      </nav>
       <div className="tour__head">
         {stop.hero && (
           <div className="tour__photo">
@@ -387,7 +411,7 @@ export function TourCard({
         <div>
           <p className="badge">
             <span className="num">{stop.number}</span>
-            Stop {stop.number} of {total}
+            Stop {stop.number} of {stops.length}
           </p>
           <h1>{stop.title}</h1>
           {(stop.address || stop.subtitle) && <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>}

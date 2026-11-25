@@ -230,7 +230,9 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .primary-button {
   position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   min-height: 54px; padding: 0 30px; border: 2px solid var(--ink); border-radius: 999px;
-  background: var(--ink); color: white; font: 700 18px/1 var(--sans); letter-spacing: 0.04em;
+  /* On a trail's pages the button wears that trail's colour. */
+  background: var(--trail, var(--ink)); color: white; font: 700 18px/1 var(--sans); letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.5);
   box-shadow: 4px 4px 0 var(--ink); transition: transform 0.12s, box-shadow 0.12s;
 }
 .primary-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
@@ -273,6 +275,12 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .tour__bar { height: 8px; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; background: var(--card); margin-bottom: 14px; }
 .tour__bar i { display: block; height: 100%; background: var(--trail); transform-origin: left; animation: fill linear both; }
 @keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* One button per stop: tap a number to hear that plaque. */
+/* A single swipeable row on a phone, so the half-raised sheet keeps its room. */
+.tour__stops { display: flex; gap: 8px; margin: 0 calc(var(--gutter) * -1) 10px; padding: 2px var(--gutter) 4px; overflow-x: auto; scrollbar-width: none; }
+.tour__stops .num { flex: none; width: 36px; height: 36px; padding: 0; font-size: 15px; background: var(--card); color: var(--ink); cursor: pointer; text-shadow: none; }
+.tour__stops .num--on { background: var(--trail); color: #fff; text-shadow: 0 1px 1px rgb(0 0 0 / 0.45); box-shadow: 2px 2px 0 var(--ink); }
+.stop__tour { margin-top: 14px; }
 .tour__head { display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: center; }
 .tour__head > div:only-child { grid-column: 1 / -1; }
 .tour__photo { width: 92px; height: 92px; overflow: hidden; border: 1.5px solid var(--ink); border-radius: 10px; background: #2b2923; }
@@ -286,7 +294,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
   background: var(--card); font-size: 30px; line-height: 1; padding: 0 0 4px;
 }
 .tour__controls button:disabled { opacity: 0.3; }
-.tour__controls .tour__play { width: 66px; height: 66px; padding: 0; background: var(--ink); color: white; box-shadow: 3px 3px 0 var(--ink); }
+.tour__controls .tour__play { width: 66px; height: 66px; padding: 0; background: var(--trail, var(--ink)); color: white; box-shadow: 3px 3px 0 var(--ink); }
 .tour__summary { margin: 0 0 8px; font-size: 17px; }
 .tour__read { min-height: 44px; background: none; border: 0; padding: 0; color: var(--ink); font-weight: 700; }
 
@@ -358,6 +366,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
   .stop-head h1 { font-size: 36px; }
 
   .tour__head { display: block; }
+  .tour__stops { flex-wrap: wrap; overflow: visible; margin: 0 0 14px; padding: 0; }
   .tour__photo { width: auto; height: 240px; margin-bottom: 20px; border-radius: 6px; }
   .tour h1 { font-size: 34px; }
   .tour .facts { font-size: 17px; }
