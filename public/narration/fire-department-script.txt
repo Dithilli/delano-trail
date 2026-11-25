@@ -1,0 +1,10 @@
+Fire Department
+
+The Delano Fire Department traces its beginnings to August 1, 1876, when local residents organized the Delano Hook and Ladder Company No. 1. Over the following decades, the department grew from volunteers using hand-operated equipment into an organized community fire service with engines, hose and ladder crews, rural fire trucks, tankers, and modern equipment. Its firefighters responded to many of Delano’s most memorable disasters, including fires that destroyed schools, mills, the Delano Elevator, the Riverside Inn/American Legion Club during the 1965 flood, and the Delano Theater. The department received a new station on Second Street in 1972 and moved into another new fire station there in 2002. Today, the Firefighters Memorial outside the station, featuring Delano’s original fire bell, honors generations of firefighters whose service and dedication have protected the community for well over a century.
+
+---
+NOTES:
+- Text is the stop title plus its summary from src/data/trail.json
+- Voice, model and the Delano pronunciation spelling are the same as city-hall-script.txt (IPA used: /ˈdɛl.ə.noʊ/)
+- Generated on Nov 24, 2026 in two or three clips per stop and joined, first take of each; the owner has not yet listened to this one
+- "Riverside Inn/American Legion Club" is spoken as "Riverside Inn and American Legion Club". The stop subtitle says "Founded 1874" but the summary says 1876; unresolved.

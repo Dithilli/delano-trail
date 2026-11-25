@@ -1,0 +1,10 @@
+Delano - Franklin Township Area Historical Society
+
+Founded in 1999, the Delano Franklin Township Area Historical Society, (DFTAHS) is dedicated to preserving the artifacts, stories, and historical record of Delano and Franklin Township, with a mission to “preserve the past, enrich the present, and secure the future.” After years without a permanent home, the Society established the historic former Delano City Hall as the Delano Franklin Heritage Center and became an active part of community life through Heritage Festivals, workshops, lectures, exhibits, and educational programs. The Heritage Center later became the heart of the Spirit of Community Trail, helping visitors discover the people, businesses, and buildings that shaped Delano. Although water damage during construction forced the museum to close for renovation, the Society continues its work throughout the community, with a grand reopening of the restored Heritage Center targeted for 2027.
+
+---
+NOTES:
+- Text is the stop title plus its summary from src/data/trail.json
+- Voice, model and the Delano pronunciation spelling are the same as city-hall-script.txt (IPA used: /ˈdɛl.ə.noʊ/)
+- Generated on Nov 24, 2026 in two or three clips per stop and joined, first take of each; the owner has not yet listened to this one
+- The "(DFTAHS)" abbreviation is not spoken.

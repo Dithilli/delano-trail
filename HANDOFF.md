@@ -10,7 +10,7 @@ The local app includes building search and a narrated first stop. The public Git
 
 ## Audio and remaining work
 
-The first two Green Trail stops are narrated: City Hall (`public/narration/city-hall.mp3`, about 51 seconds) and the Delano Community Development Corporation (`public/narration/dcdc.mp3`, about 49 seconds). Each has its script beside it as `<slug>-script.txt`. The official ElevenLabs Creative MCP is configured and signed in on the Mac.
+All ten Green Trail stops are narrated. Each recording is `public/narration/<slug>.mp3` with its script beside it as `<slug>-script.txt`. The owner approved City Hall and the Delano Community Development Corporation by ear. Stops 3 to 10 were generated in one batch on November 24, 2026 and published before the owner listened to them, so their "Delano"s are unchecked. The official ElevenLabs Creative MCP is configured and signed in on the Mac.
 
 **Voice for all stops:** Christian - Warm Documentary Narrator (voice ID `KMLpM4tgKxYUlv81Ue0p`) on the `eleven_v4` model. It replaced Rouell, which had a noticeable lisp. Owen was also lispy; the owner hears a faint trace on Christian and accepted it.
 
@@ -20,7 +20,13 @@ The first two Green Trail stops are narrated: City Hall (`public/narration/city-
 
 **Credits:** the owner added credits to the ElevenLabs account on November 24, 2026; check the balance before a batch. A full-length stop is about 800 characters, and each request makes two takes.
 
-The other 70 stops still use the timed tour. To narrate another stop, save its recording as `public/narration/<slug>.mp3` and add the slug to `NARRATED_STOPS` in `src/Panels.tsx`. The DCDC summary says the organization "disbanded in 1980" while its longer text says late 1980s/early 1990s; the narration follows the summary and the owner has not yet said which is right.
+The other six trails (62 stops) still use the timed tour. To narrate another stop, save its recording as `public/narration/<slug>.mp3` and add the slug to `NARRATED_STOPS` in `src/Panels.tsx`.
+
+Open questions for the owner, all copied from the source site and read as written in the narration:
+- DCDC: the summary says the organization "disbanded in 1980"; its longer text says late 1980s/early 1990s.
+- Fire Department: the subtitle says "Founded 1874"; the summary says 1876.
+- Delano Village Hall: the subtitle says "Built in 1988"; the summary says 1888.
+- The pronunciations of "Tautges" (Funeral Services) and "Leiter" (Leiter's Livery and Auto) are the voice's guess.
 
 ## Verification and publication
 

@@ -304,7 +304,18 @@ export function StopPanel({
 export const TOUR_SECONDS = 16
 
 /** Stops with a recording at public/narration/<slug>.mp3; the rest use the timed tour. */
-const NARRATED_STOPS = new Set(['city-hall', 'dcdc'])
+const NARRATED_STOPS = new Set([
+  'city-hall',
+  'dcdc',
+  'dftahs',
+  'delano-united-way',
+  'delano-schools',
+  'funeral-services',
+  'fire-department',
+  'leiters-livery-and-auto',
+  'sesquicentennial',
+  'village-hall',
+])
 
 /** Guided tour: one plaque at a time, advancing on its own. */
 export function TourCard({

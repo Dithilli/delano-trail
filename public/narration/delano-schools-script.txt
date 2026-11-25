@@ -1,0 +1,9 @@
+Delano Public Schools
+
+The 1928 Delano School building stands as a lasting reminder of the community’s long commitment to education. Built at the corner of Elm Avenue and 2nd Street after fire damaged the earlier high school, the new building brought Delano’s grade and high school students together under one roof and was considered one of the finest and best-equipped schools in the area. Its modern gymnasium-auditorium, library, science laboratory, and industrial arts and home economics departments reflected a new era in education. As Delano grew and new schools were built, the building continued to adapt—first serving younger grades and later becoming home to Community Education and other community programs. Nearly a century after it opened, the 1928 school remains an important part of Delano’s educational and community history.
+
+---
+NOTES:
+- Text is the stop title plus its summary from src/data/trail.json
+- Voice, model and the Delano pronunciation spelling are the same as city-hall-script.txt (IPA used: /ˈdɛl.ə.noʊ/)
+- Generated on Nov 24, 2026 in two or three clips per stop and joined, first take of each; the owner has not yet listened to this one

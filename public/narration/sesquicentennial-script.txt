@@ -1,0 +1,9 @@
+Sesquicentennial
+
+Delano was founded in 1876 along the banks of the Crow River. What started as a small river town has grown into the community you're standing in today, built by generations who showed up for each other. In 2026, Delano celebrated 150 years the way this town does everything: together. The celebration kicked off with a "150 Ways to Celebrate" campaign, giving the town 150 reasons to get involved throughout the year.
+
+---
+NOTES:
+- Text is the stop title plus its summary from src/data/trail.json
+- Voice, model and the Delano pronunciation spelling are the same as city-hall-script.txt (IPA used: /ˈdɛl.ə.noʊ/)
+- Generated on Nov 24, 2026 in two or three clips per stop and joined, first take of each; the owner has not yet listened to this one

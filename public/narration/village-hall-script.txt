@@ -1,0 +1,10 @@
+Delano Village Hall
+
+Built in 1888, Delano’s Village Hall quickly became much more than the place where local government conducted its business—it became the heart of community life. The building housed village offices, the fire department, and even a jail, while its upstairs hall welcomed dances, school graduations, basketball games, church dinners, weddings, funerals, and theatrical performances. A stage and dressing rooms were added as entertainment flourished, followed by the familiar tower and fire bell in 1896 and jail cells in 1905. Over the years, the building also provided space for the public library and local elections. Through generations of meetings, celebrations, public service, and everyday gatherings, Delano’s historic City Hall has played a central role in the civic and social life of the community.
+
+---
+NOTES:
+- Text is the stop title plus its summary from src/data/trail.json
+- Voice, model and the Delano pronunciation spelling are the same as city-hall-script.txt (IPA used: /ˈdɛl.ə.noʊ/)
+- Generated on Nov 24, 2026 in two or three clips per stop and joined, first take of each; the owner has not yet listened to this one
+- The stop subtitle says "Built in 1988" but the summary says 1888; unresolved.

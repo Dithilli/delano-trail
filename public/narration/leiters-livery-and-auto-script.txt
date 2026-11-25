@@ -1,0 +1,10 @@
+Leiter’s Livery and Auto
+
+The corner of Bridge and Second streets tells a remarkable story of Delano’s changing transportation, business, and community life. From schoolhouse and livery barn to automobile garage, factory, civic center, and commercial corner, this site reflects more than a century of change in the heart of Delano.
+
+---
+NOTES:
+- Text is the stop title plus its summary from src/data/trail.json
+- Voice, model and the Delano pronunciation spelling are the same as city-hall-script.txt (IPA used: /ˈdɛl.ə.noʊ/)
+- Generated on Nov 24, 2026 in two or three clips per stop and joined, first take of each; the owner has not yet listened to this one
+- The pronunciation of "Leiter" has not been checked with the owner.
