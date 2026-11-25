@@ -2,64 +2,64 @@
  "stops": {
   "city-hall": {
    "lngLat": [
-    -93.786667,
-    45.042222
+    -93.787616,
+    45.04223
    ],
    "approx": false
   },
   "fire-department": {
    "lngLat": [
-    -93.787958,
-    45.042508
+    -93.78826,
+    45.042933
    ],
    "approx": false
   },
   "village-hall": {
    "lngLat": [
-    -93.787958,
-    45.042395
+    -93.788045,
+    45.042084
    ],
    "approx": false
   },
   "beck-building": {
    "lngLat": [
-    -93.788255,
-    45.042013
+    -93.788208,
+    45.042096
    ],
    "approx": false
   },
   "east-brick-block-on-bridge": {
    "lngLat": [
-    -93.7883,
-    45.041848
+    -93.788217,
+    45.041833
    ],
    "approx": false
   },
   "eppel-building": {
    "lngLat": [
-    -93.789142,
-    45.042011
+    -93.789159,
+    45.042176
    ],
    "approx": false
   },
   "lebovsky-building": {
    "lngLat": [
-    -93.788205,
-    45.041849
+    -93.788116,
+    45.041829
    ],
    "approx": false
   },
   "state-bank-of-delano-bldg": {
    "lngLat": [
-    -93.788854,
-    45.041847
+    -93.788866,
+    45.041842
    ],
    "approx": false
   },
   "cramer-building": {
    "lngLat": [
-    -93.7892,
-    45.042323
+    -93.78915,
+    45.042481
    ],
    "approx": false
   },
@@ -72,127 +72,127 @@
   },
   "1st-national-bank": {
    "lngLat": [
-    -93.7892,
-    45.042257
+    -93.78915,
+    45.042412
    ],
    "approx": false
   },
   "gp-schaffer-building": {
    "lngLat": [
-    -93.7892,
-    45.042193
+    -93.78915,
+    45.042343
    ],
    "approx": false
   },
   "ziebarth-lebovsky": {
    "lngLat": [
-    -93.7892,
-    45.042545
+    -93.789149,
+    45.042782
    ],
    "approx": false
   },
   "bernick-building": {
    "lngLat": [
-    -93.789199,
-    45.041441
+    -93.789165,
+    45.041839
    ],
    "approx": false
   },
   "rieder-meat-market": {
    "lngLat": [
-    -93.789198,
-    45.04132
+    -93.789143,
+    45.041634
    ],
    "approx": false
   },
   "plattner-building": {
    "lngLat": [
-    -93.789159,
-    45.041513
+    -93.789155,
+    45.041498
    ],
    "approx": false
   },
   "120-river-st-n": {
    "lngLat": [
-    -93.789198,
-    45.041029
+    -93.789142,
+    45.041146
    ],
    "approx": false
   },
   "borsch-building": {
    "lngLat": [
-    -93.789198,
-    45.040962
+    -93.789137,
+    45.041075
    ],
    "approx": false
   },
   "post-office": {
    "lngLat": [
-    -93.789117,
-    45.040825
+    -93.789083,
+    45.040854
    ],
    "approx": false
   },
   "delano-library": {
    "lngLat": [
-    -93.788172,
-    45.040827
+    -93.788152,
+    45.040868
    ],
    "approx": false
   },
   "eagle-building": {
    "lngLat": [
-    -93.786196,
-    45.040769
+    -93.78624,
+    45.040789
    ],
    "approx": false
   },
   "lindsley-bldg": {
    "lngLat": [
-    -93.786728,
-    45.040769
+    -93.786568,
+    45.04085
    ],
    "approx": false
   },
   "lundsten-lumber": {
    "lngLat": [
-    -93.7859,
-    45.04077
+    -93.785782,
+    45.040832
    ],
-   "approx": true
+   "approx": false
   },
   "dwright-county-bank-bldg": {
    "lngLat": [
-    -93.78762,
-    45.04077
+    -93.787591,
+    45.040835
    ],
    "approx": false
   },
   "delano-american-legion": {
    "lngLat": [
-    -93.791839,
-    45.042698
+    -93.791786,
+    45.042656
    ],
    "approx": false
   },
   "delano-municipal-utilities": {
    "lngLat": [
-    -93.790497,
-    45.041424
+    -93.790336,
+    45.041743
    ],
    "approx": false
   },
   "hildebrandt-bldg": {
    "lngLat": [
-    -93.78965,
-    45.04203
+    -93.790603,
+    45.042211
    ],
-   "approx": true
+   "approx": false
   },
   "rieder-homestead": {
    "lngLat": [
-    -93.79517,
-    45.042193
+    -93.79496,
+    45.042187
    ],
    "approx": false
   },
@@ -219,87 +219,87 @@
   },
   "dcdc": {
    "lngLat": [
-    -93.786612,
-    45.043291
+    -93.788036,
+    45.042153
    ],
    "approx": true
   },
   "dftahs": {
    "lngLat": [
-    -93.78708,
-    45.043132
+    -93.78795,
+    45.04213
    ],
    "approx": true
   },
   "delano-united-way": {
    "lngLat": [
-    -93.787544,
-    45.043297
+    -93.78795,
+    45.0422
    ],
    "approx": true
   },
   "delano-schools": {
    "lngLat": [
-    -93.787726,
-    45.043097
+    -93.788325,
+    45.043594
    ],
-   "approx": true
+   "approx": false
   },
   "funeral-services": {
    "lngLat": [
-    -93.787954,
-    45.042768
+    -93.78593,
+    45.043453
    ],
-   "approx": true
+   "approx": false
   },
   "leiters-livery-and-auto": {
    "lngLat": [
-    -93.787726,
-    45.042439
+    -93.787712,
+    45.041849
    ],
-   "approx": true
+   "approx": false
   },
   "sesquicentennial": {
    "lngLat": [
-    -93.787954,
+    -93.787726,
     45.04211
    ],
    "approx": true
   },
   "barbers": {
    "lngLat": [
-    -93.789195,
-    45.041865
+    -93.787611,
+    45.041849
    ],
-   "approx": true
+   "approx": false
   },
   "bakeries": {
    "lngLat": [
-    -93.788948,
-    45.042027
+    -93.78798,
+    45.04186
    ],
    "approx": true
   },
   "brick-block-on-bridge": {
    "lngLat": [
-    -93.788702,
-    45.041865
+    -93.788462,
+    45.041761
    ],
-   "approx": true
+   "approx": false
   },
   "hollywood-in-delano-and-local-talent": {
    "lngLat": [
-    -93.788456,
-    45.042026
+    -93.78906,
+    45.04186
    ],
    "approx": true
   },
   "longish-building": {
    "lngLat": [
-    -93.788222,
-    45.041911
+    -93.788668,
+    45.041842
    ],
-   "approx": true
+   "approx": false
   },
   "west-brick-block-on-bridge": {
    "lngLat": [
@@ -310,10 +310,10 @@
   },
   "beauty-shops": {
    "lngLat": [
-    -93.789205,
-    45.042127
+    -93.789149,
+    45.042549
    ],
-   "approx": true
+   "approx": false
   },
   "bwgc": {
    "lngLat": [
@@ -338,8 +338,8 @@
   },
   "floods-bridge": {
    "lngLat": [
-    -93.789211,
-    45.04357
+    -93.78925,
+    45.042
    ],
    "approx": true
   },
@@ -352,7 +352,7 @@
   },
   "delano-lions": {
    "lngLat": [
-    -93.789205,
+    -93.789435,
     45.041634
    ],
    "approx": true
@@ -380,8 +380,8 @@
   },
   "dacac": {
    "lngLat": [
-    -93.78921,
-    45.040804
+    -93.78925,
+    45.04189
    ],
    "approx": true
   },
@@ -394,29 +394,29 @@
   },
   "grain-elevators": {
    "lngLat": [
-    -93.787787,
-    45.040778
+    -93.782803,
+    45.040451
    ],
-   "approx": true
+   "approx": false
   },
   "great-northern-hotel": {
    "lngLat": [
-    -93.786763,
-    45.040613
+    -93.78826,
+    45.04087
    ],
    "approx": true
   },
   "ioof": {
    "lngLat": [
-    -93.785737,
-    45.040772
+    -93.78733,
+    45.040883
    ],
-   "approx": true
+   "approx": false
   },
   "railroad": {
    "lngLat": [
-    -93.784713,
-    45.040608
+    -93.78805,
+    45.04087
    ],
    "approx": true
   },
@@ -436,10 +436,10 @@
   },
   "leiter-oil-company": {
    "lngLat": [
-    -93.791563,
-    45.041886
+    -93.791155,
+    45.041696
    ],
-   "approx": true
+   "approx": false
   },
   "plotniks-blacksmith": {
    "lngLat": [
@@ -499,10 +499,10 @@
   },
   "lsi-big-rock-park": {
    "lngLat": [
-    -93.787854,
-    45.048235
+    -93.787769,
+    45.048397
    ],
-   "approx": true
+   "approx": false
   }
  },
  "trails": {
