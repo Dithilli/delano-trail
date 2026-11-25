@@ -10,6 +10,8 @@ import type { Geo, LngLat, Stop, Trail } from './types'
 setWorkerUrl(workerUrl)
 
 const DOWNTOWN: LngLat = [-93.7885, 45.0425]
+/** The home view on a phone: downtown filling the map, where the trails meet. */
+const HOME_PHONE = { center: [-93.78982, 45.04206] as LngLat, zoom: 14.75, pitch: 0, bearing: -27 }
 const CLEAR = 'rgba(0,0,0,0)'
 const INK = '#2b2923'
 /** Below this zoom, stops shrink to dots and the trail lines carry the map. */
@@ -51,6 +53,12 @@ export function MapView(props: Props) {
   const handlers = useRef(props)
   handlers.current = props
   const padding = () => paddingFor(handlers.current.wide, handlers.current.bottomInset)
+  // The camera move in progress, so a sheet that settles mid-flight can carry it on instead of cutting it short.
+  const flight = useRef<{ target: object; until: number; curve: number } | null>(null)
+  const fly = (target: object, duration: number, curve: number) => {
+    flight.current = { target, until: performance.now() + duration, curve }
+    mapRef.current?.flyTo({ ...target, padding: padding(), duration, curve, essential: true })
+  }
   const [loaded, setLoaded] = useState(false)
   // Pins and trails stay hidden until the opening flight lands.
   const [revealed, setRevealed] = useState(!intro)
@@ -307,7 +315,7 @@ export function MapView(props: Props) {
       const close = map.getZoom() > 16.5 && distance([map.getCenter().lng, map.getCenter().lat], at) < 450
       if (still) map.jumpTo(target)
       else if (close) map.easeTo({ ...target, duration: 1500, essential: true })
-      else map.flyTo({ ...target, duration: opening ? 6000 : 2200, curve: 1.1, essential: true })
+      else fly(target, opening ? 6000 : 2200, 1.1)
       land()
       return
     }
@@ -324,16 +332,18 @@ export function MapView(props: Props) {
     map.setPadding(padding())
     const cam = map.cameraForBounds(box, { maxZoom: 17.6 })
     if (!cam) return
-    const target = { center: cam.center, zoom: (cam.zoom ?? 15) - 0.25, pitch: activeTrail ? 50 : 42, bearing: activeTrail ? 14 : -12 }
+    const target = !activeTrail && !handlers.current.wide
+      ? HOME_PHONE
+      : { center: cam.center, zoom: (cam.zoom ?? 15) - 0.25, pitch: activeTrail ? 50 : 42, bearing: activeTrail ? 14 : -12 }
     if (still) {
       map.jumpTo(target)
       land()
     } else if (opening) {
       // The opening shot: fall out of the sky onto downtown.
-      map.flyTo({ ...target, duration: 6500, curve: 1.6, essential: true })
+      fly(target, 6500, 1.6)
       window.setTimeout(land, 4300)
     } else {
-      map.flyTo({ ...target, duration: 1800, curve: 1.2, essential: true })
+      fly(target, 1800, 1.2)
     }
   }, [loaded, activeTrail, activeStop, stops, geo, editing, intro])
 
@@ -374,7 +384,9 @@ export function MapView(props: Props) {
   useEffect(() => {
     const map = mapRef.current
     if (!map || !loaded || intro || wide) return
-    map.easeTo({ padding: padding(), duration: 350 })
+    const left = (flight.current?.until ?? 0) - performance.now()
+    if (flight.current && left > 350) map.flyTo({ ...flight.current.target, padding: padding(), duration: left, curve: flight.current.curve, essential: true })
+    else map.easeTo({ padding: padding(), duration: 350 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bottomInset, wide, loaded])
 
