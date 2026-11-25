@@ -86,6 +86,8 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 }
 /* A finger needs more than 34px: widen the touch area without growing the dot. */
 .pin::before { content: ''; position: absolute; inset: -7px; border-radius: 50%; }
+/* The chosen trail's pins sit above every ghosted pin, so a tap where they overlap goes to the full-colour one. */
+.pin-wrap--lit { z-index: 2; }
 .pin-wrap--dim .pin { opacity: 0.2; }
 .pin-wrap--active { z-index: 4; }
 .pin-wrap--active .pin { transform: scale(1.45); background: var(--trail); color: #fff; border-color: #fffdf6; text-shadow: 0 1px 1px rgb(0 0 0 / 0.45); box-shadow: 0 0 0 2px var(--ink); }
@@ -371,7 +373,7 @@ h1, h2, h3, h4, .dial__name { hyphens: none; overflow-wrap: normal; word-break: 
 
   .pin { left: -15px; top: -15px; width: 30px; height: 30px; font-size: 13px; border-width: 4px; }
   .pin:hover, .map--far .pin-wrap:not(.pin-wrap--lit):not(.pin-wrap--active) .pin:hover { transform: scale(1.25); font-size: 13px; }
-  .pin-wrap:hover { z-index: 3; }
+  .pin-wrap:not(.pin-wrap--dim):hover { z-index: 3; }
   .pin-wrap--dim .pin:hover { opacity: 0.9; }
   .pin-wrap--active .pin:hover { transform: scale(1.5); }
 
