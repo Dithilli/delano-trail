@@ -4,7 +4,7 @@ The local app includes building search and a narrated first stop. The public Git
 
 ## Try it
 
-- **Audio on a phone:** Join the Mac’s Wi-Fi, open the [Green Trail preview](http://192.168.0.9:5185/?nointro#/trail/green), open a stop, and tap the play button in the player at the top right of the page. That stop's story plays and then stops; the arrows on the player move to the next or previous stop. The trail page itself has no play button. The center button pauses or resumes the recording. [Listen to the MP3 directly](http://192.168.0.9:5185/narration/city-hall.mp3).
+- **Audio on a phone:** Join the Mac’s Wi-Fi, open the [Green Trail preview](http://192.168.0.9:5185/?nointro#/trail/green), open a stop, and tap the play button in the player at the top right of the page. That stop's story plays and then stops; the double arrows on the player go back ten seconds (left) and switch double speed on or off (right). The trail page itself has no play button. The center button pauses or resumes the recording. [Listen to the MP3 directly](http://192.168.0.9:5185/narration/city-hall.mp3).
 - **Building search:** Tap **Search** in the top bar. Enter a building name, stop title, or address and select a result to open its plaque. Search covers all 72 stops.
 - **Visual direction:** The welcome screen uses a large black tower and wordmark. After entry, the home panel uses a compact version. Selected trail buttons use the trail color with white text and a white dot. The interface uses no bronze or metallic styling.
 

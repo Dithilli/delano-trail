@@ -111,7 +111,7 @@ export function TrailPanel({
   stops: Stop[]
   go: Go
   /** The visitor has just finished this trail's guided tour. */
-  completed: boolean
+  completed?: boolean
   nextTrail?: Trail
 }) {
   return (
@@ -196,8 +196,8 @@ function FitTitle({ text }: { text: string }) {
 }
 
 /**
- * The audio player: one card in the top-right corner of a stop. Back, play and
- * forward in a row, a bar that fills as the story plays, and the story's name.
+ * The audio player: one card in the top-right corner of a stop. Go back, play and
+ * double speed in a row, a bar that fills as the story plays, and the story's name.
  */
 function AudioDial({
   id,
@@ -206,12 +206,10 @@ function AudioDial({
   playing,
   progress,
   timed,
-  prev,
-  next,
-  nextLabel,
+  fast,
   onToggle,
-  onPrev,
-  onNext,
+  onBack,
+  onFast,
   onTimedEnd,
 }: {
   /** Changes with the stop, so the bar starts again. */
@@ -225,39 +223,38 @@ function AudioDial({
   progress: number
   /** No recording: the bar fills on a timer instead. */
   timed?: boolean
-  prev?: Stop
-  next?: Stop
-  /** What "forward" does after the last stop, if it still does something. */
-  nextLabel?: string
+  /** The story is playing at twice its speed. */
+  fast?: boolean
   onToggle: () => void
-  onPrev: () => void
-  onNext: () => void
+  /** Step back a little in the story; absent when there is nothing to go back in. */
+  onBack?: () => void
+  /** Switch double speed on or off. */
+  onFast: () => void
   onTimedEnd?: () => void
 }) {
-  const forward = next?.name ?? nextLabel
-  const chevron = (d: string) => (
-    <svg viewBox="0 0 12 20" width="12" height="20" aria-hidden="true"><path d={d} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+  const chevrons = (d: string) => (
+    <svg viewBox="0 0 22 20" width="22" height="20" aria-hidden="true"><path d={d} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
   )
   return (
     <div className={`dial${playing ? ' dial--playing' : ''}${dark ? ' dial--ink' : ''}`}>
       <div className="dial__buttons">
-        <button className="dial__step" onClick={onPrev} disabled={!prev} aria-label="Previous stop" title={prev?.name}>{chevron('M9 2 L2 10 L9 18')}</button>
+        <button className="dial__step" onClick={onBack} disabled={!onBack} aria-label="Go back 10 seconds" title="Go back 10 seconds">{chevrons('M10 2 L3 10 L10 18 M19 2 L12 10 L19 18')}</button>
         <button className="tour__play dial__play" onClick={onToggle} aria-label={playing ? 'Pause the story' : 'Play the story'}>
           {playing ? <span className="pause" aria-hidden="true" /> : <span className="play" aria-hidden="true" />}
         </button>
-        <button className="dial__step" onClick={onNext} disabled={!forward} aria-label="Next stop" title={forward}>{chevron('M3 2 L10 10 L3 18')}</button>
+        <button className={`dial__step${fast ? ' dial__step--on' : ''}`} onClick={onFast} aria-pressed={!!fast} aria-label="Play at double speed" title={fast ? 'Back to normal speed' : 'Play at double speed'}>{chevrons('M3 2 L10 10 L3 18 M12 2 L19 10 L12 18')}</button>
       </div>
       <div className="dial__bar" role="progressbar" aria-label="How far through this story">
         <i
           key={id}
           className="dial__progress"
           style={timed
-            ? { animationDuration: `${TOUR_SECONDS}s`, animationPlayState: playing ? 'running' : 'paused' }
+            ? { animationDuration: `${TOUR_SECONDS / (fast ? 2 : 1)}s`, animationPlayState: playing ? 'running' : 'paused' }
             : { animation: 'none', transform: `scaleX(${progress})` }}
           onAnimationEnd={timed ? onTimedEnd : undefined}
         />
       </div>
-      <p className="dial__name"><small>{playing ? 'Now playing' : 'Listen'}</small>{breakable(name)}</p>
+      <p className="dial__name"><small>{playing ? (fast ? 'Now playing · 2×' : 'Now playing') : 'Listen'}</small>{breakable(name)}</p>
     </div>
   )
 }
@@ -273,8 +270,8 @@ export function StopPanel({
   stop: Stop
   trail: Trail
   siblings: Stop[]
-  /** Start the guided tour from this stop. */
-  onTour: () => void
+  /** Start this stop's story, at double speed if asked. */
+  onTour: (fast?: boolean) => void
   /** undefined while the trail's stories are loading, null if they failed to load. */
   body: Block[] | null | undefined
   go: Go
@@ -304,11 +301,8 @@ export function StopPanel({
           dark={trail.id === 'yellow'}
           playing={false}
           progress={0}
-          prev={prev}
-          next={next}
-          onToggle={onTour}
-          onPrev={() => prev && go({ view: 'stop', slug: prev.slug })}
-          onNext={() => next && go({ view: 'stop', slug: next.slug })}
+          onToggle={() => onTour()}
+          onFast={() => onTour(true)}
         />
         <button className="back" onClick={() => go({ view: 'trail', trail: trail.id })}>← {trail.name}</button>
         <header className="stop-head">
@@ -425,8 +419,8 @@ export function TourCard({
   stops,
   body,
   playing,
+  startFast,
   onPlaying,
-  onStep,
   onDone,
   onRead,
   onExit,
@@ -438,8 +432,9 @@ export function TourCard({
   /** The stop's story, once loaded: its photographs become the slide show. */
   body?: Block[] | null
   playing: boolean
+  /** Begin at double speed. */
+  startFast?: boolean
   onPlaying: (p: boolean) => void
-  onStep: (d: 1 | -1) => void
   /** The story has finished: playback stops here and waits for the visitor. */
   onDone: () => void
   onRead: () => void
@@ -449,9 +444,17 @@ export function TourCard({
   const [progress, setProgress] = useState(0)
   const [failed, setFailed] = useState(false)
   const narrated = NARRATED_STOPS.has(stop.slug) && !failed
-  const at = stops.findIndex((x) => x.slug === stop.slug)
   // Each finished play-through starts a new round, which empties the progress bar.
   const [round, setRound] = useState(0)
+  const [fast, setFast] = useState(!!startFast)
+  // A timed story has no recording to wind back, so going back starts its bar again.
+  const [again, setAgain] = useState(0)
+  const back = () => {
+    const player = audio.current
+    if (!narrated || !player) return setAgain((n) => n + 1)
+    player.currentTime = Math.max(0, player.currentTime - 10)
+    if (player.duration > 0) setProgress(player.currentTime / player.duration)
+  }
   const finish = () => {
     setRound((r) => r + 1)
     setProgress(0)
@@ -492,6 +495,13 @@ export function TourCard({
     }
     return () => { active = false; player.pause() }
   }, [playing, narrated, onPlaying, stop.slug])
+  useEffect(() => {
+    const player = audio.current
+    if (!player) return
+    // Set both: starting playback resets the rate to the default.
+    player.defaultPlaybackRate = fast ? 2 : 1
+    player.playbackRate = fast ? 2 : 1
+  }, [fast, narrated])
 
   return (
     <article className="view tour" style={trailVar(trail)}>
@@ -503,18 +513,16 @@ export function TourCard({
         }} />}
       <div className="tour__head">
         <AudioDial
-          id={`${stop.slug}-${round}`}
+          id={`${stop.slug}-${round}-${again}`}
           name={stop.name}
           dark={trail.id === 'yellow'}
           playing={playing}
           progress={progress}
           timed={!narrated}
-          prev={stops[at - 1]}
-          next={stops[at + 1]}
-          nextLabel="Finish"
+          fast={fast}
           onToggle={() => onPlaying(!playing)}
-          onPrev={() => onStep(-1)}
-          onNext={() => onStep(1)}
+          onBack={back}
+          onFast={() => setFast((f) => !f)}
           onTimedEnd={finish}
         />
         <p className="tour__label">Guided tour · {trail.name}</p>

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import data from './data/trail.json'
 import geoData from './data/geo.json'
-import { Fireworks } from './Fireworks'
 import { Intro } from './Intro'
 import { MapView } from './MapView'
 import { HomePanel, StopPanel, TourCard, TrailPanel } from './Panels'
@@ -41,9 +40,7 @@ export function App() {
   const [intro, setIntro] = useState(
     () => route.view === 'home' && !editing && !query.has('nointro') && !sessionStorage.getItem(SEEN),
   )
-  const [tour, setTour] = useState<{ playing: boolean } | null>(null)
-  const [completed, setCompleted] = useState<string | null>(null)
-  const [fireworks, setFireworks] = useState(0)
+  const [tour, setTour] = useState<{ playing: boolean; fast?: boolean } | null>(null)
   const panel = useRef<HTMLDivElement>(null)
   const { wide, height } = useViewport()
   const [searchOpen, setSearchOpen] = useState(false)
@@ -69,11 +66,10 @@ export function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stop, trail])
 
-  // Leaving the stops ends a tour; leaving a finished trail clears its banner.
+  // Leaving the stops ends a story.
   useEffect(() => {
     if (route.view !== 'stop') setTour(null)
-    if (completed && trailId !== completed) setCompleted(null)
-  }, [route, trailId, completed])
+  }, [route])
 
   const onLocate = useCallback((at: LngLat) => {
     const hit = nearest(at, stops, (s) => geo.stops[s.slug]?.lngLat)
@@ -103,18 +99,6 @@ export function App() {
     setTour({ playing })
     if (playing) setSnap('full')
   }, [])
-
-  const tourStep = (d: 1 | -1) => {
-    if (!stop || !trail) return
-    const next = trailStops[trailStops.findIndex((s) => s.slug === stop.slug) + d]
-    if (next) return go({ view: 'stop', slug: next.slug })
-    if (d === 1) {
-      setTour(null)
-      setCompleted(trail.id)
-      setFireworks((n) => n + 1)
-      go({ view: 'trail', trail: trail.id })
-    }
-  }
 
   return (
     <div className={`app ${intro ? 'app--intro' : ''}`} style={{ '--sheet': `${visible}px` } as React.CSSProperties}>
@@ -182,22 +166,21 @@ export function App() {
             stops={trailStops}
             body={body}
             playing={tour.playing && !searchOpen}
+            startFast={tour.fast}
             onPlaying={changePlayback}
-            onStep={tourStep}
             onDone={() => setTour({ playing: false })}
             onRead={() => { setTour(null); setSnap('full') }}
             onExit={() => go({ view: 'trail', trail: trail.id })}
           />
         ) : stop && trail ? (
           <StopPanel key={stop.slug} stop={stop} trail={trail} siblings={trailStops} body={body} go={go}
-            onTour={() => { setCompleted(null); setTour({ playing: true }); setSnap('full'); panel.current?.scrollTo({ top: 0 }) }} />
+            onTour={(fast) => { setTour({ playing: true, fast }); setSnap('full'); panel.current?.scrollTo({ top: 0 }) }} />
         ) : trail ? (
           <TrailPanel
             key={trail.id}
             trail={trail}
             stops={trailStops}
             go={go}
-            completed={completed === trail.id}
             nextTrail={trails[(trails.indexOf(trail) + 1) % trails.length]}
           />
         ) : (
@@ -205,7 +188,6 @@ export function App() {
         )}
       </Sheet>
 
-      <Fireworks show={fireworks} bursts={10} colors={trailColors} />
       {intro && <Intro onBegin={begin} colors={trailColors} />}
     </div>
   )

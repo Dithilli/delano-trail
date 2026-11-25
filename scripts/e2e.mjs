@@ -167,16 +167,12 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   await page.tap('.tour__play')
   await page.waitForTimeout(3600)
   check('phone: tour starts at stop 1', (await page.locator('.tour .badge').textContent())?.includes('Stop 1 of 9'))
-  check('phone: panel rises for the tour, controls reachable', await snapOf(page) === 'sheet--full' && await tappable(page, '.tour__play') && await tappable(page, '.dial button[aria-label="Next stop"]'))
+  check('phone: panel rises for the tour, controls reachable', await snapOf(page) === 'sheet--full' && await tappable(page, '.tour__play') && await tappable(page, '.dial button[aria-label="Play at double speed"]'))
   await page.screenshot({ path: `${dir}/p8-tour.png` })
   const b1 = await page.evaluate(() => window.__map.getBearing())
   await page.waitForTimeout(1500)
   const b2 = await page.evaluate(() => window.__map.getBearing())
   check('phone: camera circles during tour', Math.abs(b2 - b1) > 1, `${b1.toFixed(1)} -> ${b2.toFixed(1)}`)
-  for (let i = 0; i < 9; i++) { await page.tap('.dial button[aria-label="Next stop"]'); await page.waitForTimeout(200) }
-  await page.waitForTimeout(1500)
-  check('phone: finishing the tour celebrates', await page.locator('.complete').isVisible())
-  await page.screenshot({ path: `${dir}/p9-complete.png` })
 
   // A plaque's QR code: straight to the story.
   await page.goto('about:blank')

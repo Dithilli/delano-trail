@@ -295,9 +295,11 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 }
 .dial--ink { --on: #1d1b16; text-shadow: none; }
 .dial__buttons { display: flex; align-items: center; justify-content: space-between; }
-.dial__step { width: 32px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; background: none; color: var(--on); filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.3)); }
+.dial__step { width: 36px; border-radius: 12px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; background: none; color: var(--on); filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.3)); }
 .dial--ink .dial__step { filter: none; }
 .dial__step:disabled { opacity: 0.35; }
+/* Double speed is on. */
+.dial__step--on { background: color-mix(in srgb, var(--on) 28%, transparent); }
 .dial__step:active:not(:disabled) { transform: scale(0.85); }
 .dial__play {
   width: 58px; height: 58px; display: grid; place-items: center; padding: 0;
