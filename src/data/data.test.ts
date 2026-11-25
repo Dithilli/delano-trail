@@ -12,8 +12,8 @@ const trails = data.trails
 const placed = geo.stops as Record<string, { lngLat: number[]; approx: boolean }>
 const lines = geo.trails as Record<string, number[][][]>
 
-// Greater downtown Delano.
-const inTown = ([lng, lat]: number[]) => lng > -93.80 && lng < -93.78 && lat > 45.038 && lat < 45.05
+// Greater downtown Delano, south to the Drive-In at Hwy 12 and West River Rd.
+const inTown = ([lng, lat]: number[]) => lng > -93.80 && lng < -93.78 && lat > 45.035 && lat < 45.05
 
 describe('trail data', () => {
   it('has the printed list: 7 trails, 72 plaques', () => {
