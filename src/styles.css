@@ -302,11 +302,12 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .dial__bar { height: 5px; margin: 11px 0 9px; border-radius: 999px; overflow: hidden; background: color-mix(in srgb, var(--on) 30%, transparent); }
 .dial__progress { display: block; height: 100%; background: var(--on); transform: scaleX(0); transform-origin: left; animation: fill linear both; transition: transform 0.3s linear; }
 @keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.dial__name { margin: 0; font: 600 15px/1.2 var(--serif); color: var(--on); overflow-wrap: break-word; }
+.dial__name { margin: 0; font: 600 15px/1.2 var(--serif); color: var(--on); }
 .dial__name small { display: block; margin-bottom: 3px; font: 700 10px/1 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--on); opacity: 0.85; }
-/* Titles share their line with the dial, so they run a little smaller and may break a long word. */
+/* Titles share their line with the player, so they run a little smaller. A heading never breaks inside a word. */
 .stop-top { display: flow-root; }
-.stop-head h1, .tour h1 { hyphens: auto; overflow-wrap: break-word; }
+h1, h2, h3, h4, .dial__name { hyphens: none; overflow-wrap: normal; word-break: normal; }
+.prose h2, .prose h3, .prose h4 { overflow-wrap: normal; }
 .tour__summary { margin: 0 0 8px; font-size: 17px; }
 .tour__read { min-height: 44px; background: none; border: 0; padding: 0; color: var(--ink); font-weight: 700; }
 

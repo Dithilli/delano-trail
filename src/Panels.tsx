@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import { Lightbox, type Photo } from './Lightbox'
 import { PRINTED_MAP, sized } from './lib/image'
@@ -161,6 +161,40 @@ function captionFor(body: Block[], i: number): string | undefined {
   return text.length > 0 && text.length < 280 ? text : undefined
 }
 
+/** Let a title break after a slash, which is punctuation, but never inside a word. */
+const breakable = (text: string) => text.replace(/\//g, '/\u200b')
+
+/**
+ * A stop's title beside the audio player. Words are never split, so when the
+ * longest word is wider than the room left of the player, the whole title is
+ * set a little smaller until that word fits.
+ */
+function FitTitle({ text }: { text: string }) {
+  const ref = useRef<HTMLHeadingElement>(null)
+  useLayoutEffect(() => {
+    const h = ref.current
+    const box = h?.closest<HTMLElement>('.stop-top, .tour__head')
+    if (!h || !box) return
+    const fit = () => {
+      h.style.fontSize = ''
+      const player = box.querySelector<HTMLElement>('.dial')
+      const room = box.clientWidth - (player ? player.offsetWidth + 16 : 0)
+      const pen = document.createElement('canvas').getContext('2d')
+      if (!pen || room <= 0) return
+      const style = getComputedStyle(h)
+      pen.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
+      const widest = Math.max(...text.split(/[\s/]+|(?<=-)/).map((w) => pen.measureText(w).width)) + 4
+      if (widest > room) h.style.fontSize = `${Math.max(15, Math.floor((parseFloat(style.fontSize) * room) / widest))}px`
+    }
+    fit()
+    const watch = new ResizeObserver(fit)
+    watch.observe(box)
+    document.fonts?.ready.then(fit)
+    return () => watch.disconnect()
+  }, [text])
+  return <h1 ref={ref}>{breakable(text)}</h1>
+}
+
 /**
  * The audio player: one card in the top-right corner of a stop. Back, play and
  * forward in a row, a bar that fills as the story plays, and the story's name.
@@ -223,7 +257,7 @@ function AudioDial({
           onAnimationEnd={timed ? onTimedEnd : undefined}
         />
       </div>
-      <p className="dial__name"><small>{playing ? 'Now playing' : 'Listen'}</small>{name}</p>
+      <p className="dial__name"><small>{playing ? 'Now playing' : 'Listen'}</small>{breakable(name)}</p>
     </div>
   )
 }
@@ -283,7 +317,7 @@ export function StopPanel({
             {trail.name}
             {stop.nonprofit && <span className="tag">Nonprofit</span>}
           </p>
-          <h1>{stop.title}</h1>
+          <FitTitle text={stop.title} />
           {(stop.address || stop.subtitle) && (
             <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>
           )}
@@ -458,7 +492,7 @@ export function TourCard({
           <span className="num">{stop.number}</span>
           Stop {stop.number} of {stops.length}
         </p>
-        <h1>{stop.title}</h1>
+        <FitTitle text={stop.title} />
         {(stop.address || stop.subtitle) && <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>}
         <button className="tour__exit" onClick={onExit}>× End narrative</button>
       </div>
