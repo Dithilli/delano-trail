@@ -10,8 +10,6 @@ import type { Geo, LngLat, Stop, Trail } from './types'
 setWorkerUrl(workerUrl)
 
 const DOWNTOWN: LngLat = [-93.7885, 45.0425]
-/** The home view on a phone: downtown filling the map, where the trails meet. */
-const HOME_PHONE = { center: [-93.78982, 45.04206] as LngLat, zoom: 14.75, pitch: 0, bearing: -27 }
 const CLEAR = 'rgba(0,0,0,0)'
 const INK = '#2b2923'
 /** Below this zoom, stops shrink to dots and the trail lines carry the map. */
@@ -332,9 +330,7 @@ export function MapView(props: Props) {
     map.setPadding(padding())
     const cam = map.cameraForBounds(box, { maxZoom: 17.6 })
     if (!cam) return
-    const target = !activeTrail && !handlers.current.wide
-      ? HOME_PHONE
-      : { center: cam.center, zoom: (cam.zoom ?? 15) - 0.25, pitch: activeTrail ? 50 : 42, bearing: activeTrail ? 14 : -12 }
+    const target = { center: cam.center, zoom: (cam.zoom ?? 15) - 0.25, pitch: activeTrail ? 50 : 42, bearing: activeTrail ? 14 : -12 }
     if (still) {
       map.jumpTo(target)
       land()
