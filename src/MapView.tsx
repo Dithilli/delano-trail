@@ -14,6 +14,8 @@ const CLEAR = 'rgba(0,0,0,0)'
 const INK = '#2b2923'
 /** Below this zoom, stops shrink to dots and the trail lines carry the map. */
 const FAR_ZOOM = 15.7
+/** At or above this zoom, choosing a stop slides the map over without changing its scale. */
+const NEAR_ZOOM = 15
 const calm = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 interface Props {
@@ -309,10 +311,14 @@ export function MapView(props: Props) {
       // Come in from the angle the map is already at, so picking a stop reads as
       // a zoom rather than a swing; between neighbouring stops it is a plain glide.
       const at = geo.stops[stop.slug].lngLat
-      const target = { center: at, zoom: 17.9, pitch: 62, bearing: opening ? -12 : map.getBearing(), padding: padding() }
-      const close = map.getZoom() > 16.5 && distance([map.getCenter().lng, map.getCenter().lat], at) < 450
+      // Once the visitor is in among the pins the map keeps its size and angle and
+      // only slides the chosen stop to the middle; from far out it comes in close.
+      const near = !opening && map.getZoom() >= NEAR_ZOOM
+      const target = near
+        ? { center: at, zoom: map.getZoom(), pitch: map.getPitch(), bearing: map.getBearing(), padding: padding() }
+        : { center: at, zoom: 17.9, pitch: 62, bearing: opening ? -12 : map.getBearing(), padding: padding() }
       if (still) map.jumpTo(target)
-      else if (close) map.easeTo({ ...target, duration: 1500, essential: true })
+      else if (near) { flight.current = null; map.easeTo({ ...target, duration: 900, essential: true }) }
       else fly(target, opening ? 6000 : 2200, 1.1)
       land()
       return

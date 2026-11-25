@@ -78,14 +78,14 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .pin-wrap { width: 0; height: 0; }
 .pin {
   /* A station on a transit map: white, ringed in its line's colour. */
-  position: absolute; left: -17px; top: -17px; width: 34px; height: 34px; padding: 0; border-radius: 50%;
-  background: #fffdf6; color: var(--ink); border: 4.5px solid var(--trail);
-  font: 800 14px/1 var(--sans);
+  position: absolute; left: -13px; top: -13px; width: 26px; height: 26px; padding: 0; border-radius: 50%;
+  background: #fffdf6; color: var(--ink); border: 3.5px solid var(--trail);
+  font: 800 12px/1 var(--sans);
   box-shadow: 0 0 0 1.5px var(--ink), 1.5px 3px 0 1px rgb(43 41 35 / 0.3);
   transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.35s, font-size 0.2s, background 0.2s;
 }
-/* A finger needs more than 34px: widen the touch area without growing the dot. */
-.pin::before { content: ''; position: absolute; inset: -7px; border-radius: 50%; }
+/* A finger needs more than 26px: widen the touch area without growing the dot. */
+.pin::before { content: ''; position: absolute; inset: -9px; border-radius: 50%; }
 /* The chosen trail's pins sit above every ghosted pin, so a tap where they overlap goes to the full-colour one. */
 .pin-wrap--lit { z-index: 2; }
 .pin-wrap--dim .pin { opacity: 0.2; }
@@ -371,7 +371,7 @@ h1, h2, h3, h4, .dial__name { hyphens: none; overflow-wrap: normal; word-break: 
   .maplibregl-ctrl-group button { width: 29px; height: 29px; }
   .near, .editbar { left: calc(var(--panel-w) + 14px); right: auto; bottom: 26px; }
 
-  .pin { left: -15px; top: -15px; width: 30px; height: 30px; font-size: 13px; border-width: 4px; }
+  .pin { left: -12px; top: -12px; width: 24px; height: 24px; font-size: 11.5px; border-width: 3px; }
   .pin:hover, .map--far .pin-wrap:not(.pin-wrap--lit):not(.pin-wrap--active) .pin:hover { transform: scale(1.25); font-size: 13px; }
   .pin-wrap:not(.pin-wrap--dim):hover { z-index: 3; }
   .pin-wrap--dim .pin:hover { opacity: 0.9; }
