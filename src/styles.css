@@ -275,30 +275,35 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .tour .facts { font-size: 15px; margin-top: 2px; }
 
 /* ---------- the audio player ---------- */
-/* One card floated into the top-right corner; the title runs down its left side. */
+/* One card in the trail's colour, floated into the top-right corner; the title
+   runs down its left side. It prints in white, or in ink on the yellow trail. */
 .dial {
+  --on: #fff;
   float: right; width: 150px; margin: 0 0 10px 14px; padding: 12px 12px 11px; text-align: center;
-  border: 2px solid var(--ink); border-radius: 20px; background: var(--card);
+  border: 2px solid var(--ink); border-radius: 20px; background: var(--trail, var(--ink)); color: var(--on);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
 }
+.dial--ink { --on: #1d1b16; text-shadow: none; }
 .dial__buttons { display: flex; align-items: center; justify-content: space-between; }
-.dial__step { width: 32px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; background: none; color: var(--ink); }
-.dial__step:disabled { opacity: 0.25; }
+.dial__step { width: 32px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; background: none; color: var(--on); filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.3)); }
+.dial--ink .dial__step { filter: none; }
+.dial__step:disabled { opacity: 0.35; }
 .dial__step:active:not(:disabled) { transform: scale(0.85); }
 .dial__play {
   width: 58px; height: 58px; display: grid; place-items: center; padding: 0;
-  border: 2px solid var(--ink); border-radius: 50%; background: var(--trail, var(--ink)); color: #fff; transition: transform 0.12s;
+  border: 0; border-radius: 50%; background: var(--on); color: var(--trail, var(--ink)); transition: transform 0.12s;
 }
 .dial__play:active { transform: scale(0.94); }
 .dial__play .play { margin-left: 4px; border-width: 10px 0 10px 16px; }
 .dial__play .pause { width: 16px; height: 20px; border-width: 0 5px; }
 /* A slow breath while a story is playing. */
 .dial--playing .dial__play { animation: breathe 2.4s ease-in-out infinite; }
-@keyframes breathe { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--trail, var(--ink)) 28%, transparent); } }
-.dial__bar { height: 5px; margin: 11px 0 9px; border-radius: 999px; overflow: hidden; background: color-mix(in srgb, var(--trail, var(--ink)) 22%, var(--card)); }
-.dial__progress { display: block; height: 100%; background: var(--trail, var(--ink)); transform: scaleX(0); transform-origin: left; animation: fill linear both; transition: transform 0.3s linear; }
+@keyframes breathe { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--on) 32%, transparent); } }
+.dial__bar { height: 5px; margin: 11px 0 9px; border-radius: 999px; overflow: hidden; background: color-mix(in srgb, var(--on) 30%, transparent); }
+.dial__progress { display: block; height: 100%; background: var(--on); transform: scaleX(0); transform-origin: left; animation: fill linear both; transition: transform 0.3s linear; }
 @keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.dial__name { margin: 0; font: 600 15px/1.2 var(--serif); color: var(--ink); overflow-wrap: break-word; }
-.dial__name small { display: block; margin-bottom: 3px; font: 700 10px/1 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
+.dial__name { margin: 0; font: 600 15px/1.2 var(--serif); color: var(--on); overflow-wrap: break-word; }
+.dial__name small { display: block; margin-bottom: 3px; font: 700 10px/1 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--on); opacity: 0.85; }
 /* Titles share their line with the dial, so they run a little smaller and may break a long word. */
 .stop-top { display: flow-root; }
 .stop-head h1, .tour h1 { hyphens: auto; overflow-wrap: break-word; }
@@ -375,7 +380,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
   .tour h1 { font-size: 30px; }
   .tour .facts { font-size: 17px; }
   .tour { display: flex; flex-direction: column; }
-  .dial__step:hover:not(:disabled) { color: var(--trail); }
+  .dial__step:hover:not(:disabled) { transform: scale(1.15); }
   .tour__summary { margin: 18px 0 10px; font-size: 18px; }
   .tour__read { align-self: flex-start; }
 

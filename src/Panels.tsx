@@ -168,6 +168,7 @@ function captionFor(body: Block[], i: number): string | undefined {
 function AudioDial({
   id,
   name,
+  dark,
   playing,
   progress,
   timed,
@@ -183,6 +184,8 @@ function AudioDial({
   id: string
   /** The story this plays. */
   name: string
+  /** A pale trail colour (yellow): print in ink instead of white. */
+  dark?: boolean
   playing: boolean
   /** 0..1 through a recording. */
   progress: number
@@ -202,7 +205,7 @@ function AudioDial({
     <svg viewBox="0 0 12 20" width="12" height="20" aria-hidden="true"><path d={d} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
   )
   return (
-    <div className={playing ? 'dial dial--playing' : 'dial'}>
+    <div className={`dial${playing ? ' dial--playing' : ''}${dark ? ' dial--ink' : ''}`}>
       <div className="dial__buttons">
         <button className="dial__step" onClick={onPrev} disabled={!prev} aria-label="Previous stop" title={prev?.name}>{chevron('M9 2 L2 10 L9 18')}</button>
         <button className="tour__play dial__play" onClick={onToggle} aria-label={playing ? 'Pause the story' : 'Play the story'}>
@@ -264,6 +267,7 @@ export function StopPanel({
         <AudioDial
           id={stop.slug}
           name={stop.name}
+          dark={trail.id === 'yellow'}
           playing={false}
           progress={0}
           prev={prev}
@@ -437,6 +441,7 @@ export function TourCard({
         <AudioDial
           id={stop.slug}
           name={stop.name}
+          dark={trail.id === 'yellow'}
           playing={playing}
           progress={progress}
           timed={!narrated}
