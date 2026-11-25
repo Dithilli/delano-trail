@@ -174,6 +174,7 @@ export function App() {
             stop={stop}
             trail={trail}
             stops={trailStops}
+            body={body}
             playing={tour.playing && !searchOpen}
             onPlaying={changePlayback}
             onStep={tourStep}

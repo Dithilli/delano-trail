@@ -401,6 +401,8 @@ export function StopPanel({
 }
 
 export const TOUR_SECONDS = 16
+/** How long each photograph holds during a story. */
+const SLIDE_SECONDS = 6
 
 /** Stops with a recording at public/narration/<slug>.mp3; the rest use the timed tour. */
 const NARRATED_STOPS = new Set([
@@ -421,6 +423,7 @@ export function TourCard({
   stop,
   trail,
   stops,
+  body,
   playing,
   onPlaying,
   onStep,
@@ -433,6 +436,8 @@ export function TourCard({
   trail: Trail
   /** Every stop on this trail, in order. */
   stops: Stop[]
+  /** The stop's story, once loaded: its photographs become the slide show. */
+  body?: Block[] | null
   playing: boolean
   onPlaying: (p: boolean) => void
   onStep: (d: 1 | -1) => void
@@ -447,6 +452,24 @@ export function TourCard({
   const [failed, setFailed] = useState(false)
   const narrated = NARRATED_STOPS.has(stop.slug) && !failed
   const at = stops.findIndex((x) => x.slug === stop.slug)
+
+  // While the story plays, its photographs take turns.
+  const slides = useMemo(() => {
+    const fromStory = (body ?? []).flatMap((b) => (b.type === 'image' ? [b.src] : []))
+    return fromStory.length ? fromStory : stop.hero ? [stop.hero] : []
+  }, [body, stop.hero])
+  const [slide, setSlide] = useState({ now: 0, before: -1 })
+  useEffect(() => {
+    if (!playing || slides.length < 2) return
+    const timer = window.setInterval(() => setSlide((s) => ({ now: (s.now + 1) % slides.length, before: s.now })), SLIDE_SECONDS * 1000)
+    return () => window.clearInterval(timer)
+  }, [playing, slides.length])
+  const shown = slide.now < slides.length ? slide.now : 0
+  // Fetch the next photograph ahead of its turn, so the fade has something to fade to.
+  useEffect(() => {
+    const next = slides[(shown + 1) % slides.length]
+    if (next && slides.length > 1) new Image().src = sized(next, 1000)
+  }, [slides, shown])
   useEffect(() => {
     setProgress(0)
     setFailed(false)
@@ -510,9 +533,11 @@ export function TourCard({
           </button>
         ))}
       </nav>
-      {stop.hero && (
+      {slides.length > 0 && (
         <div className="tour__photo">
-          <img key={stop.hero} src={sized(stop.hero, 1000)} alt="" />
+          {slide.before >= 0 && slide.before < slides.length && <img key={`was-${slide.before}`} src={sized(slides[slide.before], 1000)} alt="" />}
+          <img key={shown} className="tour__slide" src={sized(slides[shown], 1000)} alt="" />
+          {slides.length > 1 && <span className="hero__count">{shown + 1} / {slides.length}</span>}
         </div>
       )}
       <p className="tour__summary">{excerpt(stop.summary, 420)}</p>
