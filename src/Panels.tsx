@@ -162,12 +162,12 @@ function captionFor(body: Block[], i: number): string | undefined {
 }
 
 /**
- * The audio dial: one round control in the top-right corner of a stop. Play sits
- * in the middle, back and forward ride the rim, the rim itself fills as the
- * story plays, and the neighbouring stories are named underneath.
+ * The audio player: one card in the top-right corner of a stop. Back, play and
+ * forward in a row, a bar that fills as the story plays, and the story's name.
  */
 function AudioDial({
   id,
+  name,
   playing,
   progress,
   timed,
@@ -179,16 +179,18 @@ function AudioDial({
   onNext,
   onTimedEnd,
 }: {
-  /** Changes with the stop, so the rim starts again. */
+  /** Changes with the stop, so the bar starts again. */
   id: string
+  /** The story this plays. */
+  name: string
   playing: boolean
   /** 0..1 through a recording. */
   progress: number
-  /** No recording: the rim fills on a timer instead. */
+  /** No recording: the bar fills on a timer instead. */
   timed?: boolean
   prev?: Stop
   next?: Stop
-  /** What "forward" says after the last stop, if it still does something. */
+  /** What "forward" does after the last stop, if it still does something. */
   nextLabel?: string
   onToggle: () => void
   onPrev: () => void
@@ -200,34 +202,25 @@ function AudioDial({
     <svg viewBox="0 0 12 20" width="12" height="20" aria-hidden="true"><path d={d} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
   )
   return (
-    <div className="dial">
-      <div className={playing ? 'dial__wheel dial__wheel--playing' : 'dial__wheel'}>
-        <svg className="dial__ring" viewBox="0 0 136 136" role="progressbar" aria-label="How far through this story">
-          <circle className="dial__track" cx="68" cy="68" r="62" />
-          <circle
-            key={id}
-            className="dial__progress"
-            cx="68" cy="68" r="62" pathLength={100}
-            style={timed
-              ? { animationDuration: `${TOUR_SECONDS}s`, animationPlayState: playing ? 'running' : 'paused' }
-              : { animation: 'none', strokeDashoffset: 100 * (1 - progress) }}
-            onAnimationEnd={timed ? onTimedEnd : undefined}
-          />
-        </svg>
-        <button className="dial__step dial__step--prev" onClick={onPrev} disabled={!prev} aria-label="Previous stop">{chevron('M9 2 L2 10 L9 18')}</button>
+    <div className={playing ? 'dial dial--playing' : 'dial'}>
+      <div className="dial__buttons">
+        <button className="dial__step" onClick={onPrev} disabled={!prev} aria-label="Previous stop" title={prev?.name}>{chevron('M9 2 L2 10 L9 18')}</button>
         <button className="tour__play dial__play" onClick={onToggle} aria-label={playing ? 'Pause the story' : 'Play the story'}>
           {playing ? <span className="pause" aria-hidden="true" /> : <span className="play" aria-hidden="true" />}
         </button>
-        <button className="dial__step dial__step--next" onClick={onNext} disabled={!forward} aria-label="Next stop">{chevron('M3 2 L10 10 L3 18')}</button>
+        <button className="dial__step" onClick={onNext} disabled={!forward} aria-label="Next stop" title={forward}>{chevron('M3 2 L10 10 L3 18')}</button>
       </div>
-      <div className="dial__names">
-        <button onClick={onPrev} disabled={!prev} tabIndex={-1}>
-          {prev && <><small>Back</small><span>{prev.name}</span></>}
-        </button>
-        <button onClick={onNext} disabled={!forward} tabIndex={-1}>
-          {forward && <><small>Next</small><span>{forward}</span></>}
-        </button>
+      <div className="dial__bar" role="progressbar" aria-label="How far through this story">
+        <i
+          key={id}
+          className="dial__progress"
+          style={timed
+            ? { animationDuration: `${TOUR_SECONDS}s`, animationPlayState: playing ? 'running' : 'paused' }
+            : { animation: 'none', transform: `scaleX(${progress})` }}
+          onAnimationEnd={timed ? onTimedEnd : undefined}
+        />
       </div>
+      <p className="dial__name"><small>{playing ? 'Now playing' : 'Listen'}</small>{name}</p>
     </div>
   )
 }
@@ -270,6 +263,7 @@ export function StopPanel({
       <div className="stop-top">
         <AudioDial
           id={stop.slug}
+          name={stop.name}
           playing={false}
           progress={0}
           prev={prev}
@@ -291,9 +285,6 @@ export function StopPanel({
           )}
         </header>
       </div>
-      <button className="primary-button primary-button--wide stop__tour" onClick={onTour}>
-        <span className="play" aria-hidden="true" /> <span>Listen to the {stop.title.replace(/^The /, '')} story</span>
-      </button>
       {stop.hero && (
         <button className="hero" onClick={() => setOpen(0)} aria-label="View photograph">
           <img key={stop.hero} src={sized(stop.hero, 1000)} alt="" />
@@ -445,6 +436,7 @@ export function TourCard({
       <div className="tour__head">
         <AudioDial
           id={stop.slug}
+          name={stop.name}
           playing={playing}
           progress={progress}
           timed={!narrated}

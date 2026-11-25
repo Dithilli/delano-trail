@@ -228,8 +228,6 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 }
 .primary-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
 .primary-button--wide { width: 100%; margin-bottom: 16px; font-size: 17px; }
-/* A stop's button names its story, so it may run to two or three lines. */
-.stop__tour { padding: 12px 24px; line-height: 1.25; text-align: left; letter-spacing: 0.02em; }
 .play { flex: none; width: 0; height: 0; border-style: solid; border-width: 7px 0 7px 12px; border-color: transparent transparent transparent currentColor; }
 .pause { width: 12px; height: 14px; border-style: solid; border-width: 0 4px; border-color: currentColor; }
 
@@ -270,42 +268,37 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .tour__stops { display: flex; gap: 8px; margin: 0 calc(var(--gutter) * -1) 10px; padding: 2px var(--gutter) 4px; overflow-x: auto; scrollbar-width: none; }
 .tour__stops .num { flex: none; width: 36px; height: 36px; padding: 0; font-size: 15px; background: var(--card); color: var(--ink); cursor: pointer; text-shadow: none; }
 .tour__stops .num--on { background: var(--trail); color: #fff; text-shadow: 0 1px 1px rgb(0 0 0 / 0.45); }
-.stop__tour { margin-top: 14px; margin-bottom: 0; }
 .tour__photo { height: 150px; margin-bottom: 14px; overflow: hidden; border: 1.5px solid var(--ink); border-radius: 10px; background: #2b2923; }
 .tour__photo img { width: 100%; height: 100%; object-fit: cover; animation: kenburns 18s ease-out both; }
 .tour h1 { font-size: 24px; }
 .tour .badge { margin-bottom: 4px; }
 .tour .facts { font-size: 15px; margin-top: 2px; }
 
-/* ---------- the audio dial ---------- */
-/* Floated into the top-right corner; the title runs down its left side. */
-.dial { float: right; width: 136px; margin: 0 0 8px 14px; }
-.dial__wheel { position: relative; width: 136px; height: 136px; border-radius: 50%; background: var(--card); box-shadow: inset 0 0 0 2px var(--ink); }
-.dial__ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none; }
-.dial__ring circle { fill: none; stroke-width: 7; }
-.dial__track { stroke: color-mix(in srgb, var(--trail, var(--ink)) 22%, var(--card)); }
-.dial__progress { stroke: var(--trail, var(--ink)); stroke-dasharray: 100; stroke-dashoffset: 100; animation: ring linear both; transition: stroke-dashoffset 0.3s linear; }
-@keyframes ring { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-.dial__step { position: absolute; top: 20px; bottom: 20px; width: 38px; display: grid; place-items: center; padding: 0; border: 0; background: none; color: var(--ink); }
-.dial__step--prev { left: 6px; }
-.dial__step--next { right: 6px; }
+/* ---------- the audio player ---------- */
+/* One card floated into the top-right corner; the title runs down its left side. */
+.dial {
+  float: right; width: 150px; margin: 0 0 10px 14px; padding: 12px 12px 11px; text-align: center;
+  border: 2px solid var(--ink); border-radius: 20px; background: var(--card);
+}
+.dial__buttons { display: flex; align-items: center; justify-content: space-between; }
+.dial__step { width: 32px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; background: none; color: var(--ink); }
 .dial__step:disabled { opacity: 0.25; }
 .dial__step:active:not(:disabled) { transform: scale(0.85); }
 .dial__play {
-  position: absolute; inset: 0; margin: auto; width: 62px; height: 62px; display: grid; place-items: center; padding: 0;
+  width: 58px; height: 58px; display: grid; place-items: center; padding: 0;
   border: 2px solid var(--ink); border-radius: 50%; background: var(--trail, var(--ink)); color: #fff; transition: transform 0.12s;
 }
 .dial__play:active { transform: scale(0.94); }
 .dial__play .play { margin-left: 4px; border-width: 10px 0 10px 16px; }
 .dial__play .pause { width: 16px; height: 20px; border-width: 0 5px; }
 /* A slow breath while a story is playing. */
-.dial__wheel--playing .dial__play { animation: breathe 2.4s ease-in-out infinite; }
-@keyframes breathe { 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--trail, var(--ink)) 28%, transparent); } }
-.dial__names { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-.dial__names button { display: block; min-width: 0; padding: 0; border: 0; background: none; text-align: left; color: var(--ink); font: 600 12px/1.25 var(--sans); }
-.dial__names button + button { text-align: right; }
-.dial__names small { display: block; margin-bottom: 1px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
-.dial__names span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.dial--playing .dial__play { animation: breathe 2.4s ease-in-out infinite; }
+@keyframes breathe { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--trail, var(--ink)) 28%, transparent); } }
+.dial__bar { height: 5px; margin: 11px 0 9px; border-radius: 999px; overflow: hidden; background: color-mix(in srgb, var(--trail, var(--ink)) 22%, var(--card)); }
+.dial__progress { display: block; height: 100%; background: var(--trail, var(--ink)); transform: scaleX(0); transform-origin: left; animation: fill linear both; transition: transform 0.3s linear; }
+@keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.dial__name { margin: 0; font: 600 15px/1.2 var(--serif); color: var(--ink); overflow-wrap: break-word; }
+.dial__name small { display: block; margin-bottom: 3px; font: 700 10px/1 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
 /* Titles share their line with the dial, so they run a little smaller and may break a long word. */
 .stop-top { display: flow-root; }
 .stop-head h1, .tour h1 { hyphens: auto; overflow-wrap: break-word; }
@@ -401,6 +394,6 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition: none !important; }
   .dial__progress { animation-duration: 16s !important; }
-  .dial__wheel--playing .dial__play { animation: none !important; }
+  .dial--playing .dial__play { animation: none !important; }
   .reveal { opacity: 1; transform: none; }
 }
