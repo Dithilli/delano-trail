@@ -167,7 +167,7 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   await page.tap('.tour__play')
   await page.waitForTimeout(3600)
   check('phone: tour starts at stop 1', (await page.locator('.tour .badge').textContent())?.includes('Stop 1 of 9'))
-  check('phone: tour controls reachable at half', await snapOf(page) === 'sheet--half' && await tappable(page, '.tour__play') && await tappable(page, '.dial button[aria-label="Next stop"]'))
+  check('phone: panel rises for the tour, controls reachable', await snapOf(page) === 'sheet--full' && await tappable(page, '.tour__play') && await tappable(page, '.dial button[aria-label="Next stop"]'))
   await page.screenshot({ path: `${dir}/p8-tour.png` })
   const b1 = await page.evaluate(() => window.__map.getBearing())
   await page.waitForTimeout(1500)

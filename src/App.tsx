@@ -62,8 +62,11 @@ export function App() {
 
   useEffect(() => {
     panel.current?.scrollTo({ top: 0 })
-    setSnap('half') // every new view opens with the map and the story sharing the screen
+    // Every new view opens with the map and the story sharing the screen; while a
+    // story is being narrated the panel stays up, so its photographs can be seen.
+    setSnap(stop && tour?.playing ? 'full' : 'half')
     document.title = `${stop?.title ?? trail?.name ?? 'Spirit of Community Trail'} · Delano, Minnesota`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stop, trail])
 
   // Leaving the stops ends a tour; leaving a finished trail clears its banner.
@@ -96,7 +99,10 @@ export function App() {
     setIntro(false)
   }
 
-  const changePlayback = useCallback((playing: boolean) => setTour({ playing }), [])
+  const changePlayback = useCallback((playing: boolean) => {
+    setTour({ playing })
+    if (playing) setSnap('full')
+  }, [])
 
   const tourStep = (d: 1 | -1) => {
     if (!stop || !trail) return
@@ -178,14 +184,13 @@ export function App() {
             playing={tour.playing && !searchOpen}
             onPlaying={changePlayback}
             onStep={tourStep}
-            onJump={(slug) => go({ view: 'stop', slug })}
             onDone={() => tourStep(1)}
             onRead={() => { setTour(null); setSnap('full') }}
             onExit={() => go({ view: 'trail', trail: trail.id })}
           />
         ) : stop && trail ? (
           <StopPanel key={stop.slug} stop={stop} trail={trail} siblings={trailStops} body={body} go={go}
-            onTour={() => { setCompleted(null); setTour({ playing: true }); setSnap('half'); panel.current?.scrollTo({ top: 0 }) }} />
+            onTour={() => { setCompleted(null); setTour({ playing: true }); setSnap('full'); panel.current?.scrollTo({ top: 0 }) }} />
         ) : trail ? (
           <TrailPanel
             key={trail.id}

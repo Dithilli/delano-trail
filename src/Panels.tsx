@@ -427,7 +427,6 @@ export function TourCard({
   playing,
   onPlaying,
   onStep,
-  onJump,
   onDone,
   onRead,
   onExit,
@@ -441,8 +440,6 @@ export function TourCard({
   playing: boolean
   onPlaying: (p: boolean) => void
   onStep: (d: 1 | -1) => void
-  /** Jump straight to another stop's number. */
-  onJump: (slug: string) => void
   onDone: () => void
   onRead: () => void
   onExit: () => void
@@ -519,20 +516,6 @@ export function TourCard({
         {(stop.address || stop.subtitle) && <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>}
         <button className="tour__exit" onClick={onExit}>× End narrative</button>
       </div>
-      <nav className="tour__stops" aria-label="Stops on this trail">
-        {stops.map((s) => (
-          <button
-            key={s.slug}
-            className={s.slug === stop.slug ? 'num num--on' : 'num'}
-            onClick={() => onJump(s.slug)}
-            aria-current={s.slug === stop.slug ? 'step' : undefined}
-            aria-label={`Stop ${s.number}: ${s.name}`}
-            title={s.name}
-          >
-            {s.number}
-          </button>
-        ))}
-      </nav>
       {slides.length > 0 && (
         <div className="tour__photo">
           {slide.before >= 0 && slide.before < slides.length && <img key={`was-${slide.before}`} src={sized(slides[slide.before], 1000)} alt="" />}
