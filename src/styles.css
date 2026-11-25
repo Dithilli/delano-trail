@@ -270,6 +270,16 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .tour__photo .tour__slide { animation: slide-in 1.4s ease both, slide-drift 9s ease-out both; }
 @keyframes slide-drift { from { transform: scale(1); } to { transform: scale(1.06); } }
 @keyframes slide-in { from { opacity: 0; } }
+/* Arrows to turn the photographs by hand: quiet while the story plays, plain once it stops. */
+.tour__nav {
+  position: absolute; top: 50%; z-index: 1; width: 44px; height: 44px; margin-top: -22px; display: grid; place-items: center; padding: 0 0 4px;
+  border: 0; border-radius: 50%; background: rgb(20 18 14 / 0.6); color: #f6efdc; font-size: 30px; line-height: 1; opacity: 0.55; transition: opacity 0.3s;
+}
+.tour__nav--prev { left: 8px; }
+.tour__nav--next { right: 8px; }
+.tour__photo--browse .tour__nav { opacity: 1; background: rgb(20 18 14 / 0.8); }
+.tour__photo .hero__count { z-index: 1; }
+.tour__more { margin: -4px 0 14px; font-size: 15px; font-weight: 600; color: var(--ink-soft); }
 .tour h1 { font-size: 24px; }
 .tour .badge { margin-bottom: 4px; }
 .tour .facts { font-size: 15px; margin-top: 2px; }

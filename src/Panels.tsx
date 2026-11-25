@@ -470,6 +470,8 @@ export function TourCard({
     return () => window.clearInterval(timer)
   }, [playing, slides.length])
   const shown = slide.now < slides.length ? slide.now : 0
+  /** The viewer turns to another photograph by hand; allowed at any time. */
+  const turn = (d: 1 | -1) => setSlide({ now: (shown + d + slides.length) % slides.length, before: shown })
   // Fetch the next photograph ahead of its turn, so the fade has something to fade to.
   useEffect(() => {
     const next = slides[(shown + 1) % slides.length]
@@ -525,11 +527,20 @@ export function TourCard({
         <button className="tour__exit" onClick={onExit}>× End narrative</button>
       </div>
       {slides.length > 0 && (
-        <div className="tour__photo">
+        <div className={playing ? 'tour__photo' : 'tour__photo tour__photo--browse'}>
           {slide.before >= 0 && slide.before < slides.length && <img key={`was-${slide.before}`} src={sized(slides[slide.before], 1000)} alt="" />}
           <img key={shown} className="tour__slide" src={sized(slides[shown], 1000)} alt="" />
-          {slides.length > 1 && <span className="hero__count">{shown + 1} / {slides.length}</span>}
+          {slides.length > 1 && (
+            <>
+              <button className="tour__nav tour__nav--prev" onClick={() => turn(-1)} aria-label="Previous photograph">‹</button>
+              <button className="tour__nav tour__nav--next" onClick={() => turn(1)} aria-label="Next photograph">›</button>
+              <span className="hero__count">{shown + 1} / {slides.length}</span>
+            </>
+          )}
         </div>
+      )}
+      {round > 0 && !playing && slides.length > 1 && (
+        <p className="tour__more">The story has finished. Use the arrows to see all {slides.length} photographs.</p>
       )}
       <p className="tour__summary">{excerpt(stop.summary, 420)}</p>
       <button className="tour__read" onClick={onRead}>Read the full story →</button>
