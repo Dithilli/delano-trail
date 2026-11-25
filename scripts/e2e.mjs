@@ -196,7 +196,7 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   await page.waitForTimeout(1500)
   await page.tap('.tour__play')
   await page.waitForTimeout(2300)
-  check('phone: tour advances on its own', !(await page.locator('.tour .badge').textContent())?.includes('Stop 1 of'), await page.locator('.tour .badge').textContent())
+  check('phone: a finished story stops and waits', (await page.locator('.tour .badge').textContent())?.includes('Stop 1 of') && (await page.locator('.tour__play').getAttribute('aria-label')) === 'Play the story', await page.locator('.tour .badge').textContent())
   await page.close()
 }
 

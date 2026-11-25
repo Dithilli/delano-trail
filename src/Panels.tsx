@@ -418,7 +418,7 @@ const NARRATED_STOPS = new Set([
   'village-hall',
 ])
 
-/** Guided tour: one plaque at a time, advancing on its own. */
+/** A stop's story being played: one plaque at a time; the visitor moves on when ready. */
 export function TourCard({
   stop,
   trail,
@@ -440,6 +440,7 @@ export function TourCard({
   playing: boolean
   onPlaying: (p: boolean) => void
   onStep: (d: 1 | -1) => void
+  /** The story has finished: playback stops here and waits for the visitor. */
   onDone: () => void
   onRead: () => void
   onExit: () => void
@@ -449,6 +450,13 @@ export function TourCard({
   const [failed, setFailed] = useState(false)
   const narrated = NARRATED_STOPS.has(stop.slug) && !failed
   const at = stops.findIndex((x) => x.slug === stop.slug)
+  // Each finished play-through starts a new round, which empties the progress bar.
+  const [round, setRound] = useState(0)
+  const finish = () => {
+    setRound((r) => r + 1)
+    setProgress(0)
+    onDone()
+  }
 
   // While the story plays, its photographs take turns.
   const slides = useMemo(() => {
@@ -485,7 +493,7 @@ export function TourCard({
 
   return (
     <article className="view tour" style={trailVar(trail)}>
-      {narrated && <audio key={stop.slug} ref={audio} src={`./narration/${stop.slug}.mp3`} onEnded={onDone}
+      {narrated && <audio key={stop.slug} ref={audio} src={`./narration/${stop.slug}.mp3`} onEnded={finish}
         onError={() => setFailed(true)}
         onTimeUpdate={(event) => {
           const player = event.currentTarget
@@ -493,7 +501,7 @@ export function TourCard({
         }} />}
       <div className="tour__head">
         <AudioDial
-          id={stop.slug}
+          id={`${stop.slug}-${round}`}
           name={stop.name}
           dark={trail.id === 'yellow'}
           playing={playing}
@@ -505,7 +513,7 @@ export function TourCard({
           onToggle={() => onPlaying(!playing)}
           onPrev={() => onStep(-1)}
           onNext={() => onStep(1)}
-          onTimedEnd={onDone}
+          onTimedEnd={finish}
         />
         <p className="tour__label">Guided tour · {trail.name}</p>
         <p className="badge">

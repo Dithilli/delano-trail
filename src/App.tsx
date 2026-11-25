@@ -184,7 +184,7 @@ export function App() {
             playing={tour.playing && !searchOpen}
             onPlaying={changePlayback}
             onStep={tourStep}
-            onDone={() => tourStep(1)}
+            onDone={() => setTour({ playing: false })}
             onRead={() => { setTour(null); setSnap('full') }}
             onExit={() => go({ view: 'trail', trail: trail.id })}
           />
