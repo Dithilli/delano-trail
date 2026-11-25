@@ -237,7 +237,9 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 }
 .primary-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
 .primary-button--wide { width: 100%; margin-bottom: 16px; font-size: 17px; }
-.play { width: 0; height: 0; border-style: solid; border-width: 7px 0 7px 12px; border-color: transparent transparent transparent currentColor; }
+/* A stop's button names its story, so it may run to two or three lines. */
+.stop__tour { padding: 12px 24px; line-height: 1.25; text-align: left; letter-spacing: 0.02em; }
+.play { flex: none; width: 0; height: 0; border-style: solid; border-width: 7px 0 7px 12px; border-color: transparent transparent transparent currentColor; }
 .pause { width: 12px; height: 14px; border-style: solid; border-width: 0 4px; border-color: currentColor; }
 
 /* ---------- the opening ---------- */

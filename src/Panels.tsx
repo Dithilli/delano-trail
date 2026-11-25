@@ -224,7 +224,7 @@ export function StopPanel({
         </button>
       )}
       <button className="primary-button primary-button--wide stop__tour" onClick={onTour}>
-        <span className="play" aria-hidden="true" /> Play the guided tour
+        <span className="play" aria-hidden="true" /> <span>Listen to the {stop.title.replace(/^The /, '')} story</span>
       </button>
       {placed && (
         <a
