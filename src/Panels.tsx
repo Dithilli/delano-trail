@@ -161,6 +161,77 @@ function captionFor(body: Block[], i: number): string | undefined {
   return text.length > 0 && text.length < 280 ? text : undefined
 }
 
+/**
+ * The audio dial: one round control in the top-right corner of a stop. Play sits
+ * in the middle, back and forward ride the rim, the rim itself fills as the
+ * story plays, and the neighbouring stories are named underneath.
+ */
+function AudioDial({
+  id,
+  playing,
+  progress,
+  timed,
+  prev,
+  next,
+  nextLabel,
+  onToggle,
+  onPrev,
+  onNext,
+  onTimedEnd,
+}: {
+  /** Changes with the stop, so the rim starts again. */
+  id: string
+  playing: boolean
+  /** 0..1 through a recording. */
+  progress: number
+  /** No recording: the rim fills on a timer instead. */
+  timed?: boolean
+  prev?: Stop
+  next?: Stop
+  /** What "forward" says after the last stop, if it still does something. */
+  nextLabel?: string
+  onToggle: () => void
+  onPrev: () => void
+  onNext: () => void
+  onTimedEnd?: () => void
+}) {
+  const forward = next?.name ?? nextLabel
+  const chevron = (d: string) => (
+    <svg viewBox="0 0 12 20" width="12" height="20" aria-hidden="true"><path d={d} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+  )
+  return (
+    <div className="dial">
+      <div className={playing ? 'dial__wheel dial__wheel--playing' : 'dial__wheel'}>
+        <svg className="dial__ring" viewBox="0 0 136 136" role="progressbar" aria-label="How far through this story">
+          <circle className="dial__track" cx="68" cy="68" r="62" />
+          <circle
+            key={id}
+            className="dial__progress"
+            cx="68" cy="68" r="62" pathLength={100}
+            style={timed
+              ? { animationDuration: `${TOUR_SECONDS}s`, animationPlayState: playing ? 'running' : 'paused' }
+              : { animation: 'none', strokeDashoffset: 100 * (1 - progress) }}
+            onAnimationEnd={timed ? onTimedEnd : undefined}
+          />
+        </svg>
+        <button className="dial__step dial__step--prev" onClick={onPrev} disabled={!prev} aria-label="Previous stop">{chevron('M9 2 L2 10 L9 18')}</button>
+        <button className="tour__play dial__play" onClick={onToggle} aria-label={playing ? 'Pause the story' : 'Play the story'}>
+          {playing ? <span className="pause" aria-hidden="true" /> : <span className="play" aria-hidden="true" />}
+        </button>
+        <button className="dial__step dial__step--next" onClick={onNext} disabled={!forward} aria-label="Next stop">{chevron('M3 2 L10 10 L3 18')}</button>
+      </div>
+      <div className="dial__names">
+        <button onClick={onPrev} disabled={!prev} tabIndex={-1}>
+          {prev && <><small>Back</small><span>{prev.name}</span></>}
+        </button>
+        <button onClick={onNext} disabled={!forward} tabIndex={-1}>
+          {forward && <><small>Next</small><span>{forward}</span></>}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function StopPanel({
   stop,
   trail,
@@ -197,6 +268,16 @@ export function StopPanel({
   return (
     <article className="view stop" style={trailVar(trail)} ref={root}>
       <div className="stop-top">
+        <AudioDial
+          id={stop.slug}
+          playing={false}
+          progress={0}
+          prev={prev}
+          next={next}
+          onToggle={onTour}
+          onPrev={() => prev && go({ view: 'stop', slug: prev.slug })}
+          onNext={() => next && go({ view: 'stop', slug: next.slug })}
+        />
         <button className="back" onClick={() => go({ view: 'trail', trail: trail.id })}>← {trail.name}</button>
         <header className="stop-head">
           <p className="badge">
@@ -210,15 +291,15 @@ export function StopPanel({
           )}
         </header>
       </div>
+      <button className="primary-button primary-button--wide stop__tour" onClick={onTour}>
+        <span className="play" aria-hidden="true" /> <span>Listen to the {stop.title.replace(/^The /, '')} story</span>
+      </button>
       {stop.hero && (
         <button className="hero" onClick={() => setOpen(0)} aria-label="View photograph">
           <img key={stop.hero} src={sized(stop.hero, 1000)} alt="" />
           {stop.photos > 1 && <span className="hero__count">{stop.photos} photos</span>}
         </button>
       )}
-      <button className="primary-button primary-button--wide stop__tour" onClick={onTour}>
-        <span className="play" aria-hidden="true" /> <span>Listen to the {stop.title.replace(/^The /, '')} story</span>
-      </button>
 
       <div className="stop-body">
         {!body && (
@@ -336,6 +417,7 @@ export function TourCard({
   const [progress, setProgress] = useState(0)
   const [failed, setFailed] = useState(false)
   const narrated = NARRATED_STOPS.has(stop.slug) && !failed
+  const at = stops.findIndex((x) => x.slug === stop.slug)
   useEffect(() => {
     setProgress(0)
     setFailed(false)
@@ -360,16 +442,28 @@ export function TourCard({
           const player = event.currentTarget
           if (player.duration > 0) setProgress(player.currentTime / player.duration)
         }} />}
-      <div className="tour__top">
-        <span className="tour__label">Guided tour · {trail.name}</span>
-        <button className="tour__exit" onClick={onExit}>End narrative ×</button>
-      </div>
-      <div className="tour__bar" role="progressbar" aria-label="Time until the next stop">
-        <i
-          key={stop.slug}
-          style={narrated ? { animation: 'none', transform: `scaleX(${progress})` } : { animationDuration: `${TOUR_SECONDS}s`, animationPlayState: playing ? 'running' : 'paused' }}
-          onAnimationEnd={narrated ? undefined : onDone}
+      <div className="tour__head">
+        <AudioDial
+          id={stop.slug}
+          playing={playing}
+          progress={progress}
+          timed={!narrated}
+          prev={stops[at - 1]}
+          next={stops[at + 1]}
+          nextLabel="Finish"
+          onToggle={() => onPlaying(!playing)}
+          onPrev={() => onStep(-1)}
+          onNext={() => onStep(1)}
+          onTimedEnd={onDone}
         />
+        <p className="tour__label">Guided tour · {trail.name}</p>
+        <p className="badge">
+          <span className="num">{stop.number}</span>
+          Stop {stop.number} of {stops.length}
+        </p>
+        <h1>{stop.title}</h1>
+        {(stop.address || stop.subtitle) && <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>}
+        <button className="tour__exit" onClick={onExit}>× End narrative</button>
       </div>
       <nav className="tour__stops" aria-label="Stops on this trail">
         {stops.map((s) => (
@@ -385,28 +479,11 @@ export function TourCard({
           </button>
         ))}
       </nav>
-      <div className="tour__head">
-        {stop.hero && (
-          <div className="tour__photo">
-            <img key={stop.hero} src={sized(stop.hero, 1000)} alt="" />
-          </div>
-        )}
-        <div>
-          <p className="badge">
-            <span className="num">{stop.number}</span>
-            Stop {stop.number} of {stops.length}
-          </p>
-          <h1>{stop.title}</h1>
-          {(stop.address || stop.subtitle) && <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>}
+      {stop.hero && (
+        <div className="tour__photo">
+          <img key={stop.hero} src={sized(stop.hero, 1000)} alt="" />
         </div>
-      </div>
-      <div className="tour__controls">
-        <button onClick={() => onStep(-1)} disabled={stop.number === 1} aria-label="Previous stop">‹</button>
-        <button className="tour__play" onClick={() => onPlaying(!playing)} aria-label={playing ? 'Pause the tour' : 'Resume the tour'}>
-          {playing ? <span className="pause" aria-hidden="true" /> : <span className="play" aria-hidden="true" />}
-        </button>
-        <button onClick={() => onStep(1)} aria-label="Next stop">›</button>
-      </div>
+      )}
       <p className="tour__summary">{excerpt(stop.summary, 420)}</p>
       <button className="tour__read" onClick={onRead}>Read the full story →</button>
     </article>

@@ -387,10 +387,10 @@
   },
   "original-commercial-district": {
    "lngLat": [
-    -93.788813,
-    45.040619
+    -93.78915,
+    45.04082
    ],
-   "approx": true
+   "approx": false
   },
   "grain-elevators": {
    "lngLat": [
