@@ -400,7 +400,7 @@ const FAST_PACE = 1.5
 
 export const TOUR_SECONDS = 16
 /** How long each photograph holds during a story. */
-const SLIDE_SECONDS = 6
+const SLIDE_SECONDS = 4.5
 
 /** Stops with a recording at public/narration/<slug>.mp3; the rest use the timed tour. */
 const NARRATED_STOPS = new Set([

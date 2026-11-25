@@ -267,7 +267,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 /* Many of the photographs are portraits or documents, so each is shown whole on a dark mat. */
 .tour__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #2b2923; }
 /* Each photograph fades in over the last and drifts while it holds. */
-.tour__photo .tour__slide { animation: slide-in 1.4s ease both, slide-drift 9s ease-out both; }
+.tour__photo .tour__slide { animation: slide-in 1.1s ease both, slide-drift 7s ease-out both; }
 @keyframes slide-drift { from { transform: scale(1); } to { transform: scale(1.06); } }
 @keyframes slide-in { from { opacity: 0; } }
 /* Arrows to turn the photographs by hand: quiet while the story plays, plain once it stops. */
