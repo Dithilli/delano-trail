@@ -197,7 +197,7 @@ function FitTitle({ text }: { text: string }) {
 
 /**
  * The audio player: one card in the top-right corner of a stop. Go back, play and
- * double speed in a row, a bar that fills as the story plays, and the story's name.
+ * the faster speed in a row, a bar that fills as the story plays, and the story's name.
  */
 function AudioDial({
   id,
@@ -223,12 +223,12 @@ function AudioDial({
   progress: number
   /** No recording: the bar fills on a timer instead. */
   timed?: boolean
-  /** The story is playing at twice its speed. */
+  /** The story is playing at the faster speed. */
   fast?: boolean
   onToggle: () => void
   /** Step back a little in the story; absent when there is nothing to go back in. */
   onBack?: () => void
-  /** Switch double speed on or off. */
+  /** Switch the faster speed on or off. */
   onFast: () => void
   onTimedEnd?: () => void
 }) {
@@ -238,23 +238,23 @@ function AudioDial({
   return (
     <div className={`dial${playing ? ' dial--playing' : ''}${dark ? ' dial--ink' : ''}`}>
       <div className="dial__buttons">
-        <button className="dial__step" onClick={onBack} disabled={!onBack} aria-label={fast ? 'Back to normal speed' : 'Go back 10 seconds'} title={fast ? 'Back to normal speed' : 'Go back 10 seconds'}>{chevrons('M10 2 L3 10 L10 18 M19 2 L12 10 L19 18')}</button>
-        <button className="tour__play dial__play" onClick={onToggle} aria-label={playing ? (fast ? 'Back to normal speed' : 'Pause the story') : 'Play the story'}>
+        <button className="dial__step" onClick={onBack} disabled={!onBack} aria-label={fast ? 'Back to the usual speed' : 'Go back 10 seconds'} title={fast ? 'Back to the usual speed' : 'Go back 10 seconds'}>{chevrons('M10 2 L3 10 L10 18 M19 2 L12 10 L19 18')}</button>
+        <button className="tour__play dial__play" onClick={onToggle} aria-label={playing ? (fast ? 'Back to the usual speed' : 'Pause the story') : 'Play the story'}>
           {playing ? <span className="pause" aria-hidden="true" /> : <span className="play" aria-hidden="true" />}
         </button>
-        <button className={`dial__step${fast ? ' dial__step--on' : ''}`} onClick={onFast} aria-pressed={!!fast} aria-label="Play at double speed" title={fast ? 'Back to normal speed' : 'Play at double speed'}>{chevrons('M3 2 L10 10 L3 18 M12 2 L19 10 L12 18')}</button>
+        <button className={`dial__step${fast ? ' dial__step--on' : ''}`} onClick={onFast} aria-pressed={!!fast} aria-label="Play faster" title={fast ? 'Back to the usual speed' : 'Play faster'}>{chevrons('M3 2 L10 10 L3 18 M12 2 L19 10 L12 18')}</button>
       </div>
       <div className="dial__bar" role="progressbar" aria-label="How far through this story">
         <i
           key={id}
           className="dial__progress"
           style={timed
-            ? { animationDuration: `${TOUR_SECONDS / (fast ? 2 : 1)}s`, animationPlayState: playing ? 'running' : 'paused' }
+            ? { animationDuration: `${TOUR_SECONDS / (fast ? FAST_PACE / PACE : 1)}s`, animationPlayState: playing ? 'running' : 'paused' }
             : { animation: 'none', transform: `scaleX(${progress})` }}
           onAnimationEnd={timed ? onTimedEnd : undefined}
         />
       </div>
-      <p className="dial__name"><small>{playing ? (fast ? 'Now playing · 2×' : 'Now playing') : 'Listen'}</small>{breakable(name)}</p>
+      <p className="dial__name"><small>{playing ? (fast ? 'Now playing · Faster' : 'Now playing') : 'Listen'}</small>{breakable(name)}</p>
     </div>
   )
 }
@@ -270,7 +270,7 @@ export function StopPanel({
   stop: Stop
   trail: Trail
   siblings: Stop[]
-  /** Start this stop's story, at double speed if asked. */
+  /** Start this stop's story, at the faster speed if asked. */
   onTour: (fast?: boolean) => void
   /** undefined while the trail's stories are loading, null if they failed to load. */
   body: Block[] | null | undefined
@@ -394,6 +394,10 @@ export function StopPanel({
   )
 }
 
+/** Every recording plays a little brisker than it was read; the right arrows make it faster still. */
+const PACE = 1.2
+const FAST_PACE = 1.8
+
 export const TOUR_SECONDS = 16
 /** How long each photograph holds during a story. */
 const SLIDE_SECONDS = 6
@@ -432,7 +436,7 @@ export function TourCard({
   /** The stop's story, once loaded: its photographs become the slide show. */
   body?: Block[] | null
   playing: boolean
-  /** Begin at double speed. */
+  /** Begin at the faster speed. */
   startFast?: boolean
   onPlaying: (p: boolean) => void
   /** The story has finished: playback stops here and waits for the visitor. */
@@ -450,7 +454,7 @@ export function TourCard({
   // A timed story has no recording to wind back, so going back starts its bar again.
   const [again, setAgain] = useState(0)
   const back = () => {
-    // At double speed the left arrows first bring the story back to normal speed.
+    // At the faster speed the left arrows first bring the story back to the usual speed.
     if (fast) return setFast(false)
     const player = audio.current
     if (!narrated || !player) return setAgain((n) => n + 1)
@@ -501,8 +505,8 @@ export function TourCard({
     const player = audio.current
     if (!player) return
     // Set both: starting playback resets the rate to the default.
-    player.defaultPlaybackRate = fast ? 2 : 1
-    player.playbackRate = fast ? 2 : 1
+    player.defaultPlaybackRate = fast ? FAST_PACE : PACE
+    player.playbackRate = fast ? FAST_PACE : PACE
   }, [fast, narrated])
 
   return (
