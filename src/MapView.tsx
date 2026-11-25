@@ -43,11 +43,6 @@ function paddingFor(wide: boolean, bottomInset: number) {
   return wide ? { top: 100, right: 70, bottom: 70, left: 70 } : { top: 76, right: 34, bottom: bottomInset + 28, left: 34 }
 }
 
-/** A different approach angle for each stop, so moving between neighbours swoops. */
-function bearingFor(stop: Stop) {
-  return ((stop.number * 47 + stop.trail.length * 31) % 120) - 60
-}
-
 export function MapView(props: Props) {
   const { trails, stops, geo, activeTrail, activeStop, intro, orbit, editing, wide, bottomInset } = props
   const el = useRef<HTMLDivElement>(null)
@@ -122,17 +117,17 @@ export function MapView(props: Props) {
           id: `trail-glow-${t.id}`, type: 'line', source: `trail-${t.id}`,
           layout: { 'line-cap': 'round', 'line-join': 'round' },
           paint: { 'line-color': t.color, 'line-width': width(22), 'line-blur': 16, 'line-opacity': 0 },
-        }, 'road-label')
+        }, 'street-name')
         map.addLayer({
           id: `trail-case-${t.id}`, type: 'line', source: `trail-${t.id}`,
           layout: { 'line-cap': 'round', 'line-join': 'round' },
           paint: { 'line-color': INK, 'line-width': width(3.5), 'line-gradient': hidden },
-        }, 'road-label')
+        }, 'street-name')
         map.addLayer({
           id: `trail-line-${t.id}`, type: 'line', source: `trail-${t.id}`,
           layout: { 'line-cap': 'round', 'line-join': 'round' },
           paint: { 'line-color': t.color, 'line-width': width(0), 'line-gradient': hidden },
-        }, 'road-label')
+        }, 'street-name')
         map.addLayer({
           id: `trail-name-${t.id}`, type: 'symbol', source: `trail-${t.id}`, maxzoom: 18,
           layout: {
@@ -305,9 +300,14 @@ export function MapView(props: Props) {
 
     const stop = activeStop ? stops.find((s) => s.slug === activeStop) : undefined
     if (stop && geo.stops[stop.slug]) {
-      const target = { center: geo.stops[stop.slug].lngLat, zoom: 17.9, pitch: 62, bearing: bearingFor(stop), padding: padding() }
+      // Come in from the angle the map is already at, so picking a stop reads as
+      // a zoom rather than a swing; between neighbouring stops it is a plain glide.
+      const at = geo.stops[stop.slug].lngLat
+      const target = { center: at, zoom: 17.9, pitch: 62, bearing: opening ? -12 : map.getBearing(), padding: padding() }
+      const close = map.getZoom() > 16.5 && distance([map.getCenter().lng, map.getCenter().lat], at) < 450
       if (still) map.jumpTo(target)
-      else map.flyTo({ ...target, duration: opening ? 6000 : 2400, curve: 1.3, essential: true })
+      else if (close) map.easeTo({ ...target, duration: 1500, essential: true })
+      else map.flyTo({ ...target, duration: opening ? 6000 : 2200, curve: 1.1, essential: true })
       land()
       return
     }

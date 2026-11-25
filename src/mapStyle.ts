@@ -4,12 +4,29 @@ import streets from './data/streets.json'
 // Our own street-name labels: a point every 18 m along each named street, drawn
 // as text lying on the road. The basemap's along-the-line labels (road-label
 // below) thin out to almost nothing when zoomed in close, which is exactly when
-// someone on foot wants them, so these take over from zoom 15.5.
+// someone on foot wants them, so these are the only street names on the map,
+// abbreviated and bold so they read at a glance.
+const SHORT: Record<string, string> = {
+  Street: 'St', Avenue: 'Ave', Boulevard: 'Blvd', Drive: 'Dr', Road: 'Rd', Lane: 'Ln', Court: 'Ct', Circle: 'Cir',
+  Trail: 'Trl', Highway: 'Hwy', Saint: 'St', County: 'Co',
+}
+const COMPASS: Record<string, string> = {
+  North: 'N', South: 'S', East: 'E', West: 'W', Northeast: 'NE', Northwest: 'NW', Southeast: 'SE', Southwest: 'SW',
+}
+
+/** "Bridge Avenue West" -> "Bridge Ave W", the way a street sign has it. */
+export function shortStreet(name: string): string {
+  const words = name.split(' ')
+  return words
+    .map((w, i) => (words.length > 2 && (i === 0 || i === words.length - 1) && COMPASS[w]) || (words.length > 1 && SHORT[w]) || w)
+    .join(' ')
+}
+
 const streetLabels = {
   type: 'FeatureCollection' as const,
   features: (streets.points as number[][]).map(([lng, lat, rotation, name]) => ({
     type: 'Feature' as const,
-    properties: { name: streets.names[name], rotation },
+    properties: { name: shortStreet(streets.names[name]), rotation },
     geometry: { type: 'Point' as const, coordinates: [lng, lat] },
   })),
 }
@@ -108,32 +125,20 @@ export const mapStyle: StyleSpecification = {
       paint: { 'line-color': INK, 'line-width': width(5, 12), 'line-dasharray': [0.15, 1.2] },
     },
     {
-      id: 'road-label', type: 'symbol', source: 'openmaptiles', 'source-layer': 'transportation_name', minzoom: 13, maxzoom: 15.5,
-      layout: {
-        'symbol-placement': 'line',
-        'symbol-spacing': 150,
-        'text-field': ['get', 'name'],
-        'text-font': ['Noto Sans Italic'],
-        'text-size': ['interpolate', ['linear'], ['zoom'], 13, 10, 15.5, 12.5],
-        'text-letter-spacing': 0.04,
-      },
-      paint: { 'text-color': INK, 'text-halo-color': STREET, 'text-halo-width': 1.8 },
-    },
-    {
-      id: 'street-name', type: 'symbol', source: 'streets', minzoom: 15.5,
+      id: 'street-name', type: 'symbol', source: 'streets', minzoom: 13,
       layout: {
         'text-field': ['get', 'name'],
-        'text-font': ['Noto Sans Italic'],
-        'text-size': ['interpolate', ['linear'], ['zoom'], 15.5, 12.5, 17, 14, 19, 17],
+        'text-font': ['Noto Sans Bold'],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 13, 10.5, 15.5, 13, 17, 15, 19, 18],
         'text-letter-spacing': 0.04,
         'text-rotate': ['get', 'rotation'],
         'text-rotation-alignment': 'map',
         'text-pitch-alignment': 'map',
         // Labels along one street are 18 m apart; this gap decides how many of
         // them survive at each zoom.
-        'text-padding': ['interpolate', ['linear'], ['zoom'], 15.5, 16, 19, 10],
+        'text-padding': ['interpolate', ['linear'], ['zoom'], 13, 30, 15.5, 16, 19, 10],
       },
-      paint: { 'text-color': INK, 'text-halo-color': STREET, 'text-halo-width': 1.8 },
+      paint: { 'text-color': '#211f1a', 'text-halo-color': STREET, 'text-halo-width': 2 },
     },
     {
       id: 'water-label', type: 'symbol', source: 'openmaptiles', 'source-layer': 'waterway', minzoom: 13,

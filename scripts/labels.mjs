@@ -14,7 +14,7 @@ for (const zoom of [16, 17, 18, 19]) {
   out[`z${zoom}`] = await page.evaluate(() => {
     // labels in the strip of map above the sheet
     const top = document.querySelector('.sheet').getBoundingClientRect().top
-    return window.__map.queryRenderedFeatures([[0, 0], [innerWidth, top]], { layers: ['road-label', 'street-name'] }).length
+    return window.__map.queryRenderedFeatures([[0, 0], [innerWidth, top]], { layers: ['street-name'] }).length
   })
   if (shot) await page.screenshot({ path: shot.replace('.png', `-z${zoom}.png`) })
 }
