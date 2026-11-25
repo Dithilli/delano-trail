@@ -362,7 +362,7 @@ export function TourCard({
         }} />}
       <div className="tour__top">
         <span className="tour__label">Guided tour · {trail.name}</span>
-        <button className="tour__exit" onClick={onExit}>End tour ×</button>
+        <button className="tour__exit" onClick={onExit}>End narrative ×</button>
       </div>
       <div className="tour__bar" role="progressbar" aria-label="Time until the next stop">
         <i
