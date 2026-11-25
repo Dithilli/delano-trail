@@ -1,4 +1,3 @@
-import { TrailMark } from './TrailMark'
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import { Lightbox, type Photo } from './Lightbox'
@@ -42,12 +41,8 @@ export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; st
     <div className="view home">
       <header className="masthead">
         <h1>
-          <TrailMark />
+          <img className="banner" src="./delano-trail-banner.jpg" alt="Delano Spirit of Community Trail" width={1486} height={494} />
         </h1>
-        <p className="lede">
-          Delano’s story is one of <em>creativity, resilience and community investment</em>. Follow the bronze plaques
-          through downtown and discover the people and places behind it.
-        </p>
       </header>
 
       <h2 className="section-title">Choose a trail</h2>
@@ -87,6 +82,11 @@ export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; st
           </span>
         </a>
       </section>
+
+      <p className="lede">
+        Delano’s story is one of <em>creativity, resilience and community investment</em>. Follow the bronze plaques
+        through downtown and discover the people and places behind it.
+      </p>
 
       <footer className="credits">
         Stories, photographs and research by the Spirit of Community Trail Committee of the{' '}
