@@ -396,7 +396,7 @@ export function StopPanel({
 
 /** Every recording plays a little brisker than it was read; the right arrows make it faster still. */
 const PACE = 1.2
-const FAST_PACE = 1.8
+const FAST_PACE = 1.5
 
 export const TOUR_SECONDS = 16
 /** How long each photograph holds during a story. */
