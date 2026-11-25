@@ -96,7 +96,6 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   })
   check('phone: map zooms to the chosen trail, all its stops above the sheet', fit.zoom > 16.3 && fit.lit === 11 && fit.inView === 11, JSON.stringify(fit))
   check('phone: other trails dim on map', await page.locator('.pin-wrap:not(.pin-wrap--dim)').count() === 11)
-  check('phone: tour button within thumb reach at half', await tappable(page, '.primary-button--wide'))
   await page.screenshot({ path: `${dir}/p4-trail.png` })
 
   await swipe(page, 195, 760, 560)
@@ -163,9 +162,9 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   check('phone: pulling down from the top of the story lowers the sheet', await snapOf(page) !== 'sheet--full', await snapOf(page))
 
   // Guided tour.
-  await page.goto(`${base}?nointro#/trail/blue`, { waitUntil: 'load' })
+  await page.goto(`${base}?nointro#/stop/delano-american-legion`, { waitUntil: 'load' })
   await page.waitForTimeout(2500)
-  await page.tap('.primary-button--wide')
+  await page.tap('.stop__tour')
   await page.waitForTimeout(3600)
   check('phone: tour starts at stop 1', (await page.locator('.tour .badge').textContent())?.includes('Stop 1 of 9'))
   check('phone: tour controls reachable at half', await snapOf(page) === 'sheet--half' && await tappable(page, '.tour__play') && await tappable(page, '.tour__controls button[aria-label="Next stop"]'))
@@ -192,10 +191,10 @@ const tappable = (page, sel) => page.evaluate((sel) => {
 {
   const page = await (await browser.newContext(PHONE)).newPage()
   watch(page)
-  await page.goto(`${base}?nointro#/trail/blue`, { waitUntil: 'load' })
+  await page.goto(`${base}?nointro#/stop/delano-american-legion`, { waitUntil: 'load' })
   await page.addStyleTag({ content: '.tour__bar i { animation-duration: 1.2s !important; }' })
   await page.waitForTimeout(1500)
-  await page.tap('.primary-button--wide')
+  await page.tap('.stop__tour')
   await page.waitForTimeout(2300)
   check('phone: tour advances on its own', !(await page.locator('.tour .badge').textContent())?.includes('Stop 1 of'), await page.locator('.tour .badge').textContent())
   await page.close()
@@ -252,7 +251,9 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   await page.keyboard.press('Escape')
   await page.click('.back')
   await page.waitForTimeout(400)
-  await page.click('.primary-button--wide')
+  await page.click('.stop-row')
+  await page.waitForTimeout(400)
+  await page.click('.stop__tour')
   await page.waitForTimeout(3200)
   check('wide: tour starts', (await page.locator('.tour .badge').textContent())?.includes('Stop 1 of 11'))
   await page.screenshot({ path: `${dir}/d3-tour.png` })

@@ -98,13 +98,6 @@ export function App() {
 
   const changePlayback = useCallback((playing: boolean) => setTour({ playing }), [])
 
-  const startTour = () => {
-    if (!trailStops.length) return
-    setCompleted(null)
-    setTour({ playing: true })
-    go({ view: 'stop', slug: trailStops[0].slug })
-  }
-
   const tourStep = (d: 1 | -1) => {
     if (!stop || !trail) return
     const next = trailStops[trailStops.findIndex((s) => s.slug === stop.slug) + d]
@@ -200,7 +193,6 @@ export function App() {
             go={go}
             completed={completed === trail.id}
             nextTrail={trails[(trails.indexOf(trail) + 1) % trails.length]}
-            onTour={startTour}
           />
         ) : (
           <HomePanel key="home" trails={trails} stops={stops} go={go} onReplay={() => setIntro(true)} />

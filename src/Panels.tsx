@@ -106,7 +106,6 @@ export function TrailPanel({
   go,
   completed,
   nextTrail,
-  onTour,
 }: {
   trail: Trail
   stops: Stop[]
@@ -114,7 +113,6 @@ export function TrailPanel({
   /** The visitor has just finished this trail's guided tour. */
   completed: boolean
   nextTrail?: Trail
-  onTour: () => void
 }) {
   return (
     <div className="view trail" style={trailVar(trail)}>
@@ -137,9 +135,6 @@ export function TrailPanel({
           <p>{trail.area} · {stops.length} stops</p>
         </div>
       </header>
-      <button className="primary-button primary-button--wide" onClick={onTour}>
-        <span className="play" aria-hidden="true" /> Play the guided tour
-      </button>
       <ol className="stop-list">
         {stops.map((s, i) => (
           <li key={s.slug} style={{ '--n': i } as CSSProperties}>
