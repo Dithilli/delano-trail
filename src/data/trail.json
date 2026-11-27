@@ -13,10 +13,22 @@
    "color": "#e0303a"
   },
   {
+   "id": "blue",
+   "name": "Blue Trail",
+   "area": "Bridge Ave. / Hwy. 12",
+   "color": "#2f9fc4"
+  },
+  {
    "id": "lime",
    "name": "Lime Green Trail",
    "area": "River St. north of Bridge",
    "color": "#8cb82b"
+  },
+  {
+   "id": "orange",
+   "name": "Orange Trail",
+   "area": "Central Park",
+   "color": "#ee8a1d"
   },
   {
    "id": "purple",
@@ -29,18 +41,6 @@
    "name": "Yellow Trail",
    "area": "Railroad Ave.",
    "color": "#e8c800"
-  },
-  {
-   "id": "blue",
-   "name": "Blue Trail",
-   "area": "Bridge Ave. / Hwy. 12",
-   "color": "#2f9fc4"
-  },
-  {
-   "id": "orange",
-   "name": "Orange Trail",
-   "area": "Central Park",
-   "color": "#ee8a1d"
   }
  ],
  "stops": [

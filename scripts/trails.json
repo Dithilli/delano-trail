@@ -23,6 +23,18 @@
   {"slug": "state-bank-of-delano-bldg", "name": "State Bank of Delano"},
   {"slug": "west-brick-block-on-bridge", "name": "West Brick Block on Bridge"}
  ]},
+ {"id": "blue", "name": "Blue Trail", "area": "Bridge Ave. / Hwy. 12", "color": "#2f9fc4", "stops": [
+  {"slug": "delano-american-legion", "name": "Delano American Legion", "nonprofit": true},
+  {"slug": "delano-creamery", "name": "Delano Creamery"},
+  {"slug": "delano-municipal-utilities", "name": "Delano Municipal Utilities"},
+  {"slug": "hildebrandt-bldg", "name": "Hildebrandt Building"},
+  {"slug": "indigenous-people", "name": "Indigenous Peoples"},
+  {"slug": "leiter-oil-company", "name": "Leiter Oil Company"},
+  {"slug": "plotniks-blacksmith", "name": "Plotnik's Blacksmith"},
+  {"slug": "rieder-homestead", "name": "Rieder Homestead Barn"},
+  {"slug": "the-drive-in", "name": "The Drive-In"},
+  {"slug": "sesquicentennial", "name": "Sesquicentennial"}
+ ]},
  {"id": "lime", "name": "Lime Green Trail", "area": "River St. north of Bridge", "color": "#8cb82b", "stops": [
   {"slug": "beauty-shops", "name": "Beauty Shops"},
   {"slug": "bwgc", "name": "Big Woods Garden Club"},
@@ -34,6 +46,18 @@
   {"slug": "gp-schaffer-building", "name": "GP Schaffer Building"},
   {"slug": "floods-bridge", "name": "Wagon Bridge / Crow River Floods"},
   {"slug": "ziebarth-lebovsky", "name": "Ziebarth/Lebovsky Block"}
+ ]},
+ {"id": "orange", "name": "Orange Trail", "area": "Central Park", "color": "#ee8a1d", "stops": [
+  {"slug": "central-park", "name": "Central Park"},
+  {"slug": "general-federated-womens-club-delano", "name": "General Federated Women's Club", "nonprofit": true},
+  {"slug": "delano-4th-of-july", "name": "Delano 4th of July"},
+  {"slug": "delano-american-legion-war-memorials", "name": "Delano American Legion Memorial", "nonprofit": true},
+  {"slug": "light-the-night", "name": "Delano Light the Night", "nonprofit": true},
+  {"slug": "delano-municipal-baseball-park", "name": "Delano Municipal Baseball", "nonprofit": false},
+  {"slug": "delano-royalty", "name": "Delano Royalty", "nonprofit": true},
+  {"slug": "snowstormers", "name": "Delano Snowstormers", "nonprofit": true},
+  {"slug": "delano-sportsmans-club", "name": "Delano Sportsman's Club", "nonprofit": true},
+  {"slug": "lsi-big-rock-park", "name": "Big Rock Park - LSI", "nonprofit": true}
  ]},
  {"id": "purple", "name": "Purple Trail", "area": "River St. south of Bridge", "color": "#a8619c", "stops": [
   {"slug": "bernick-building", "name": "Bernick Building"},
@@ -60,29 +84,5 @@
   {"slug": "lundsten-lumber", "name": "Lundsten Lumber"},
   {"slug": "railroad", "name": "The Railroad"},
   {"slug": "dwright-county-bank-bldg", "name": "Wright County Bank"}
- ]},
- {"id": "blue", "name": "Blue Trail", "area": "Bridge Ave. / Hwy. 12", "color": "#2f9fc4", "stops": [
-  {"slug": "delano-american-legion", "name": "Delano American Legion", "nonprofit": true},
-  {"slug": "delano-creamery", "name": "Delano Creamery"},
-  {"slug": "delano-municipal-utilities", "name": "Delano Municipal Utilities"},
-  {"slug": "hildebrandt-bldg", "name": "Hildebrandt Building"},
-  {"slug": "indigenous-people", "name": "Indigenous Peoples"},
-  {"slug": "leiter-oil-company", "name": "Leiter Oil Company"},
-  {"slug": "plotniks-blacksmith", "name": "Plotnik's Blacksmith"},
-  {"slug": "rieder-homestead", "name": "Rieder Homestead Barn"},
-  {"slug": "the-drive-in", "name": "The Drive-In"},
-  {"slug": "sesquicentennial", "name": "Sesquicentennial"}
- ]},
- {"id": "orange", "name": "Orange Trail", "area": "Central Park", "color": "#ee8a1d", "stops": [
-  {"slug": "central-park", "name": "Central Park"},
-  {"slug": "general-federated-womens-club-delano", "name": "General Federated Women's Club", "nonprofit": true},
-  {"slug": "delano-4th-of-july", "name": "Delano 4th of July"},
-  {"slug": "delano-american-legion-war-memorials", "name": "Delano American Legion Memorial", "nonprofit": true},
-  {"slug": "light-the-night", "name": "Delano Light the Night", "nonprofit": true},
-  {"slug": "delano-municipal-baseball-park", "name": "Delano Municipal Baseball", "nonprofit": false},
-  {"slug": "delano-royalty", "name": "Delano Royalty", "nonprofit": true},
-  {"slug": "snowstormers", "name": "Delano Snowstormers", "nonprofit": true},
-  {"slug": "delano-sportsmans-club", "name": "Delano Sportsman's Club", "nonprofit": true},
-  {"slug": "lsi-big-rock-park", "name": "Big Rock Park - LSI", "nonprofit": true}
  ]}
 ]
