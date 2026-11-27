@@ -101,7 +101,12 @@ export function MapView(props: Props) {
       if (hit) handlers.current.onSelectTrail(hit.layer.id.replace('trail-line-', ''))
       else handlers.current.onMapTap()
     })
-    const onZoom = () => setFar(map.getZoom() < FAR_ZOOM)
+    const onZoom = () => {
+      setFar(map.getZoom() < FAR_ZOOM)
+      // Pins stay small while the map is wide and grow to full size as the visitor zooms in.
+      const grow = Math.min(1, Math.max(0, (map.getZoom() - 17) / 1.2))
+      el.current?.parentElement?.style.setProperty('--pin', (0.72 + 0.28 * grow).toFixed(3))
+    }
     map.on('zoom', onZoom)
     onZoom()
 

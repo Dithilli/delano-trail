@@ -81,6 +81,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
   position: absolute; left: -13px; top: -13px; width: 26px; height: 26px; padding: 0; border-radius: 50%;
   background: #fffdf6; color: var(--ink); border: 3.5px solid var(--trail);
   font: 800 12px/1 var(--sans);
+  transform: scale(var(--pin, 1));
   box-shadow: 0 0 0 1.5px var(--ink), 1.5px 3px 0 1px rgb(43 41 35 / 0.3);
   transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.35s, font-size 0.2s, background 0.2s;
 }
@@ -90,7 +91,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .pin-wrap--lit { z-index: 2; }
 .pin-wrap--dim .pin { opacity: 0.2; }
 .pin-wrap--active { z-index: 4; }
-.pin-wrap--active .pin { transform: scale(1.45); background: var(--trail); color: #fff; border-color: #fffdf6; text-shadow: 0 1px 1px rgb(0 0 0 / 0.45); box-shadow: 0 0 0 2px var(--ink); }
+.pin-wrap--active .pin { transform: scale(max(1.2, calc(var(--pin, 1) * 1.45))); background: var(--trail); color: #fff; border-color: #fffdf6; text-shadow: 0 1px 1px rgb(0 0 0 / 0.45); box-shadow: 0 0 0 2px var(--ink); }
 /* Zoomed out, stops are dots on their line; the chosen trail's stops (and the open one) stay numbered. */
 .map--far .pin-wrap:not(.pin-wrap--lit):not(.pin-wrap--active) .pin { transform: scale(0.4); font-size: 0; }
 .pin-wrap--approx .pin { border-style: dashed; }
