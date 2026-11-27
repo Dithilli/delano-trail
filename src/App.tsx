@@ -119,12 +119,12 @@ export function App() {
       />
 
       <nav className="chips" aria-label="Trails">
+        <button aria-pressed={!trail} className={`chip ${!trail ? 'chip--on' : ''}`} onClick={() => go({ view: 'home' })}>All Trails</button>
         <StopSearch stops={stops} trails={trails} onToggle={setSearchOpen} onSelect={(slug) => {
           setTour(null)
           setSnap('half')
           go({ view: 'stop', slug })
         }} />
-        <button aria-pressed={!trail} className={`chip ${!trail ? 'chip--on' : ''}`} onClick={() => go({ view: 'home' })}>All</button>
       </nav>
 
       {near && !editing && (

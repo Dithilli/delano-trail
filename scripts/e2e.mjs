@@ -86,7 +86,7 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   await page.touchscreen.tap(onLine[0], onLine[1])
   await page.waitForTimeout(2600)
   check('phone: tapping a trail line selects that trail', page.url().endsWith('#/trail/yellow'), page.url().split('#')[1])
-  await page.tap('.chip:has-text("Red")')
+  await page.tap('.home-dot[aria-label="Red Trail"]')
   await page.waitForTimeout(2800)
   check('phone: red trail lists 11 stops', await page.locator('.stop-row').count() === 11)
   const fit = await page.evaluate(() => {
@@ -228,7 +228,7 @@ const tappable = (page, sel) => page.evaluate((sel) => {
   check('wide: side panel beside the map, no overlap', layout.panel[0] === 0 && layout.panel[1] === 440 && layout.map[0] === 440 && layout.map[1] === 920 && layout.panel[2] === 860, JSON.stringify(layout))
   check('wide: no drag handle', await page.locator('.sheet__handle').count() === 0)
   check('wide: 72 pins revealed', await page.locator('.pin').count() === 72 && await page.locator('.map--veiled').count() === 0)
-  await page.click('.chip:has-text("Red")')
+  await page.click('.home-dot[aria-label="Red Trail"]')
   await page.waitForTimeout(2600)
   await page.click('.stop-row:has-text("Beck Building")')
   await page.waitForTimeout(3200)
