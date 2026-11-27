@@ -95,11 +95,12 @@ export function MapView(props: Props) {
     map.addControl(new AttributionControl({ compact: true }), wide ? 'bottom-right' : 'top-left')
     map.on('click', (e) => {
       if ((e.originalEvent.target as HTMLElement | null)?.closest?.('.pin-wrap')) return
-      // A tap on (or near) a coloured line picks that trail.
+      // A tap on (or near) a coloured line picks that trail; once a trail is chosen the
+      // other, ghosted lines stay out of reach until the visitor goes back to all trails.
       const r = 12
       const layers = trails.map((t) => `trail-line-${t.id}`).filter((id) => map.getLayer(id))
       const hit = map.queryRenderedFeatures([[e.point.x - r, e.point.y - r], [e.point.x + r, e.point.y + r]], { layers })[0]
-      if (hit) handlers.current.onSelectTrail(hit.layer.id.replace('trail-line-', ''))
+      if (hit && !handlers.current.activeTrail) handlers.current.onSelectTrail(hit.layer.id.replace('trail-line-', ''))
       else handlers.current.onMapTap()
     })
     const onZoom = () => {

@@ -39,7 +39,7 @@ function useReveal(key: string) {
 /** The trails in the order their colour tabs appear in the home artwork, top to bottom. */
 const HOME_CIRCLES = ['green', 'red', 'blue', 'lime', 'orange', 'purple', 'yellow']
 
-export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; stops: Stop[]; go: Go; onReplay: () => void }) {
+export function HomePanel({ trails, stops, go, onReplay, onChoose }: { trails: Trail[]; stops: Stop[]; go: Go; onReplay: () => void; onChoose: () => void }) {
   return (
     <div className="view home">
       <header className="masthead">
@@ -55,9 +55,9 @@ export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; st
               onClick={() => go({ view: 'trail', trail: t.id })} aria-label={t.name} title={t.name} />
           )
         })}
-        {/* The "Choose a trail" button in the artwork brings the list of trails into view. */}
+        {/* The "Choose a trail" button in the artwork raises the panel and brings the list of trails into view. */}
         <button className="home-choose" aria-label="Choose a trail"
-          onClick={(e) => e.currentTarget.closest('.home')?.querySelector('.trail-cards')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
+          onClick={onChoose} />
       </header>
 
       <ul className="trail-cards">

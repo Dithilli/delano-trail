@@ -170,7 +170,12 @@ export function App() {
             nextTrail={trails[(trails.indexOf(trail) + 1) % trails.length]}
           />
         ) : (
-          <HomePanel key="home" trails={trails} stops={stops} go={go} onReplay={() => setIntro(true)} />
+          <HomePanel key="home" trails={trails} stops={stops} go={go} onReplay={() => setIntro(true)}
+            onChoose={() => {
+              // Raise the panel all the way, then bring the whole list of trails to its top.
+              setSnap('full')
+              window.setTimeout(() => panel.current?.querySelector('.trail-cards')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80)
+            }} />
         )}
       </Sheet>
 

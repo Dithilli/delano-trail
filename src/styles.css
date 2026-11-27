@@ -87,6 +87,8 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .pin::before { content: ''; position: absolute; inset: -9px; border-radius: 50%; }
 /* The chosen trail's pins sit above every ghosted pin, so a tap where they overlap goes to the full-colour one. */
 .pin-wrap--lit { z-index: 2; }
+/* Ghosted pins belong to other trails: they cannot be tapped while a trail is chosen. */
+.pin-wrap--dim, .pin-wrap--dim .pin { pointer-events: none; }
 .pin-wrap--dim .pin { opacity: 0.2; }
 .pin-wrap--active { z-index: 4; }
 .pin-wrap--active .pin { transform: scale(max(1.2, calc(var(--pin, 1) * 1.45))); background: var(--trail); color: #fff; border-color: #fffdf6; text-shadow: 0 1px 1px rgb(0 0 0 / 0.45); box-shadow: 0 0 0 2px var(--ink); }
@@ -131,7 +133,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .masthead { position: relative; margin: 0 calc(var(--gutter) * -1); }
 .masthead h1 { margin: 0; }
 .home-dot { position: absolute; right: 0; width: 16.5%; height: 12.94%; padding: 0; border: 0; border-radius: 999px 0 0 999px; background: none; cursor: pointer; }
-.home-choose { position: absolute; left: 44.8%; top: 82%; width: 28.2%; height: 11.4%; padding: 0; border: 0; border-radius: 999px; background: none; cursor: pointer; }
+.home-choose { position: absolute; left: 36%; top: 74%; width: 46%; height: 26%; padding: 0; border: 0; border-radius: 999px; background: none; cursor: pointer; }
 .home-choose:hover, .home-choose:active { background: rgb(255 255 255 / 0.15); }
 .home-dot:hover, .home-dot:active { background: rgb(255 255 255 / 0.25); }
 .banner { display: block; width: 100%; height: auto; }
@@ -379,7 +381,6 @@ h1, h2, h3, h4, .dial__name { hyphens: none; overflow-wrap: normal; word-break: 
   .pin { left: -12px; top: -12px; width: 24px; height: 24px; font-size: 11.5px; border-width: 3px; }
   .pin:hover, .map--far .pin-wrap:not(.pin-wrap--lit):not(.pin-wrap--active) .pin:hover { transform: scale(1.25); font-size: 13px; }
   .pin-wrap:not(.pin-wrap--dim):hover { z-index: 3; }
-  .pin-wrap--dim .pin:hover { opacity: 0.9; }
   .pin-wrap--active .pin:hover { transform: scale(1.5); }
 
   .eyebrow { margin-bottom: 10px; font-size: 12px; }
