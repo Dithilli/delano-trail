@@ -18,7 +18,7 @@ const INK = '#2b2923'
 const FAR_ZOOM = 15.7
 /** At or above this zoom, choosing a stop slides the map over without changing its scale. */
 const NEAR_ZOOM = 15
-/** Taps this close (px) to one of the chosen trail's pins never switch to another trail's line. */
+/** Taps this close (px) to one of the chosen trail's pins open that pin, and never switch to another trail's line. */
 const PIN_GRACE = 30
 const calm = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -105,12 +105,17 @@ export function MapView(props: Props) {
       const layers = trails.map((t) => `trail-line-${t.id}`).filter((id) => map.getLayer(id))
       const hits = map.queryRenderedFeatures([[e.point.x - r, e.point.y - r], [e.point.x + r, e.point.y + r]], { layers })
         .map((f) => f.layer.id.replace('trail-line-', ''))
-      const guarded = !!chosen && (hits.includes(chosen) || all.some((s) => {
+      // A near miss on one of the chosen trail's pins counts as a tap on the nearest one.
+      let nearest: { slug: string; d: number } | null = null
+      if (chosen) for (const s of all) {
         const at = s.trail === chosen && places.stops[s.slug]?.lngLat
-        if (!at) return false
+        if (!at) continue
         const pin = map.project(at)
-        return Math.hypot(pin.x - e.point.x, pin.y - e.point.y) < PIN_GRACE
-      }))
+        const d = Math.hypot(pin.x - e.point.x, pin.y - e.point.y)
+        if (d < PIN_GRACE && (!nearest || d < nearest.d)) nearest = { slug: s.slug, d }
+      }
+      if (nearest) return handlers.current.onSelectStop(nearest.slug)
+      const guarded = !!chosen && hits.includes(chosen)
       if (hits[0] && !guarded) handlers.current.onSelectTrail(hits[0])
       else handlers.current.onMapTap()
     })
@@ -248,7 +253,20 @@ export function MapView(props: Props) {
         pin.title = stop.name
         pin.addEventListener('click', (e) => {
           e.stopPropagation()
-          handlers.current.onSelectStop(stop.slug)
+          // Tap areas of close pins overlap, so the tap goes to whichever of the chosen
+          // trail's pins is actually nearest the finger.
+          const box = map.getContainer().getBoundingClientRect()
+          const { activeTrail: chosen, stops: all, geo: places } = handlers.current
+          let best = stop.slug
+          let gap = Infinity
+          if (e.clientX || e.clientY) for (const s of all) {
+            const where = (!chosen || s.trail === chosen) && places.stops[s.slug]?.lngLat
+            if (!where) continue
+            const q = map.project(where)
+            const d = Math.hypot(q.x - (e.clientX - box.left), q.y - (e.clientY - box.top))
+            if (d < gap) { gap = d; best = s.slug }
+          }
+          handlers.current.onSelectStop(best)
         })
         wrap.append(pin)
         const m = new Marker({ element: wrap, draggable: editing }).setLngLat(at.lngLat).addTo(map)

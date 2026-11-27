@@ -83,8 +83,8 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
   box-shadow: 0 0 0 1.5px var(--ink), 1.5px 3px 0 1px rgb(43 41 35 / 0.3);
   transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.35s, font-size 0.2s, background 0.2s;
 }
-/* A finger needs more than 26px: widen the touch area without growing the dot. */
-.pin::before { content: ''; position: absolute; inset: -9px; border-radius: 50%; }
+/* A finger needs more than 26px: widen the touch area without growing the dot (the pin is drawn at 72% until zoomed in). */
+.pin::before { content: ''; position: absolute; inset: -16px; border-radius: 50%; }
 /* The chosen trail's pins sit above every ghosted pin, so a tap where they overlap goes to the full-colour one. */
 .pin-wrap--lit { z-index: 2; }
 /* Ghosted pins belong to other trails: they cannot be tapped while a trail is chosen. */
