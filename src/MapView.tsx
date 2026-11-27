@@ -56,6 +56,7 @@ export function MapView(props: Props) {
   const padding = () => paddingFor(handlers.current.wide, handlers.current.bottomInset)
   // The camera move in progress, so a sheet that settles mid-flight can carry it on instead of cutting it short.
   const wasHome = useRef(true)
+  const [explored, setExplored] = useState(false)
   const flight = useRef<{ target: object; until: number; curve: number } | null>(null)
   const fly = (target: object, duration: number, curve: number) => {
     flight.current = { target, until: performance.now() + duration, curve }
@@ -108,6 +109,9 @@ export function MapView(props: Props) {
       el.current?.parentElement?.style.setProperty('--pin', (0.72 + 0.28 * grow).toFixed(3))
     }
     map.on('zoom', onZoom)
+    // The home view hides the pins until the visitor touches the map.
+    const explore = () => setExplored(true)
+    for (const type of ['wheel', 'touchstart', 'mousedown', 'dblclick'] as const) map.on(type, explore)
     onZoom()
 
     map.on('load', () => {
@@ -315,6 +319,7 @@ export function MapView(props: Props) {
     // The home view shows no pins, so a stop reached from it (by search) always comes in close.
     const fromHome = wasHome.current
     wasHome.current = !activeTrail && !activeStop
+    setExplored(false)
 
     const stop = activeStop ? stops.find((s) => s.slug === activeStop) : undefined
     if (stop && geo.stops[stop.slug]) {
@@ -377,7 +382,7 @@ export function MapView(props: Props) {
 
   // MapLibre owns the inner element's class list, so our own classes live on a wrapper.
   return (
-    <div className={`map ${revealed ? '' : 'map--veiled'} ${far && !editing ? 'map--far' : ''} ${!activeTrail && !activeStop && !editing ? 'map--home' : ''}`}>
+    <div className={`map ${revealed ? '' : 'map--veiled'} ${far && !editing ? 'map--far' : ''} ${!activeTrail && !activeStop && !editing && !explored ? 'map--home' : ''}`}>
       <div ref={el} className="map__canvas" aria-label="Map of the Spirit of Community Trail" />
     </div>
   )
