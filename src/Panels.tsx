@@ -127,7 +127,14 @@ export function TrailPanel({
 }) {
   return (
     <div className="view trail" style={trailVar(trail)}>
-      <button className="back back--home" onClick={() => go({ view: 'home' })}>← All trails</button>
+      <header className={`trail-head${trail.id === 'yellow' ? ' trail-head--ink' : ''}`}>
+        <button className="trail-head__back" onClick={() => go({ view: 'home' })}>
+          <svg viewBox="0 0 22 18" width="22" height="18" aria-hidden="true"><path d="M9 2 L2 9 L9 16 M2 9 H20" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          All trails
+        </button>
+        <h1>{trail.name}</h1>
+        <p>{trail.area} · {stops.length} stops</p>
+      </header>
       {completed && (
         <div className="complete">
           <strong>{trail.name} complete!</strong>
@@ -139,13 +146,6 @@ export function TrailPanel({
           )}
         </div>
       )}
-      <header className="trail-head">
-        <span className="trail-head__bar" />
-        <div>
-          <h1>{trail.name}</h1>
-          <p>{trail.area} · {stops.length} stops</p>
-        </div>
-      </header>
       <ol className="stop-list">
         {stops.map((s, i) => (
           <li key={s.slug} style={{ '--n': i } as CSSProperties}>

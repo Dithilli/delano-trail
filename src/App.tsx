@@ -119,6 +119,7 @@ export function App() {
       />
 
       <nav className="chips" aria-label="Trails">
+        <button className="chip chip--solid" onClick={() => go({ view: 'home' })}>All trails</button>
         <StopSearch stops={stops} trails={trails} onToggle={setSearchOpen} onSelect={(slug) => {
           setTour(null)
           setSnap('half')
