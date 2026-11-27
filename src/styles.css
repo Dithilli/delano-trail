@@ -65,8 +65,6 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .chip:first-child { padding-left: 16px; }
 .chip--on { background: var(--ink); color: var(--paper); }
 .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--trail); border: 1.5px solid var(--ink); }
-.chip--trail.chip--on { background: var(--trail); color: #fff; font-weight: 700; }
-.chip--trail.chip--on .dot { background: currentColor; border-color: currentColor; }
 
 /* ---------- map controls: up top on a phone, the sheet owns the bottom ---------- */
 .maplibregl-ctrl-top-right, .maplibregl-ctrl-top-left { top: calc(60px + var(--safe-top)); }
@@ -132,7 +130,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 /* The gold trail banner runs edge to edge across the top of the home panel. */
 .masthead { position: relative; margin: 0 calc(var(--gutter) * -1); }
 .masthead h1 { margin: 0; }
-.home-dot { position: absolute; right: 0; width: 12%; height: 13.3%; padding: 0; border: 0; border-radius: 999px 0 0 999px; background: none; cursor: pointer; }
+.home-dot { position: absolute; right: 0; width: 17%; height: 12.16%; padding: 0; border: 0; border-radius: 999px 0 0 999px; background: none; cursor: pointer; }
 .home-dot:hover, .home-dot:active { background: rgb(255 255 255 / 0.25); }
 .banner { display: block; width: 100%; height: auto; }
 .lede { margin: 26px 0 0; padding-top: 20px; border-top: 1.5px solid var(--rule); font-size: 17px; color: var(--ink-soft); }
