@@ -39,7 +39,7 @@ function useReveal(key: string) {
 /** The trails in the order their colour tabs appear in the home artwork, top to bottom. */
 const HOME_CIRCLES = ['green', 'red', 'blue', 'lime', 'orange', 'purple', 'yellow']
 
-export function HomePanel({ trails, stops, go, onReplay, onChoose }: { trails: Trail[]; stops: Stop[]; go: Go; onReplay: () => void; onChoose: () => void }) {
+export function HomePanel({ trails, go, onReplay }: { trails: Trail[]; go: Go; onReplay: () => void }) {
   return (
     <div className="view home">
       <header className="masthead">
@@ -55,28 +55,7 @@ export function HomePanel({ trails, stops, go, onReplay, onChoose }: { trails: T
               onClick={() => go({ view: 'trail', trail: t.id })} aria-label={t.name} title={t.name} />
           )
         })}
-        {/* The "Choose a trail" button in the artwork raises the panel and brings the list of trails into view. */}
-        <button className="home-choose" aria-label="Choose a trail"
-          onClick={onChoose} />
       </header>
-
-      <ul className="trail-cards">
-        {trails.map((t, i) => {
-          const own = stops.filter((s) => s.trail === t.id)
-          return (
-            <li key={t.id} style={{ '--n': i } as CSSProperties}>
-              <button className="trail-card" style={trailVar(t)} onClick={() => go({ view: 'trail', trail: t.id })}>
-                <span className="trail-card__bar" />
-                <span className="trail-card__text">
-                  <strong>{t.name}</strong>
-                  <span>{t.area}</span>
-                </span>
-                <span className="trail-card__count">{own.length} stops</span>
-              </button>
-            </li>
-          )
-        })}
-      </ul>
 
       <section className="how">
         <h2 className="section-title">How the trail works</h2>
