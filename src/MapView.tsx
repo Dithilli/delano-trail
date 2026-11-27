@@ -18,6 +18,8 @@ const INK = '#2b2923'
 const FAR_ZOOM = 15.7
 /** At or above this zoom, choosing a stop slides the map over without changing its scale. */
 const NEAR_ZOOM = 15
+/** Taps this close (px) to one of the chosen trail's pins never switch to another trail's line. */
+const PIN_GRACE = 30
 const calm = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 interface Props {
@@ -95,12 +97,21 @@ export function MapView(props: Props) {
     map.addControl(new AttributionControl({ compact: true }), wide ? 'bottom-right' : 'top-left')
     map.on('click', (e) => {
       if ((e.originalEvent.target as HTMLElement | null)?.closest?.('.pin-wrap')) return
-      // A tap on (or near) a coloured line picks that trail; once a trail is chosen the
-      // other, ghosted lines stay out of reach until the visitor goes back to all trails.
+      // A tap on (or near) a coloured line picks that trail. With a trail already chosen, a
+      // ghosted line can still be tapped to switch to it, but not where the tap is on the
+      // chosen trail's own line or within a finger's width of one of its pins.
       const r = 12
+      const { activeTrail: chosen, stops: all, geo: places } = handlers.current
       const layers = trails.map((t) => `trail-line-${t.id}`).filter((id) => map.getLayer(id))
-      const hit = map.queryRenderedFeatures([[e.point.x - r, e.point.y - r], [e.point.x + r, e.point.y + r]], { layers })[0]
-      if (hit && !handlers.current.activeTrail) handlers.current.onSelectTrail(hit.layer.id.replace('trail-line-', ''))
+      const hits = map.queryRenderedFeatures([[e.point.x - r, e.point.y - r], [e.point.x + r, e.point.y + r]], { layers })
+        .map((f) => f.layer.id.replace('trail-line-', ''))
+      const guarded = !!chosen && (hits.includes(chosen) || all.some((s) => {
+        const at = s.trail === chosen && places.stops[s.slug]?.lngLat
+        if (!at) return false
+        const pin = map.project(at)
+        return Math.hypot(pin.x - e.point.x, pin.y - e.point.y) < PIN_GRACE
+      }))
+      if (hits[0] && !guarded) handlers.current.onSelectTrail(hits[0])
       else handlers.current.onMapTap()
     })
     const onZoom = () => {
