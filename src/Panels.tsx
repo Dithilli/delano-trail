@@ -44,14 +44,14 @@ export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; st
     <div className="view home">
       <header className="masthead">
         <h1>
-          <img className="banner" src="./delano-trail-home.png" width={1068} height={898}
+          <img className="banner" src="./delano-trail-home.png" width={1162} height={904}
             alt="Explore Delano. Over 70 bronze plaques bring history to life. Choose a trail: Green, Red, Blue, Lime Green, Orange, Purple, Yellow." />
         </h1>
         {/* The seven colour tabs down the right edge of the artwork each open their trail. */}
         {HOME_CIRCLES.map((id, i) => {
           const t = trails.find((x) => x.id === id)
           return t && (
-            <button key={id} className="home-dot" style={{ top: `${((88 + i * 117.3 - 58.6) / 898) * 100}%` }}
+            <button key={id} className="home-dot" style={{ top: `${((91 + i * 117 - 58.5) / 904) * 100}%` }}
               onClick={() => go({ view: 'trail', trail: t.id })} aria-label={t.name} title={t.name} />
           )
         })}
