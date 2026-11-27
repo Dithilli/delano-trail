@@ -17,7 +17,7 @@ const inTown = ([lng, lat]: number[]) => lng > -93.80 && lng < -93.78 && lat > 4
 
 describe('trail data', () => {
   it('has the printed list: 7 trails, 72 plaques', () => {
-    expect(trails.map((t) => t.id)).toEqual(['green', 'red', 'lime', 'purple', 'yellow', 'blue', 'orange'])
+    expect(trails.map((t) => t.id)).toEqual(['green', 'red', 'blue', 'lime', 'orange', 'purple', 'yellow'])
     expect(stops).toHaveLength(72)
     const counts = Object.fromEntries(trails.map((t) => [t.id, stops.filter((s) => s.trail === t.id).length]))
     expect(counts).toEqual({ green: 9, red: 11, lime: 10, purple: 12, yellow: 10, blue: 10, orange: 10 })
