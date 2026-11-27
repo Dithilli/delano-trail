@@ -10,6 +10,8 @@ import type { Geo, LngLat, Stop, Trail } from './types'
 setWorkerUrl(workerUrl)
 
 const DOWNTOWN: LngLat = [-93.7885, 45.0425]
+/** The home view on a phone: close in on downtown, where the trails meet. */
+const HOME_PHONE = { center: [-93.78876, 45.04155] as LngLat, zoom: 15.2, pitch: 45, bearing: -12 }
 const CLEAR = 'rgba(0,0,0,0)'
 const INK = '#2b2923'
 /** Below this zoom, stops shrink to dots and the trail lines carry the map. */
@@ -53,6 +55,7 @@ export function MapView(props: Props) {
   handlers.current = props
   const padding = () => paddingFor(handlers.current.wide, handlers.current.bottomInset)
   // The camera move in progress, so a sheet that settles mid-flight can carry it on instead of cutting it short.
+  const wasHome = useRef(true)
   const flight = useRef<{ target: object; until: number; curve: number } | null>(null)
   const fly = (target: object, duration: number, curve: number) => {
     flight.current = { target, until: performance.now() + duration, curve }
@@ -304,6 +307,9 @@ export function MapView(props: Props) {
     wasIntro.current = false
     const still = calm()
     const land = () => setRevealed(true)
+    // The home view shows no pins, so a stop reached from it (by search) always comes in close.
+    const fromHome = wasHome.current
+    wasHome.current = !activeTrail && !activeStop
 
     const stop = activeStop ? stops.find((s) => s.slug === activeStop) : undefined
     if (stop && geo.stops[stop.slug]) {
@@ -312,7 +318,7 @@ export function MapView(props: Props) {
       const at = geo.stops[stop.slug].lngLat
       // Once the visitor is in among the pins the map keeps its size and angle and
       // only slides the chosen stop to the middle; from far out it comes in close.
-      const near = !opening && map.getZoom() >= NEAR_ZOOM
+      const near = !opening && !fromHome && map.getZoom() >= NEAR_ZOOM
       const target = near
         ? { center: at, zoom: map.getZoom(), pitch: map.getPitch(), bearing: map.getBearing(), padding: padding() }
         : { center: at, zoom: 17.9, pitch: 62, bearing: opening ? -12 : map.getBearing(), padding: padding() }
@@ -335,7 +341,9 @@ export function MapView(props: Props) {
     map.setPadding(padding())
     const cam = map.cameraForBounds(box, { maxZoom: 17.6 })
     if (!cam) return
-    const target = { center: cam.center, zoom: (cam.zoom ?? 15) - 0.25, pitch: activeTrail ? 50 : 42, bearing: activeTrail ? 14 : -12 }
+    const target = !activeTrail && !handlers.current.wide
+      ? HOME_PHONE
+      : { center: cam.center, zoom: (cam.zoom ?? 15) - 0.25, pitch: activeTrail ? 50 : 42, bearing: activeTrail ? 14 : -12 }
     if (still) {
       map.jumpTo(target)
       land()
@@ -364,7 +372,7 @@ export function MapView(props: Props) {
 
   // MapLibre owns the inner element's class list, so our own classes live on a wrapper.
   return (
-    <div className={`map ${revealed ? '' : 'map--veiled'} ${far && !editing ? 'map--far' : ''}`}>
+    <div className={`map ${revealed ? '' : 'map--veiled'} ${far && !editing ? 'map--far' : ''} ${!activeTrail && !activeStop && !editing ? 'map--home' : ''}`}>
       <div ref={el} className="map__canvas" aria-label="Map of the Spirit of Community Trail" />
     </div>
   )

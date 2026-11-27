@@ -94,7 +94,8 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 /* Zoomed out, stops are dots on their line; the chosen trail's stops (and the open one) stay numbered. */
 .map--far .pin-wrap:not(.pin-wrap--lit):not(.pin-wrap--active) .pin { transform: scale(0.4); font-size: 0; }
 .pin-wrap--approx .pin { border-style: dashed; }
-.map--veiled .pin { opacity: 0; pointer-events: none; }
+/* Home shows the trails as lines only; the pins appear once a trail is chosen. */
+.map--veiled .pin, .map--home .pin { opacity: 0; pointer-events: none; }
 .pin--drop { animation: drop 0.7s cubic-bezier(0.25, 1.5, 0.45, 1) backwards; }
 .pin-wrap--active .pin--drop { animation: none; }
 @keyframes drop { 0% { transform: translateY(-70px) scale(0.3); opacity: 0; } }
