@@ -44,17 +44,20 @@ export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; st
     <div className="view home">
       <header className="masthead">
         <h1>
-          <img className="banner" src="./delano-trail-home.png" width={1110} height={954}
+          <img className="banner" src="./delano-trail-home.png" width={1068} height={898}
             alt="Explore Delano. Over 70 bronze plaques bring history to life. Choose a trail: Green, Red, Blue, Lime Green, Orange, Purple, Yellow." />
         </h1>
         {/* The seven colour tabs down the right edge of the artwork each open their trail. */}
         {HOME_CIRCLES.map((id, i) => {
           const t = trails.find((x) => x.id === id)
           return t && (
-            <button key={id} className="home-dot" style={{ top: `${((108 + i * 118 - 59) / 954) * 100}%` }}
+            <button key={id} className="home-dot" style={{ top: `${((88 + i * 117.3 - 58.6) / 898) * 100}%` }}
               onClick={() => go({ view: 'trail', trail: t.id })} aria-label={t.name} title={t.name} />
           )
         })}
+        {/* The "Choose a trail" button in the artwork brings the list of trails into view. */}
+        <button className="home-choose" aria-label="Choose a trail"
+          onClick={(e) => e.currentTarget.closest('.home')?.querySelector('.trail-cards')?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
       </header>
 
       <ul className="trail-cards">
