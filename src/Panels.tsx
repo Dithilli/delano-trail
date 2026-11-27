@@ -36,7 +36,7 @@ function useReveal(key: string) {
   return root
 }
 
-/** The trails in the order their colour tabs appear in the home artwork, left to right. */
+/** The trails in the order their colour tabs appear in the home artwork, top to bottom. */
 const HOME_CIRCLES = ['green', 'red', 'blue', 'lime', 'orange', 'purple', 'yellow']
 
 export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; stops: Stop[]; go: Go; onReplay: () => void }) {
@@ -44,14 +44,14 @@ export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; st
     <div className="view home">
       <header className="masthead">
         <h1>
-          <img className="banner" src="./delano-trail-home.png" width={1898} height={1290}
+          <img className="banner" src="./delano-trail-home.png" width={1260} height={842}
             alt="Explore Delano. Over 70 bronze plaques bring history to life. Touch a color to start your adventure. Creativity. Resilience. Community investment." />
         </h1>
-        {/* The seven colour tabs along the top of the artwork each open their trail. */}
+        {/* The seven colour tabs down the right edge of the artwork each open their trail. */}
         {HOME_CIRCLES.map((id, i) => {
           const t = trails.find((x) => x.id === id)
           return t && (
-            <button key={id} className="home-dot" style={{ left: `${((336 + i * 203.2 - 101.6) / 1898) * 100}%` }}
+            <button key={id} className="home-dot" style={{ top: `${((74 + i * 112.3 - 56) / 842) * 100}%` }}
               onClick={() => go({ view: 'trail', trail: t.id })} aria-label={t.name} title={t.name} />
           )
         })}
