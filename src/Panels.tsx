@@ -551,6 +551,7 @@ export function TourCard({
           onFast={() => setFast((f) => !f)}
           onTimedEnd={finish}
         />
+        <button className="tour__exit" onClick={onExit}>× End narrative</button>
         <p className="tour__label">Guided tour · {trail.name}</p>
         <p className="badge">
           <span className="num">{stop.number}</span>
@@ -558,7 +559,6 @@ export function TourCard({
         </p>
         <FitTitle text={stop.title} />
         {(stop.address || stop.subtitle) && <p className="facts">{[stop.address, stop.subtitle].filter(Boolean).join(' · ')}</p>}
-        <button className="tour__exit" onClick={onExit}>× End narrative</button>
       </div>
       {slides.length > 0 && (
         <div className={playing ? 'tour__photo' : 'tour__photo tour__photo--browse'}>
