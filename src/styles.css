@@ -133,7 +133,7 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 .banner { display: block; width: 100%; height: auto; }
 .lede { margin: 26px 0 0; padding-top: 20px; border-top: 1.5px solid var(--rule); font-size: 17px; color: var(--ink-soft); }
 .lede em { font-family: var(--serif); color: var(--ink); }
-.section-title { margin: 26px 0 12px; font: 700 12px/1 var(--sans); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); }
+.section-title { margin: 26px 0 12px; font: 700 15px/1 var(--sans); letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft); }
 
 .trail-cards, .stop-list { list-style: none; margin: 0; padding: 0; }
 .trail-cards { display: grid; gap: 8px; }
@@ -161,6 +161,8 @@ h1, h2 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 
 
 /* ---------- trail ---------- */
 .back { display: inline-flex; align-items: center; min-height: 36px; background: none; border: 0; padding: 0; margin-bottom: 6px; font-size: 15px; font-weight: 600; color: var(--ink-soft); }
+/* The way back to every trail, from a trail's own page. */
+.back--home { min-height: 44px; margin-bottom: 10px; font-size: 20px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); }
 .trail-head { display: flex; gap: 14px; align-items: stretch; margin-bottom: 16px; }
 .trail-head__bar { width: 14px; border-radius: 7px; background: var(--trail); }
 .trail-head h1 { font-size: 30px; }

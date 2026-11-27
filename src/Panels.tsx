@@ -128,7 +128,7 @@ export function TrailPanel({
 }) {
   return (
     <div className="view trail" style={trailVar(trail)}>
-      <button className="back" onClick={() => go({ view: 'home' })}>← All trails</button>
+      <button className="back back--home" onClick={() => go({ view: 'home' })}>← Choose a trail</button>
       {completed && (
         <div className="complete">
           <strong>{trail.name} complete!</strong>
