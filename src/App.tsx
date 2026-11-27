@@ -124,7 +124,7 @@ export function App() {
           setSnap('half')
           go({ view: 'stop', slug })
         }} />
-        {route.view !== 'home' && <button className="chip chip--solid" onClick={() => go({ view: 'home' })}>All trails</button>}
+        <button className="chip chip--solid" onClick={() => go({ view: 'home' })}>All trails</button>
       </nav>
 
       {near && !editing && (
