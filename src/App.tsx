@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import data from './data/trail.json'
 import geoData from './data/geo.json'
-import { Intro } from './Intro'
 import { MapView } from './MapView'
 import { HomePanel, StopPanel, TourCard, TrailPanel } from './Panels'
 import { Sheet } from './Sheet'
@@ -16,8 +15,6 @@ const trails = data.trails as Trail[]
 const stops = data.stops as Stop[]
 const query = new URLSearchParams(location.search)
 const editing = query.has('edit')
-const SEEN = 'soct-intro-seen'
-const trailColors = trails.map((t) => t.color)
 
 function useRoute(): [Route, (r: Route) => void] {
   const [route, setRoute] = useState<Route>(() => parseHash(location.hash))
@@ -36,10 +33,6 @@ export function App() {
   const [route, go] = useRoute()
   const [geo, setGeo] = useState<Geo>(geoData as unknown as Geo)
   const [near, setNear] = useState<{ stop: Stop; metres: number } | null>(null)
-  // The opening plays once per visit, and never for someone arriving at a plaque's own link.
-  const [intro, setIntro] = useState(
-    () => route.view === 'home' && !editing && !query.has('nointro') && !sessionStorage.getItem(SEEN),
-  )
   const [tour, setTour] = useState<{ playing: boolean; fast?: boolean } | null>(null)
   const panel = useRef<HTMLDivElement>(null)
   const { wide, height } = useViewport()
@@ -89,25 +82,19 @@ export function App() {
     URL.revokeObjectURL(a.href)
   }
 
-  const begin = () => {
-    sessionStorage.setItem(SEEN, '1')
-    setIntro(false)
-  }
-
   const changePlayback = useCallback((playing: boolean) => {
     setTour({ playing })
     if (playing) setSnap('full')
   }, [])
 
   return (
-    <div className={`app ${intro ? 'app--intro' : ''}`} style={{ '--sheet': `${visible}px` } as React.CSSProperties}>
+    <div className="app" style={{ '--sheet': `${visible}px` } as React.CSSProperties}>
       <MapView
         trails={trails}
         stops={stops}
         geo={geo}
         activeTrail={trail?.id ?? null}
         activeStop={stop?.slug ?? null}
-        intro={intro}
         editing={editing}
         wide={wide}
         bottomInset={bottomInset}
@@ -170,11 +157,10 @@ export function App() {
             nextTrail={trails[(trails.indexOf(trail) + 1) % trails.length]}
           />
         ) : (
-          <HomePanel key="home" trails={trails} go={go} onReplay={() => setIntro(true)} />
+          <HomePanel key="home" trails={trails} go={go} />
         )}
       </Sheet>
 
-      {intro && <Intro onBegin={begin} colors={trailColors} />}
     </div>
   )
 }

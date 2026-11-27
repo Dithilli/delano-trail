@@ -39,7 +39,7 @@ function useReveal(key: string) {
 /** The trails in the order their colour tabs appear in the home artwork, top to bottom. */
 const HOME_CIRCLES = ['green', 'red', 'blue', 'lime', 'orange', 'purple', 'yellow']
 
-export function HomePanel({ trails, go, onReplay }: { trails: Trail[]; go: Go; onReplay: () => void }) {
+export function HomePanel({ trails, go }: { trails: Trail[]; go: Go }) {
   return (
     <div className="view home">
       <header className="masthead">
@@ -87,7 +87,6 @@ export function HomePanel({ trails, go, onReplay }: { trails: Trail[]; go: Go; o
           Delano Franklin Township Area Historical Society
         </a>
         , in honor of Delano’s 150th anniversary.
-        <button className="replay" onClick={onReplay}>Replay the opening</button>
       </footer>
     </div>
   )

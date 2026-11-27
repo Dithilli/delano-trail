@@ -29,7 +29,6 @@ interface Props {
   activeTrail: string | null
   activeStop: string | null
   /** The opening card is up: hold the camera high above Minnesota. */
-  intro: boolean
   /** Slowly circle the selected stop (guided tour). */
   editing: boolean
   /** Side-panel layout (desktop) rather than the phone's pull-up sheet. */
@@ -49,7 +48,8 @@ function paddingFor(wide: boolean, bottomInset: number) {
 }
 
 export function MapView(props: Props) {
-  const { trails, stops, geo, activeTrail, activeStop, intro, editing, wide, bottomInset } = props
+  const intro = false // the opening page is gone; the map starts on the home view
+  const { trails, stops, geo, activeTrail, activeStop, editing, wide, bottomInset } = props
   const el = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const markers = useRef(new Map<string, Marker>())
