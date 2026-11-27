@@ -24,7 +24,8 @@ export function useViewport() {
 export function sheetVisible(snap: Snap, height: number): number {
   const full = height - SHEET_TOP
   if (snap === 'full') return full
-  if (snap === 'half') return Math.min(full, Math.round(height * 0.47))
+  // About half an inch above the midpoint, so the home header and the first trails both show.
+  if (snap === 'half') return Math.min(full, Math.round(height * 0.47) + 48)
   return Math.min(full, 148)
 }
 

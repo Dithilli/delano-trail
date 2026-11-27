@@ -57,7 +57,6 @@ export function HomePanel({ trails, stops, go, onReplay }: { trails: Trail[]; st
         })}
       </header>
 
-      <h2 className="section-title">Choose a trail</h2>
       <ul className="trail-cards">
         {trails.map((t, i) => {
           const own = stops.filter((s) => s.trail === t.id)
@@ -128,7 +127,7 @@ export function TrailPanel({
 }) {
   return (
     <div className="view trail" style={trailVar(trail)}>
-      <button className="back back--home" onClick={() => go({ view: 'home' })}>← Choose a trail</button>
+      <button className="back back--home" onClick={() => go({ view: 'home' })}>← All trails</button>
       {completed && (
         <div className="complete">
           <strong>{trail.name} complete!</strong>
